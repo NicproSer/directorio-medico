@@ -432,3 +432,34 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
  .svcp-portal-tab{flex:1;padding:10px 8px;font-size:.82rem}
  .svcp-portal-payment-layout .svcp-portal-nav a{justify-content:center;text-align:center}
 }
+
+
+/* Portal SVCP: historial de pagos como página independiente. */
+.svcp-portal-history-intro{display:flex;align-items:flex-end;justify-content:space-between;gap:18px;margin:0 0 20px}
+.svcp-portal-history-intro h2{margin:4px 0 6px;color:#173f5f;font-size:1.35rem;line-height:1.25}
+.svcp-portal-history-intro p{margin:0;color:#687782;font-size:.92rem}
+.svcp-portal-primary-button,.svcp-portal-pdf-button{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:38px;padding:9px 14px;border:1px solid #0b7775;border-radius:8px;background:#087b78;color:#fff!important;text-decoration:none!important;font-size:.84rem;font-weight:700;white-space:nowrap}
+.svcp-portal-primary-button:hover,.svcp-portal-pdf-button:hover{background:#056765;color:#fff!important}
+.svcp-portal-history-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin:0 0 18px}
+.svcp-portal-history-stat{display:flex;flex-direction:column;gap:7px;min-width:0;padding:16px 18px;background:#fff;border:1px solid #dce5ef;border-radius:13px}
+.svcp-portal-history-stat span{color:#718096;font-size:.8rem}
+.svcp-portal-history-stat strong{color:#173f5f;font-size:1.55rem;line-height:1.1}
+.svcp-portal-history-stat strong.is-approved{color:#16834a}.svcp-portal-history-stat strong.is-pending{color:#b7791f}.svcp-portal-history-stat strong.is-rejected{color:#c53030}
+.svcp-portal-account-card{display:flex;align-items:center;justify-content:space-between;gap:18px;margin-bottom:18px}
+.svcp-portal-account-card h2{margin:0 0 4px;font-size:1rem;color:#173f5f}.svcp-portal-account-card p{margin:0;color:#718096;font-size:.85rem}
+.svcp-portal-account-values{text-align:right}.svcp-portal-account-values strong{display:block;color:#087b78;font-size:1.35rem}.svcp-portal-account-values span{display:block;color:#64748b;font-size:.86rem;margin-top:3px}
+.svcp-portal-history-table{width:100%;min-width:760px;border-collapse:collapse;background:#fff}
+.svcp-portal-history-table th{background:#f5f8fb;color:#294b65;font-size:.73rem;text-transform:uppercase;letter-spacing:.035em;text-align:left}
+.svcp-portal-history-table th,.svcp-portal-history-table td{padding:13px 14px;border-bottom:1px solid #e8edf2;vertical-align:middle}
+.svcp-portal-history-table tr:last-child td{border-bottom:0}
+.svcp-portal-history-table .svcp-pago-estado{white-space:nowrap}
+.svcp-portal-pdf-button{min-height:32px;padding:7px 10px;font-size:.78rem}
+.svcp-portal-pdf-pending{color:#8492a3;font-size:.78rem}
+.svcp-portal-empty-state{display:flex;flex-direction:column;align-items:center;gap:8px;padding:36px 18px;text-align:center;background:#f8fafc;border:1px dashed #d6e0e9;border-radius:10px}
+.svcp-portal-empty-state>span{font-size:1.8rem;color:#0b7775}.svcp-portal-empty-state strong{color:#294b65}.svcp-portal-empty-state p{max-width:460px;margin:0 0 8px;color:#718096;font-size:.88rem}
+.svcp-portal-history-layout .svcp-portal-content{display:flex;flex-direction:column;gap:0}
+.svcp-portal-history-layout .svcp-portal-payments{margin-top:0}
+.svcp-portal-history-layout .svcp-portal-nav .svcp-portal-subnav-link.is-active{background:rgba(255,255,255,.16);color:#fff}
+@media(max-width:900px){.svcp-portal-history-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:760px){.svcp-portal-history-intro{align-items:stretch;flex-direction:column}.svcp-portal-history-intro .svcp-portal-primary-button{width:100%}.svcp-portal-account-card{align-items:flex-start;flex-direction:column}.svcp-portal-account-values{text-align:left}}
+@media(max-width:480px){.svcp-portal-history-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.svcp-portal-history-stat{padding:12px}.svcp-portal-history-stat strong{font-size:1.3rem}}
