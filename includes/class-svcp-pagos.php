@@ -870,25 +870,27 @@ CSS;
         // Encabezado institucional y acento cromático SVCP.
         $content .= "0.09 0.22 0.34 rg 0 650 612 192 re f\n";
         $content .= "0.89 0.14 0.18 rg 0 644 612 6 re f\n";
+        // El color de relleno del PDF también afecta al texto (rg); definirlo explícitamente.
+        $content .= "1 1 1 rg\n";
         $content .= "BT /F2 10 Tf 48 800 Td (SOCIEDAD VENEZOLANA DE COLOPROCTOLOGIA) Tj ET\n";
         $content .= "BT /F2 22 Tf 48 758 Td (Comprobante de pago) Tj ET\n";
         $content .= "BT /F1 10 Tf 48 735 Td (Membresia institucional - constancia de pago aprobado) Tj ET\n";
         $content .= "0.10 0.55 0.43 rg 454 760 110 28 re f\n";
-        $content .= "BT /F2 10 Tf 477 770 Td (APROBADO) Tj ET\n";
+        $content .= "1 1 1 rg BT /F2 10 Tf 477 770 Td (APROBADO) Tj ET\n";
         // Identificador y datos del afiliado.
         $content .= "0.95 0.97 0.98 rg 42 560 528 58 re f\n";
         $content .= "0.82 0.87 0.90 RG 42 560 528 58 re S\n";
-        $content .= "BT /F2 8 Tf 58 598 Td (MEDICO AFILIADO) Tj ET\n";
-        $content .= "BT /F2 13 Tf 58 578 Td (" . $esc( get_the_title($doctor) ) . ") Tj ET\n";
-        $content .= "BT /F1 9 Tf 400 598 Td (COMPROBANTE No.) Tj ET\n";
-        $content .= "BT /F2 12 Tf 400 578 Td (SVCP-" . $id . ") Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F2 8 Tf 58 598 Td (MEDICO AFILIADO) Tj ET\n";
+        $content .= "0.09 0.16 0.22 rg BT /F2 13 Tf 58 578 Td (" . $esc( get_the_title($doctor) ) . ") Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 9 Tf 400 598 Td (COMPROBANTE No.) Tj ET\n";
+        $content .= "0.09 0.16 0.22 rg BT /F2 12 Tf 400 578 Td (SVCP-" . $id . ") Tj ET\n";
         // Bloques de importes.
         $content .= "0.93 0.96 0.98 rg 42 475 252 62 re f\n";
         $content .= "0.91 0.97 0.95 rg 318 475 252 62 re f\n";
-        $content .= "BT /F1 9 Tf 58 515 Td (MONTO RECIBIDO) Tj ET\n";
-        $content .= "BT /F2 18 Tf 58 488 Td (Bs. " . $esc(number_format($monto,2,',','.')) . ") Tj ET\n";
-        $content .= "BT /F1 9 Tf 334 515 Td (EQUIVALENTE REGISTRADO) Tj ET\n";
-        $content .= "BT /F2 18 Tf 334 488 Td (USD " . $esc(number_format($usd,4,',','.')) . ") Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 9 Tf 58 515 Td (MONTO RECIBIDO) Tj ET\n";
+        $content .= "0.09 0.16 0.22 rg BT /F2 18 Tf 58 488 Td (Bs. " . $esc(number_format($monto,2,',','.')) . ") Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 9 Tf 334 515 Td (EQUIVALENTE REGISTRADO) Tj ET\n";
+        $content .= "0.09 0.16 0.22 rg BT /F2 18 Tf 334 488 Td (USD " . $esc(number_format($usd,4,',','.')) . ") Tj ET\n";
         // Detalle de la operacion en filas.
         $details = array(
             array('Fecha de operacion', get_post_meta($id,self::META_FECHA_PAGO,true)),
@@ -902,16 +904,16 @@ CSS;
         $y = 432;
         foreach ( $details as $index => $detail ) {
             if ( 0 === $index % 2 ) { $content .= "0.97 0.98 0.99 rg 42 " . ($y-9) . " 528 29 re f\n"; }
-            $content .= "BT /F1 9 Tf 58 " . $y . " Td (" . $esc($detail[0]) . ") Tj ET\n";
-            $content .= "BT /F2 9 Tf 250 " . $y . " Td (" . $esc($detail[1]) . ") Tj ET\n";
+            $content .= "0.35 0.42 0.48 rg BT /F1 9 Tf 58 " . $y . " Td (" . $esc($detail[0]) . ") Tj ET\n";
+            $content .= "0.09 0.16 0.22 rg BT /F2 9 Tf 250 " . $y . " Td (" . $esc($detail[1]) . ") Tj ET\n";
             $y -= 34;
         }
         // Pie y nota legal.
         $content .= "0.82 0.87 0.90 RG 42 165 m 570 165 l S\n";
-        $content .= "BT /F2 9 Tf 42 142 Td (Constancia interna de registro y aprobacion de pago) Tj ET\n";
-        $content .= "BT /F1 8 Tf 42 125 Td (Este documento no sustituye una factura fiscal.) Tj ET\n";
-        $content .= "BT /F1 8 Tf 42 80 Td (Sociedad Venezolana de Coloproctologia | Portal del Medico SVCP) Tj ET\n";
-        $content .= "BT /F1 8 Tf 42 64 Td (Documento generado automaticamente. Conserve este comprobante para sus registros.) Tj ET\n";
+        $content .= "0.09 0.16 0.22 rg BT /F2 9 Tf 42 142 Td (Constancia interna de registro y aprobacion de pago) Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 125 Td (Este documento no sustituye una factura fiscal.) Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 80 Td (Sociedad Venezolana de Coloproctologia | Portal del Medico SVCP) Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 64 Td (Documento generado automaticamente. Conserve este comprobante para sus registros.) Tj ET\n";
         $content .= "Q";
         $stream = $content;
         $objects = array();
