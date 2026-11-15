@@ -1,0 +1,404 @@
+/* SVCP Directorio Médico — estilos base.
+   Sobreescribe cualquiera de estas clases desde tu tema o desde
+   Apariencia → Personalizar → CSS adicional. No necesitas tocar este
+   archivo directamente si prefieres mantenerlo limpio para updates. */
+
+.svcp-directorio-wrap {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1rem;
+}
+
+.svcp-directorio-titulo {
+    text-align: center;
+    margin-bottom: 1.5rem;
+}
+
+.svcp-filtros {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 2rem;
+}
+
+.svcp-filtros select {
+    padding: 0.5rem 1rem;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+}
+
+.svcp-lista-doctores {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+    gap: 1.5rem;
+}
+
+.svcp-doctor-card {
+    border: 1px solid #e5e5e5;
+    border-radius: 10px;
+    overflow: hidden;
+    background: #fff;
+    transition: box-shadow 0.2s ease;
+}
+
+.svcp-doctor-card:hover {
+    box-shadow: 0 4px 14px rgba(0,0,0,0.08);
+}
+
+.svcp-doctor-foto img,
+.svcp-doctor-foto-placeholder {
+    width: 100%;
+    height: 220px;
+    object-fit: cover;
+    background: #f2f2f2;
+    display: block;
+}
+
+.svcp-doctor-info {
+    padding: 1rem;
+}
+
+.svcp-doctor-nombre {
+    font-size: 1.1rem;
+    margin: 0 0 0.4rem;
+}
+
+.svcp-doctor-nombre a {
+    text-decoration: none;
+    color: inherit;
+}
+
+.svcp-doctor-clinica,
+.svcp-doctor-telefono,
+.svcp-doctor-correo {
+    margin: 0.2rem 0;
+    font-size: 0.92rem;
+    color: #444;
+}
+
+.svcp-doctor-redes {
+    margin-top: 0.6rem;
+    display: flex;
+    gap: 0.75rem;
+}
+
+.svcp-doctor-redes a {
+    font-size: 0.85rem;
+}
+
+.svcp-sin-resultados {
+    grid-column: 1 / -1;
+    text-align: center;
+    color: #777;
+}
+
+/* Perfil individual */
+.svcp-doctor-perfil {
+    max-width: 800px;
+    margin: 2rem auto;
+    display: flex;
+    gap: 2rem;
+    flex-wrap: wrap;
+}
+
+.svcp-doctor-perfil-foto img {
+    width: 260px;
+    height: 260px;
+    object-fit: cover;
+    border-radius: 10px;
+}
+
+.svcp-doctor-perfil-nombre {
+    margin-top: 0;
+}
+
+/* Formulario de autorregistro */
+.svcp-form-registro {
+    max-width: 480px;
+    margin: 2rem auto;
+}
+
+.svcp-form-row {
+    margin-bottom: 1rem;
+}
+
+.svcp-form-row label {
+    display: block;
+    font-weight: 600;
+    margin-bottom: 0.3rem;
+}
+
+.svcp-form-row input,
+.svcp-form-row select {
+    width: 100%;
+    padding: 0.5rem;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+}
+
+.svcp-btn-registro {
+    padding: 0.7rem 1.5rem;
+    border: none;
+    border-radius: 6px;
+    background: #1d5f7a;
+    color: #fff;
+    cursor: pointer;
+}
+
+.svcp-form-errores {
+    background: #fdecea;
+    color: #b32d2e;
+    padding: 0.75rem 1rem;
+    border-radius: 6px;
+    margin-bottom: 1rem;
+}
+
+.svcp-registro-exito {
+    background: #e8f5e9;
+    color: #2e7d32;
+    padding: 1rem;
+    border-radius: 6px;
+}
+
+.svcp-directorio-subtitulo{text-align:center;margin:-.8rem auto 1.5rem;color:#666}.svcp-filtros{gap:.75rem;align-items:center}.svcp-filtros button{padding:.5rem 1rem;border:0;border-radius:6px;cursor:pointer}.svcp-doctor-especialidad,.svcp-doctor-ciudad{margin:.2rem 0;font-size:.92rem;color:#555}.svcp-doctor-acciones{margin-top:.8rem;display:flex;flex-wrap:wrap;gap:.5rem}.svcp-doctor-acciones a,.svcp-doctor-contacto a{display:inline-block;padding:.45rem .7rem;border:1px solid #ddd;border-radius:6px;text-decoration:none}.svcp-doctor-contacto{display:flex;flex-wrap:wrap;gap:.5rem;margin:1rem 0}.svcp-doctor-perfil-especialidad{font-weight:600}.svcp-doctor-perfil-foto{max-width:360px}.svcp-doctor-perfil-foto img,.svcp-doctor-perfil-foto .svcp-doctor-foto-placeholder{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:10px}.svcp-form-row small{display:block;margin-top:.3rem;color:#666}
+
+/* Panel frontend del doctor */
+.svcp-panel-doctor{max-width:900px;margin:30px auto;padding:24px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-sizing:border-box}.svcp-panel-header{display:flex;gap:24px;align-items:center;margin-bottom:28px;padding-bottom:24px;border-bottom:1px solid #e5e7eb}.svcp-panel-avatar{width:150px;height:150px;flex:0 0 150px;border-radius:12px;overflow:hidden;background:#f3f4f6;display:flex;align-items:center;justify-content:center}.svcp-panel-photo{width:100%;height:100%;object-fit:cover}.svcp-panel-header h2{margin:0 0 6px}.svcp-panel-header p{margin:5px 0}.svcp-panel-form h3{margin:28px 0 14px}.svcp-panel-field{margin-bottom:16px}.svcp-panel-field label{display:block;font-weight:600;margin-bottom:6px}.svcp-panel-field input,.svcp-panel-field select{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff}.svcp-panel-field small{display:block;margin-top:6px;color:#6b7280}.svcp-panel-actions{display:flex;gap:12px;align-items:center;margin-top:24px;flex-wrap:wrap}.svcp-panel-public-link{text-decoration:none}.svcp-panel-success{margin-bottom:18px;padding:12px 14px;border-radius:8px;background:#ecfdf5;color:#065f46}.svcp-panel-errors{margin-bottom:18px;padding:12px 14px;border-radius:8px;background:#fef2f2;color:#991b1b}.svcp-panel-errors p{margin:4px 0}.svcp-panel-notice{padding:16px;border:1px solid #e5e7eb;border-radius:8px}
+@media (max-width:600px){.svcp-panel-doctor{padding:16px}.svcp-panel-header{align-items:flex-start;flex-direction:column}.svcp-panel-avatar{width:120px;height:120px;flex-basis:120px}}
+
+
+/* Acceso frontend de médicos */
+.svcp-login-box{max-width:480px;margin:30px auto;padding:28px;background:#fff;border:1px solid #e5e7eb;border-radius:16px;box-sizing:border-box}.svcp-login-box h2{margin:0 0 8px}.svcp-login-description{margin:0 0 22px;color:#6b7280}.svcp-login-box .login-username,.svcp-login-box .login-password{margin-bottom:16px}.svcp-login-box label{display:block;font-weight:600;margin-bottom:6px}.svcp-login-box input[type=text],.svcp-login-box input[type=email],.svcp-login-box input[type=password]{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff}.svcp-login-box .login-remember{margin:14px 0}.svcp-login-box .login-submit{margin-top:18px}.svcp-btn-login,.svcp-login-box .login-submit input[type=submit]{display:inline-block;padding:11px 18px;border:0;border-radius:8px;background:#1d5f7a;color:#fff;text-decoration:none;cursor:pointer}.svcp-login-links{margin-top:18px;text-align:center}.svcp-login-links a{text-decoration:none}.svcp-login-success{padding:12px 14px;border-radius:8px;background:#ecfdf5;color:#065f46}.svcp-login-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}.svcp-btn-logout,.svcp-panel-logout{display:inline-block;padding:9px 14px;border:1px solid #d1d5db;border-radius:8px;text-decoration:none;color:inherit}.svcp-panel-header-info{flex:1;min-width:0}.svcp-panel-header-top{display:flex;gap:16px;align-items:flex-start;justify-content:space-between}.svcp-panel-logout{font-size:.9rem;white-space:nowrap}.svcp-panel-logout:hover,.svcp-btn-logout:hover{background:#f9fafb}@media (max-width:600px){.svcp-panel-header-top{flex-direction:column}.svcp-panel-logout{white-space:normal}.svcp-login-actions{flex-direction:column}.svcp-btn-login,.svcp-btn-logout{width:100%;box-sizing:border-box;text-align:center}}
+
+/* v0.3.0 — Directorio y ficha pública */
+.svcp-directorio-hero{max-width:760px;margin:0 auto 2rem;text-align:center}.svcp-directorio-eyebrow{display:inline-block;font-size:.78rem;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:#1d5f7a;margin-bottom:.55rem}.svcp-directorio-subtitulo{font-size:1.05rem}.svcp-filtros-directorio{display:grid;grid-template-columns:minmax(220px,1fr) 220px auto auto;max-width:900px;margin:0 auto 2.2rem;gap:.7rem}.svcp-filtros-directorio input,.svcp-filtros-directorio select{width:100%;box-sizing:border-box;padding:.75rem .9rem;border:1px solid #d1d5db;border-radius:8px;background:#fff}.svcp-filtros-directorio button{padding:.75rem 1.1rem;border:0;border-radius:8px;background:#1d5f7a;color:#fff;font-weight:600;cursor:pointer}.svcp-filtro-limpiar{display:flex;align-items:center;justify-content:center;padding:.5rem;text-decoration:none}.svcp-doctor-card{border:1px solid #e5e7eb;border-radius:16px;box-shadow:0 2px 8px rgba(0,0,0,.04)}.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{height:240px}.svcp-doctor-foto-placeholder{display:flex;align-items:center;justify-content:center;color:#6b7280}.svcp-doctor-foto-placeholder span{font-size:.9rem}.svcp-doctor-info{padding:1.15rem}.svcp-membresia-badge{display:inline-flex;padding:.3rem .55rem;border-radius:999px;background:#ecfdf5;color:#047857;font-size:.75rem;font-weight:700;margin-bottom:.65rem}.svcp-doctor-nombre{font-size:1.18rem}.svcp-doctor-region{margin:.2rem 0;font-size:.9rem;font-weight:600;color:#1d5f7a}.svcp-btn-principal{background:#1d5f7a!important;color:#fff!important;border-color:#1d5f7a!important}.svcp-sin-resultados-box{text-align:center;padding:3rem 1rem;border:1px solid #e5e7eb;border-radius:16px}.svcp-sin-resultados-box h2{margin-top:0}.svcp-paginacion{margin-top:2rem}.svcp-perfil-publico{padding:2rem 1rem 4rem}.svcp-perfil-contenedor{max-width:1050px;margin:0 auto}.svcp-volver-directorio{display:inline-block;margin-bottom:1.5rem;text-decoration:none;font-weight:600}.svcp-doctor-perfil{max-width:none;margin:0;display:grid;grid-template-columns:320px minmax(0,1fr);gap:3rem;align-items:start}.svcp-doctor-perfil-lateral{position:sticky;top:24px}.svcp-doctor-perfil-foto{width:100%}.svcp-doctor-perfil-foto img,.svcp-doctor-perfil-foto .svcp-doctor-foto-placeholder{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:18px;background:#f3f4f6}.svcp-perfil-verificacion{margin-top:.75rem;padding:.65rem .8rem;border-radius:10px;background:#ecfdf5;color:#047857;font-size:.9rem;font-weight:700;text-align:center}.svcp-doctor-perfil-nombre{font-size:clamp(2rem,4vw,3.25rem);line-height:1.05;margin:.1rem 0 .55rem}.svcp-doctor-perfil-especialidad{font-size:1.15rem;font-weight:700;margin:.25rem 0}.svcp-doctor-perfil-region{display:inline-block;margin:.4rem 0 1.4rem;padding:.35rem .65rem;border-radius:999px;background:#eef6f8;color:#1d5f7a;font-weight:600}.svcp-perfil-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem;margin:1rem 0 1.4rem}.svcp-perfil-dato{padding:1rem;border:1px solid #e5e7eb;border-radius:12px;background:#fff}.svcp-perfil-dato span{display:block;font-size:.78rem;text-transform:uppercase;letter-spacing:.04em;color:#6b7280;margin-bottom:.3rem}.svcp-perfil-dato strong{display:block;line-height:1.4}.svcp-perfil-dato-ancho{grid-column:1/-1}.svcp-perfil-contacto{margin:1.25rem 0}.svcp-perfil-contacto a{font-weight:600}.svcp-contacto-principal{background:#1d5f7a!important;color:#fff!important;border-color:#1d5f7a!important}.svcp-contacto-whatsapp{background:#ecfdf5;border-color:#a7f3d0!important;color:#047857!important}.svcp-perfil-redes{display:block;margin-top:1.8rem;padding-top:1.4rem;border-top:1px solid #e5e7eb}.svcp-perfil-redes h2{font-size:1rem;margin:0 0 .75rem}.svcp-perfil-redes>div{display:flex;flex-wrap:wrap;gap:.5rem}.svcp-perfil-redes a{padding:.45rem .7rem;border:1px solid #ddd;border-radius:7px;text-decoration:none}
+@media(max-width:760px){.svcp-filtros-directorio{grid-template-columns:1fr}.svcp-doctor-perfil{grid-template-columns:1fr;gap:1.5rem}.svcp-doctor-perfil-lateral{position:static;max-width:520px;margin:0 auto;width:100%}.svcp-perfil-grid{grid-template-columns:1fr}.svcp-perfil-dato-ancho{grid-column:auto}.svcp-doctor-perfil-datos{text-align:left}}
+
+
+/* v0.4.0 — Panel privado Mi Perfil */
+.svcp-panel-toolbar{display:flex;justify-content:space-between;gap:20px;align-items:flex-start;padding-bottom:22px;border-bottom:1px solid #e5e7eb;margin-bottom:22px}.svcp-panel-eyebrow{display:block;text-transform:uppercase;letter-spacing:.08em;font-size:.72rem;font-weight:700;color:#1d5f7a;margin-bottom:5px}.svcp-panel-toolbar h2{margin:0 0 5px;font-size:1.8rem}.svcp-panel-toolbar p{margin:0;color:#6b7280}.svcp-panel-toolbar-actions{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}.svcp-panel-link-primary,.svcp-panel-link-secondary{display:inline-block;padding:9px 13px;border-radius:8px;text-decoration:none;font-weight:600}.svcp-panel-link-primary{background:#1d5f7a;color:#fff}.svcp-panel-link-secondary{border:1px solid #d1d5db;color:inherit}.svcp-panel-summary{display:grid;grid-template-columns:minmax(0,1.35fr) minmax(260px,.8fr);gap:16px;margin-bottom:28px}.svcp-panel-profile-card,.svcp-panel-account-card{border:1px solid #e5e7eb;border-radius:14px;padding:18px;background:#fafafa}.svcp-panel-profile-card{display:flex;gap:16px;align-items:center}.svcp-panel-profile-photo{width:92px;height:92px;flex:0 0 92px;border-radius:12px;overflow:hidden;background:#eef2f4;display:flex;align-items:center;justify-content:center;font-size:2rem;font-weight:700;color:#1d5f7a}.svcp-panel-profile-photo img{width:100%;height:100%;object-fit:cover}.svcp-panel-profile-copy h3{margin:0 0 5px}.svcp-panel-profile-copy p{margin:0 0 9px;color:#6b7280}.svcp-panel-status{display:inline-flex;padding:5px 9px;border-radius:999px;font-size:.76rem;font-weight:700}.svcp-status-activa,.svcp-status-por-vencer{background:#ecfdf5;color:#047857}.svcp-status-vencida{background:#fef2f2;color:#b91c1c}.svcp-status-suspendida{background:#fff7ed;color:#c2410c}.svcp-panel-account-card h3{margin:0 0 12px}.svcp-panel-account-card p{margin:0 0 9px}.svcp-panel-account-card p span{display:block;font-size:.75rem;text-transform:uppercase;letter-spacing:.03em;color:#6b7280}.svcp-panel-account-card p strong{display:block;overflow-wrap:anywhere}.svcp-panel-account-card>a{display:inline-block;margin-top:5px;font-weight:600}.svcp-panel-section-heading{margin:28px 0 14px}.svcp-panel-section-heading h3{margin:0 0 4px}.svcp-panel-section-heading p{margin:0;color:#6b7280;font-size:.92rem}.svcp-panel-form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.svcp-panel-form-grid .svcp-panel-field{min-width:0}.svcp-panel-field textarea{width:100%;box-sizing:border-box;padding:11px 12px;border:1px solid #d1d5db;border-radius:8px;background:#fff;resize:vertical}.svcp-panel-photo-upload{display:flex;gap:18px;align-items:center;padding:16px;border:1px dashed #d1d5db;border-radius:12px;background:#fafafa}.svcp-panel-photo-preview{width:120px;height:120px;flex:0 0 120px;border-radius:12px;overflow:hidden;background:#eef2f4;display:flex;align-items:center;justify-content:center;color:#6b7280;font-size:.85rem;text-align:center}.svcp-panel-photo-preview img{width:100%;height:100%;object-fit:cover}.svcp-panel-photo-input{flex:1}.svcp-panel-photo-input label{display:block;font-weight:600;margin-bottom:7px}.svcp-panel-photo-input input{width:100%;box-sizing:border-box}.svcp-panel-photo-input small{display:block;margin-top:7px;color:#6b7280}.svcp-panel-actions{border-top:1px solid #e5e7eb;padding-top:20px}.svcp-btn-registro{background:#1d5f7a}
+@media(max-width:760px){.svcp-panel-toolbar,.svcp-panel-summary{grid-template-columns:1fr;display:grid}.svcp-panel-toolbar-actions{justify-content:flex-start}.svcp-panel-form-grid{grid-template-columns:1fr}.svcp-panel-profile-card{align-items:flex-start}.svcp-panel-photo-upload{align-items:flex-start;flex-direction:column}.svcp-panel-photo-preview{width:140px;height:140px;flex-basis:140px}}
+
+
+/* v0.4.2 — Directorio público: búsqueda, resultados y móvil */
+.svcp-resultados-resumen{max-width:1100px;margin:0 auto 1rem;color:#4b5563;font-size:.92rem}.svcp-resultados-resumen strong{color:#111827}.svcp-filtro-busqueda{min-width:0}.svcp-filtros-directorio input:focus,.svcp-filtros-directorio select:focus,.svcp-filtros-directorio button:focus,.svcp-filtro-limpiar:focus{outline:3px solid rgba(29,95,122,.18);outline-offset:2px}.svcp-doctor-card{display:flex;flex-direction:column}.svcp-doctor-foto{display:block}.svcp-doctor-info{display:flex;flex-direction:column;flex:1}.svcp-doctor-acciones{margin-top:auto;padding-top:1rem}.svcp-doctor-region{margin-bottom:.35rem}.svcp-paginacion nav{display:flex;justify-content:center}.svcp-paginacion .page-numbers{display:inline-flex;align-items:center;justify-content:center;min-width:38px;height:38px;margin:0 3px;border:1px solid #e5e7eb;border-radius:8px;text-decoration:none}.svcp-paginacion .current{background:#1d5f7a;color:#fff;border-color:#1d5f7a}.svcp-paginacion .dots{border:0}.svcp-filtros-directorio button:hover{filter:brightness(.94)}
+@media(max-width:760px){.svcp-directorio-wrap{padding:1.25rem .85rem}.svcp-directorio-hero{margin-bottom:1.4rem}.svcp-filtros-directorio{grid-template-columns:1fr;margin-bottom:1.4rem}.svcp-filtros-directorio button,.svcp-filtro-limpiar{width:100%;box-sizing:border-box}.svcp-lista-doctores{grid-template-columns:1fr;gap:1rem}.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{height:auto;aspect-ratio:4/3}.svcp-doctor-acciones a{flex:1;text-align:center}.svcp-resultados-resumen{margin-bottom:.75rem}}
+
+
+/* v0.4.3 — Portada del directorio y exploración por regiones */
+.svcp-directorio-buscador-principal{background:#f8fafc;border:1px solid #e5e7eb;border-radius:18px;padding:14px;box-sizing:border-box;box-shadow:0 8px 28px rgba(15,23,42,.05)}
+.svcp-regiones-directorio{max-width:1100px;margin:0 auto 2.6rem}
+.svcp-regiones-cabecera{display:flex;justify-content:space-between;align-items:end;gap:2rem;margin-bottom:1rem}
+.svcp-regiones-cabecera .svcp-directorio-eyebrow{margin-bottom:.25rem}
+.svcp-regiones-cabecera h2{margin:.1rem 0 0;font-size:1.55rem}
+.svcp-regiones-cabecera p{max-width:500px;margin:0;color:#6b7280;line-height:1.5}
+.svcp-regiones-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:.85rem}
+.svcp-region-card{display:flex;flex-direction:column;min-height:128px;padding:1rem;text-decoration:none;color:inherit;background:#fff;border:1px solid #e5e7eb;border-radius:14px;transition:transform .18s ease,box-shadow .18s ease,border-color .18s ease}
+.svcp-region-card:hover{transform:translateY(-2px);border-color:#b8cbd1;box-shadow:0 8px 22px rgba(15,23,42,.08)}
+.svcp-region-card-icon{font-size:1.35rem;color:#1d5f7a;line-height:1;margin-bottom:.85rem}
+.svcp-region-card-name{font-weight:700;line-height:1.25}
+.svcp-region-card-action{margin-top:auto;padding-top:.8rem;font-size:.82rem;font-weight:600;color:#1d5f7a}
+@media(max-width:900px){.svcp-regiones-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.svcp-regiones-cabecera{align-items:flex-start;flex-direction:column;gap:.5rem}}
+@media(max-width:520px){.svcp-regiones-grid{grid-template-columns:1fr}.svcp-region-card{min-height:110px}.svcp-directorio-buscador-principal{padding:10px}}
+
+/* v0.9.3 — Identidad SVCP, pagos y accesibilidad */
+:root{--svcp-primary:#173f5f;--svcp-primary-2:#1f6f8b;--svcp-accent:#0f8b8d;--svcp-ink:#173042;--svcp-muted:#60717d;--svcp-border:#dfe7ee;--svcp-surface:#fff;--svcp-soft:#f4f8fa}
+.svcp-form-pago{max-width:820px;margin:0 auto;padding:clamp(1.2rem,3vw,2rem);background:var(--svcp-surface);border:1px solid var(--svcp-border);border-radius:20px;box-shadow:0 12px 38px rgba(23,63,95,.08)}
+.svcp-pago-wrap{max-width:900px;margin:2rem auto;padding:0 1rem;color:var(--svcp-ink)}.svcp-pago-encabezado{margin-bottom:1.25rem}.svcp-pago-kicker{display:inline-block;color:var(--svcp-accent);font-size:.76rem;font-weight:800;text-transform:uppercase;letter-spacing:.09em}.svcp-pago-encabezado h2{margin:.25rem 0 .5rem;color:var(--svcp-primary);font-size:clamp(1.8rem,4vw,2.5rem)}.svcp-pago-encabezado p{max-width:720px;color:var(--svcp-muted);line-height:1.6}.svcp-pago-resumen{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin:0 0 14px}.svcp-pago-resumen>div{padding:1rem;border:1px solid var(--svcp-border);border-radius:14px;background:var(--svcp-soft)}.svcp-pago-resumen span{display:block;color:var(--svcp-muted);font-size:.76rem;text-transform:uppercase;letter-spacing:.05em;margin-bottom:.3rem}.svcp-pago-resumen strong{display:block;color:var(--svcp-primary)}.svcp-pago-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:1rem}.svcp-pago-campo{margin:0}.svcp-pago-campo label{display:block;font-weight:700;margin-bottom:.45rem;color:var(--svcp-ink)}.svcp-pago-campo label span{color:#b42318}.svcp-pago-campo input,.svcp-pago-campo select{width:100%;box-sizing:border-box;min-height:46px;padding:.72rem .8rem;border:1px solid #cbd7df;border-radius:10px;background:#fff;color:var(--svcp-ink);transition:border-color .15s,box-shadow .15s}.svcp-pago-campo input:focus,.svcp-pago-campo select:focus{outline:0;border-color:var(--svcp-primary-2);box-shadow:0 0 0 3px rgba(31,111,139,.13)}.svcp-pago-campo small{display:block;margin-top:.4rem;color:var(--svcp-muted);font-size:.8rem}.svcp-pago-campo-ancho{grid-column:1/-1}.svcp-pago-seguridad{display:flex;gap:.75rem;align-items:flex-start;margin:1.2rem 0;padding:.9rem 1rem;border-radius:12px;background:#eef8f8;color:#295b63}.svcp-pago-seguridad>span{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:var(--svcp-accent);color:#fff;font-weight:800;flex:0 0 24px}.svcp-pago-seguridad p{margin:0;font-size:.88rem;line-height:1.45}.svcp-pago-boton{width:100%;min-height:48px;border:0;border-radius:11px;background:linear-gradient(135deg,var(--svcp-primary),var(--svcp-primary-2));color:#fff;font-weight:800;font-size:1rem;cursor:pointer;box-shadow:0 7px 18px rgba(23,63,95,.2);transition:transform .15s,filter .15s}.svcp-pago-boton:hover{filter:brightness(1.06);transform:translateY(-1px)}.svcp-pago-alerta-publico,.svcp-pago-aviso{display:flex;gap:.7rem;flex-direction:column;margin:0 0 1rem;padding:1rem 1.1rem;border-radius:14px;border:1px solid #cce5e6;background:#f0fbfb;color:#295b63}.svcp-pago-alerta-publico strong,.svcp-pago-aviso strong{color:var(--svcp-primary)}
+@media(max-width:680px){.svcp-pago-grid,.svcp-pago-resumen{grid-template-columns:1fr}.svcp-pago-campo-ancho{grid-column:auto}.svcp-pago-wrap{padding:0 .65rem}}
+
+.svcp-pago-alerta-error{background:#fff5f5;border-color:#f1c7c7;color:#7a2e2e}.svcp-pago-alerta-error strong{color:#9b1c1c}
+
+/* v0.9.5: CTA de creación de cuenta desde el acceso médico */
+.svcp-login-register-cta{margin-top:24px;padding:20px;border:1px solid #dbe5e9;border-radius:12px;background:#f7fafb;text-align:center}.svcp-login-register-cta>p{margin:0 0 14px;color:#374151}.svcp-btn-register{display:inline-block;padding:12px 20px;border-radius:8px;background:#e5232e;color:#fff!important;text-decoration:none!important;font-weight:700;transition:filter .2s ease}.svcp-btn-register:hover,.svcp-btn-register:focus{filter:brightness(.92);color:#fff!important}.svcp-login-register-cta .svcp-form-registro{margin-top:18px;text-align:left}.svcp-login-register-cta .svcp-form-row{margin-bottom:14px}
+
+/* v0.9.8 — Catálogo público SVCP basado en la referencia visual institucional */
+:root{--svcp-blue:#0b5a88;--svcp-sky:#3b9ed8;--svcp-teal:#4cadaf;--svcp-mint:#78c8a7;--svcp-orange:#f49a22;--svcp-red:#fd0600;--svcp-ink:#172b3a;--svcp-muted:#647789;--svcp-line:#e3ebf0;--svcp-soft:#f2f7fa}
+.svcp-directorio-wrap{max-width:1120px;padding:0 22px 48px;color:var(--svcp-ink);font-family:inherit}
+.svcp-directorio-hero{max-width:none;margin:0 calc(50% - 50vw) 30px;padding:44px max(22px,calc((100vw - 1076px)/2)) 38px;background:var(--svcp-blue);color:#fff;text-align:left}
+.svcp-directorio-hero .svcp-directorio-eyebrow{color:#bfe6f8;font-size:.72rem;letter-spacing:.16em;margin-bottom:8px}
+.svcp-directorio-titulo{text-align:left;color:#fff;font-size:clamp(2.1rem,4vw,3.25rem);font-weight:800;letter-spacing:-.035em;line-height:1.05;margin:0 0 12px;text-transform:uppercase}
+.svcp-directorio-subtitulo{text-align:left;margin:0;color:#e2f3fb;font-size:1rem}
+.svcp-filtros-directorio{position:relative;z-index:1;grid-template-columns:minmax(220px,1fr) 220px auto auto;max-width:100%;margin:-14px auto 34px;padding:9px;background:#fff;border:1px solid var(--svcp-line);border-radius:12px;box-shadow:0 10px 28px rgba(11,90,136,.10);gap:8px}
+.svcp-filtros-directorio input,.svcp-filtros-directorio select{min-height:44px;border:1px solid #dce6ec;border-radius:8px;color:var(--svcp-ink);font-size:.94rem}
+.svcp-filtros-directorio input:focus,.svcp-filtros-directorio select:focus{outline:2px solid #3b9ed855;border-color:var(--svcp-sky)}
+.svcp-filtros-directorio button{min-height:44px;background:var(--svcp-blue);border-radius:8px;padding:0 18px;transition:background .2s ease}
+.svcp-filtros-directorio button:hover{background:#08476c}
+.svcp-regiones-directorio{margin:0 0 28px}
+.svcp-regiones-cabecera{display:flex;justify-content:space-between;align-items:end;gap:18px;margin-bottom:14px}
+.svcp-regiones-cabecera .svcp-directorio-eyebrow{color:var(--svcp-teal);margin-bottom:4px}
+.svcp-regiones-cabecera h2{margin:0;color:var(--svcp-blue);font-size:1.35rem}
+.svcp-regiones-cabecera>p{max-width:390px;margin:0;color:var(--svcp-muted);font-size:.9rem}
+.svcp-regiones-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:9px}
+.svcp-region-card{display:grid;grid-template-columns:38px minmax(0,1fr);grid-template-rows:auto auto;column-gap:10px;align-items:center;padding:12px;border:1px solid var(--svcp-line);border-radius:10px;background:#fff;color:var(--svcp-ink);text-decoration:none;transition:border-color .2s,transform .2s,box-shadow .2s}
+.svcp-region-card:hover{border-color:var(--svcp-sky);transform:translateY(-2px);box-shadow:0 5px 14px #0b5a8812}
+.svcp-region-card-icon{grid-row:1/3;display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:50%;background:#e5f5f6;color:var(--svcp-teal);font-size:1.2rem}
+.svcp-region-card-name{font-size:.9rem;font-weight:700;color:var(--svcp-ink)}
+.svcp-region-card-action{font-size:.76rem;color:var(--svcp-muted)}
+.svcp-directorio-resultados{margin-top:20px}
+.svcp-resultados-resumen{padding:0 0 12px;margin-bottom:20px;border-bottom:1px solid #cfdce4;color:var(--svcp-muted);font-size:.85rem}
+.svcp-resultados-resumen strong{color:var(--svcp-blue)}
+.svcp-lista-doctores{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 28px}
+.svcp-doctor-card{border:0;border-radius:0;box-shadow:none;border-bottom:1px solid var(--svcp-line);padding:0 0 22px;overflow:visible;min-width:0}
+.svcp-doctor-card:hover{box-shadow:none}
+.svcp-doctor-foto{display:block;width:100%;height:auto;overflow:hidden;border-radius:8px;background:var(--svcp-soft);aspect-ratio:4/3}
+.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{display:flex;width:100%;height:100%;min-height:0;aspect-ratio:4/3;object-fit:cover;background:var(--svcp-soft);align-items:center;justify-content:center}
+.svcp-doctor-foto-placeholder{color:var(--svcp-blue);font-weight:800;font-size:2rem;letter-spacing:.08em}
+.svcp-doctor-foto-placeholder span{font-size:2rem;color:var(--svcp-blue)}
+.svcp-doctor-info{padding:13px 0 0}
+.svcp-doctor-nombre{font-size:1.12rem;line-height:1.3;color:var(--svcp-blue);margin:0 0 4px;font-weight:750;overflow-wrap:anywhere}
+.svcp-doctor-region{font-size:.68rem;text-transform:uppercase;letter-spacing:.07em;color:var(--svcp-muted);font-weight:700;margin:0 0 12px}
+.svcp-doctor-clinica,.svcp-doctor-ciudad,.svcp-doctor-direccion{font-size:.84rem;line-height:1.5;color:#526577;margin:3px 0;overflow-wrap:anywhere}
+.svcp-doctor-clinica strong{color:var(--svcp-ink);font-weight:700}
+.svcp-doctor-acciones{margin-top:12px;gap:7px;align-items:center}
+.svcp-doctor-acciones a{border:0;border-radius:50px;text-decoration:none}
+.svcp-doctor-contact-actions .svcp-contact-icon{display:flex;align-items:center;gap:6px;width:100%;padding:2px 0;color:#526577;font-size:.8rem;overflow-wrap:anywhere}
+.svcp-doctor-contact-actions .svcp-contact-icon:hover{color:var(--svcp-blue)}
+.svcp-doctor-contact-actions .svcp-contact-email{color:var(--svcp-red)}
+.svcp-doctor-contact-actions .svcp-social-icon{display:inline-flex;align-items:center;justify-content:center;width:29px;height:29px;padding:0;background:var(--svcp-red);color:#fff;font-size:.76rem;font-weight:800}
+.svcp-doctor-contact-actions .svcp-social-icon:hover{background:#c90000;color:#fff}
+.svcp-sin-resultados-box{border-color:var(--svcp-line);background:var(--svcp-soft)}
+.svcp-sin-resultados-box h2{color:var(--svcp-blue)}
+.svcp-paginacion a,.svcp-paginacion span{display:inline-block;padding:8px 12px;margin:3px;border-radius:7px;background:var(--svcp-soft);color:var(--svcp-blue);text-decoration:none}
+.svcp-paginacion .current{background:var(--svcp-blue);color:#fff}
+@media(max-width:900px){.svcp-regiones-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.svcp-lista-doctores{grid-template-columns:repeat(2,minmax(0,1fr));gap:22px}}
+@media(max-width:600px){.svcp-directorio-wrap{padding:0 16px 32px}.svcp-directorio-hero{padding:32px 20px 30px;margin-bottom:24px}.svcp-filtros-directorio{grid-template-columns:1fr;margin-top:-10px;padding:8px}.svcp-filtros-directorio button{width:100%}.svcp-regiones-cabecera{display:block}.svcp-regiones-cabecera>p{margin-top:7px}.svcp-regiones-grid{gap:7px}.svcp-region-card{grid-template-columns:30px minmax(0,1fr);padding:9px;column-gap:7px}.svcp-region-card-icon{width:29px;height:29px}.svcp-region-card-name{font-size:.8rem}.svcp-region-card-action{font-size:.7rem}.svcp-lista-doctores{grid-template-columns:1fr;gap:20px}.svcp-doctor-card{padding-bottom:20px}.svcp-doctor-foto{max-height:300px}.svcp-doctor-nombre{font-size:1.15rem}}
+
+/* Portal del médico v0.9.9: panel adaptable inspirado en el diseño institucional. */
+.svcp-portal-layout{--svcp-navy:#0b5a88;--svcp-blue:#3b9ed8;--svcp-teal:#4cadaf;--svcp-mint:#78c8a7;--svcp-orange:#f49a22;--svcp-red:#fd0600;display:flex;width:100%;max-width:1600px;min-height:650px;margin:0 auto;background:#f1f5f9;color:#101828;border-radius:12px;overflow:hidden;font-family:inherit;box-sizing:border-box}
+.svcp-portal-layout *{box-sizing:border-box}
+.svcp-portal-sidebar{width:240px;flex:0 0 240px;display:flex;flex-direction:column;min-height:650px;background:#005b5b;color:#fff;padding:20px;gap:28px}
+.svcp-portal-brand{display:flex;flex-direction:column;gap:3px;color:#fff!important;text-decoration:none!important}.svcp-portal-brand strong{font-size:1.45rem;line-height:1.1;font-weight:800;letter-spacing:-.04em}.svcp-portal-brand span{font-size:.82rem;color:#c8eeee}
+.svcp-portal-nav{display:flex;flex-direction:column;gap:7px}.svcp-portal-nav a,.svcp-portal-logout{display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:9px;text-decoration:none!important;color:#efffff!important;font-size:.92rem;font-weight:500;transition:background .15s,color .15s}.svcp-portal-nav a span,.svcp-portal-logout span{width:16px;text-align:center;font-size:1.1rem}.svcp-portal-nav a:hover,.svcp-portal-logout:hover{background:rgba(255,255,255,.12)}.svcp-portal-nav a.is-active{background:#fff;color:#005b67!important}.svcp-portal-logout{margin-top:auto}
+.svcp-portal-main{min-width:0;flex:1}.svcp-portal-topbar{min-height:70px;padding:15px 30px;display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fff;border-bottom:1px solid #e1e8f0}.svcp-portal-topbar .svcp-panel-eyebrow{color:#008080;margin-bottom:3px}.svcp-portal-topbar h1{font-size:1.35rem;line-height:1.3;margin:0;color:#101828}.svcp-portal-user{width:38px;height:38px;flex:0 0 38px;border-radius:50%;overflow:hidden;background:#dceff0;display:flex;align-items:center;justify-content:center;color:#005b67;font-weight:700}.svcp-portal-user img{width:100%;height:100%;object-fit:cover}.svcp-portal-content{padding:26px 30px 32px;min-width:0}.svcp-portal-stats{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:12px;margin-bottom:24px}.svcp-portal-stat{display:flex;align-items:center;gap:12px;min-width:0;padding:16px;background:#fff;border:1px solid #dce5ef;border-radius:14px}.svcp-portal-stat-icon{display:flex;align-items:center;justify-content:center;width:40px;height:40px;flex:0 0 40px;border-radius:12px;background:#e4f2f1;color:#008080;font-size:1.35rem}.svcp-portal-stat small{display:block;color:#738196;font-size:.78rem;margin-bottom:2px}.svcp-portal-stat strong{display:block;font-size:.9rem;line-height:1.35;overflow-wrap:anywhere;color:#101828}.svcp-portal-stat .svcp-stat-activa,.svcp-portal-stat .svcp-stat-por-vencer{color:#16834a}.svcp-portal-stat .svcp-stat-vencida{color:#d92d20}.svcp-portal-stat .svcp-stat-suspendida{color:#b54708}
+.svcp-portal-workspace{display:grid;grid-template-columns:minmax(230px,.82fr) minmax(0,1.8fr);gap:22px;margin:0}.svcp-portal-profile-column,.svcp-portal-form-column{display:flex;flex-direction:column;gap:20px;min-width:0}.svcp-portal-card{background:#fff;border:1px solid #dce5ef;border-radius:15px;padding:22px;min-width:0}.svcp-portal-card h2{font-size:1.02rem;line-height:1.4;margin:0 0 5px;color:#101828}.svcp-portal-muted{color:#718096;font-size:.9rem;line-height:1.5;margin:0 0 18px}.svcp-portal-preview-photo{width:100%;aspect-ratio:4/3;border-radius:10px;overflow:hidden;background:#eef3f8;display:flex;align-items:center;justify-content:center;color:#0b5a88;font-size:2rem;font-weight:700;margin-bottom:16px}.svcp-portal-preview-photo img{width:100%;height:100%;object-fit:cover}.svcp-portal-preview-card h3{margin:0 0 4px;font-size:1.12rem;color:#007b80}.svcp-portal-region{margin:0 0 16px;color:#718096;font-size:.76rem;letter-spacing:.04em;text-transform:uppercase}.svcp-portal-outline-button{display:inline-flex;align-items:center;justify-content:center;min-height:38px;padding:8px 14px;border:1px solid #dce5ef;border-radius:8px;background:#fff;color:#101828!important;text-decoration:none!important;font-size:.87rem;font-weight:500;cursor:pointer}.svcp-portal-outline-button:hover{border-color:#4cadaf;color:#006b70!important}.svcp-portal-upload{min-height:100px;border:2px dashed #dce5ef;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:15px;color:#6f8298;text-align:center;cursor:pointer}.svcp-portal-upload>span:first-child{font-size:1.7rem;color:#008080}.svcp-portal-upload input{display:block;max-width:100%;font-size:.8rem}.svcp-portal-section-heading{margin:0 0 18px!important}.svcp-portal-section-heading h2{margin:0 0 5px}.svcp-portal-section-heading p{margin:0;color:#718096;font-size:.9rem}.svcp-portal-form-column .svcp-panel-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:0 16px}.svcp-portal-layout .svcp-panel-field{min-width:0;margin-bottom:14px}.svcp-portal-layout .svcp-panel-field label{display:block;margin-bottom:6px;font-weight:500;font-size:.88rem;color:#101828}.svcp-portal-layout .svcp-panel-field input,.svcp-portal-layout .svcp-panel-field select,.svcp-portal-layout .svcp-panel-field textarea{width:100%;min-width:0;min-height:40px;padding:9px 12px;border:1px solid #dce5ef;border-radius:8px;background:#fff;color:#101828;font:inherit;font-size:.88rem;box-shadow:none}.svcp-portal-layout .svcp-panel-field textarea{min-height:76px;resize:vertical}.svcp-portal-form-actions{display:flex;justify-content:flex-end;align-items:center;gap:12px;border-top:1px solid #e8edf3;padding-top:18px;margin-top:4px}.svcp-portal-layout .svcp-btn-registro{min-height:40px;padding:10px 20px;border:0;border-radius:8px;background:#007b78;color:#fff;font-weight:700;cursor:pointer}.svcp-portal-layout .svcp-btn-registro:hover{background:#006664}.svcp-portal-password-link{margin:0;text-align:right;font-size:.85rem}.svcp-portal-password-link a{color:#0b5a88}.svcp-portal-layout .svcp-panel-success,.svcp-portal-layout .svcp-panel-errors{margin:0 0 18px}
+@media(max-width:1100px){.svcp-portal-content{padding:22px 20px}.svcp-portal-topbar{padding:14px 20px}.svcp-portal-sidebar{width:205px;flex-basis:205px;padding:16px}.svcp-portal-stats{grid-template-columns:repeat(2,minmax(0,1fr))}.svcp-portal-workspace{grid-template-columns:minmax(200px,.7fr) minmax(0,1.5fr);gap:16px}.svcp-portal-card{padding:18px}}
+@media(max-width:760px){.svcp-portal-layout{display:block;border-radius:0;min-height:0;margin:0 calc(50% - 50vw);width:100vw}.svcp-portal-sidebar{width:100%;min-height:0;padding:12px 16px;gap:12px}.svcp-portal-brand{flex-direction:row;align-items:baseline;gap:9px}.svcp-portal-brand strong{font-size:1.15rem}.svcp-portal-nav{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}.svcp-portal-nav a{justify-content:center;gap:6px;padding:10px 6px;font-size:.78rem;text-align:center}.svcp-portal-nav a span{display:none}.svcp-portal-logout{position:absolute;right:14px;top:12px;margin:0;padding:5px 8px;font-size:.75rem}.svcp-portal-logout span{display:none}.svcp-portal-topbar{padding:16px;min-height:65px}.svcp-portal-topbar h1{font-size:1.2rem}.svcp-portal-content{padding:16px 12px 24px}.svcp-portal-stats{gap:8px;margin-bottom:16px}.svcp-portal-stat{padding:11px;gap:8px;border-radius:11px}.svcp-portal-stat-icon{width:32px;height:32px;flex-basis:32px;font-size:1.1rem}.svcp-portal-stat small{font-size:.72rem}.svcp-portal-stat strong{font-size:.8rem}.svcp-portal-workspace{grid-template-columns:minmax(0,1fr);gap:14px}.svcp-portal-profile-column{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);align-items:stretch;gap:10px}.svcp-portal-card{padding:15px;border-radius:12px}.svcp-portal-preview-card h3{font-size:.98rem}.svcp-portal-muted{font-size:.82rem;margin-bottom:12px}.svcp-portal-form-column .svcp-panel-form-grid{grid-template-columns:minmax(0,1fr);gap:0}.svcp-portal-form-actions{justify-content:stretch}.svcp-portal-form-actions>*{flex:1}.svcp-portal-password-link{text-align:center}}
+@media(max-width:420px){.svcp-portal-profile-column{grid-template-columns:minmax(0,1fr)}.svcp-portal-preview-photo{max-height:230px}.svcp-portal-nav a{font-size:.72rem}.svcp-portal-stat{align-items:flex-start;flex-direction:column}.svcp-portal-stat-icon{width:28px;height:28px;flex-basis:28px}}
+
+
+/* v0.10.1 — integración con temas WordPress y adaptación real al ancho disponible.
+   Se prioriza el ancho del contenedor del tema y no el ancho de la ventana.
+   Todos los estilos permanecen aislados bajo las clases SVCP. */
+.svcp-portal-layout,
+.svcp-directorio-wrap { box-sizing:border-box; width:100%; min-width:0; }
+.svcp-portal-layout *, .svcp-directorio-wrap * { box-sizing:border-box; }
+.svcp-portal-layout { max-width:100%; margin:24px auto; border:1px solid #e1e8ef; border-radius:14px; overflow:hidden; box-shadow:0 8px 28px rgba(16,24,40,.06); container-type:inline-size; }
+.svcp-portal-main { min-width:0; width:calc(100% - 230px); }
+.svcp-portal-sidebar { width:230px; flex:0 0 230px; }
+.svcp-portal-content { width:100%; max-width:100%; padding:clamp(16px,2.2vw,30px); }
+.svcp-portal-stats { grid-template-columns:repeat(2,minmax(0,1fr)); }
+.svcp-portal-stat { min-width:0; }
+.svcp-portal-stat strong { overflow-wrap:anywhere; word-break:break-word; }
+.svcp-portal-workspace { grid-template-columns:minmax(0,1fr); gap:18px; }
+.svcp-portal-profile-column { display:grid; grid-template-columns:minmax(0,1fr) minmax(0,1fr); align-items:start; gap:14px; }
+.svcp-portal-form-column, .svcp-portal-profile-column, .svcp-portal-card { min-width:0; }
+.svcp-portal-form-column .svcp-panel-form-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); }
+.svcp-portal-layout input, .svcp-portal-layout select, .svcp-portal-layout textarea, .svcp-portal-layout button { max-width:100%; }
+.svcp-portal-layout .svcp-portal-upload input[type=file] { width:100%; }
+.svcp-portal-layout .svcp-portal-form-actions { flex-wrap:wrap; }
+
+/* Si el contenedor principal de WordPress es estrecho, el portal reorganiza
+   sus columnas sin depender del tamaño total de la pantalla. */
+@container (min-width:1050px) {
+ .svcp-portal-stats { grid-template-columns:repeat(4,minmax(0,1fr)); }
+ .svcp-portal-workspace { grid-template-columns:minmax(220px,.78fr) minmax(0,1.8fr); gap:20px; }
+ .svcp-portal-profile-column { display:flex; flex-direction:column; }
+}
+@container (max-width:760px) {
+ .svcp-portal-layout { display:block; border-radius:12px; }
+ .svcp-portal-sidebar { width:100%; min-height:0; padding:14px 16px; gap:14px; }
+ .svcp-portal-brand { flex-direction:row; align-items:baseline; gap:9px; }
+ .svcp-portal-brand strong { font-size:1.15rem; }
+ .svcp-portal-nav { display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:6px; }
+ .svcp-portal-nav a { justify-content:center; text-align:center; gap:5px; padding:10px 6px; font-size:.78rem; }
+ .svcp-portal-nav a span { display:none; }
+ .svcp-portal-logout { position:static; margin:0 0 0 auto; padding:5px 8px; font-size:.78rem; }
+ .svcp-portal-main { width:100%; }
+ .svcp-portal-topbar { padding:14px 18px; }
+ .svcp-portal-content { padding:16px; }
+ .svcp-portal-stats { grid-template-columns:repeat(2,minmax(0,1fr)); gap:9px; }
+ .svcp-portal-profile-column { grid-template-columns:repeat(2,minmax(0,1fr)); }
+ .svcp-portal-form-column .svcp-panel-form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@container (max-width:480px) {
+ .svcp-portal-nav { grid-template-columns:1fr; }
+ .svcp-portal-nav a { justify-content:flex-start; text-align:left; }
+ .svcp-portal-nav a span { display:inline-block; }
+ .svcp-portal-stats, .svcp-portal-profile-column, .svcp-portal-form-column .svcp-panel-form-grid { grid-template-columns:minmax(0,1fr); }
+ .svcp-portal-stat { flex-direction:row; align-items:center; }
+ .svcp-portal-card { padding:14px; }
+ .svcp-portal-form-actions { display:grid; grid-template-columns:1fr; }
+ .svcp-portal-form-actions > * { width:100%; }
+ .svcp-portal-password-link { text-align:center; }
+}
+
+/* Directorio público: centrado, márgenes consistentes y tarjetas fluidas. */
+.svcp-directorio-wrap { max-width:1200px; margin:0 auto; padding:0 clamp(16px,3vw,28px) 52px; }
+.svcp-directorio-hero { width:100vw; max-width:none; margin:0 calc(50% - 50vw) 30px; padding:clamp(30px,4vw,48px) max(20px,calc((100vw - 1144px)/2)); }
+.svcp-directorio-hero h1 { max-width:1144px; margin:0 auto 10px; font-size:clamp(2rem,4vw,3rem); line-height:1.1; overflow-wrap:anywhere; }
+.svcp-directorio-hero .svcp-directorio-eyebrow,
+.svcp-directorio-hero .svcp-directorio-subtitulo { max-width:1144px; }
+.svcp-directorio-hero .svcp-directorio-eyebrow { display:block; margin-left:auto; margin-right:auto; }
+.svcp-directorio-hero .svcp-directorio-subtitulo { margin:0 auto; text-align:left; }
+.svcp-filtros-directorio { width:100%; max-width:1000px; margin:0 auto 34px; }
+.svcp-regiones-directorio, .svcp-directorio-resultados { width:100%; min-width:0; }
+.svcp-regiones-grid { grid-template-columns:repeat(4,minmax(0,1fr)); gap:12px; }
+.svcp-region-card { min-width:0; }
+.svcp-region-card-name { overflow-wrap:anywhere; }
+.svcp-lista-doctores { grid-template-columns:repeat(3,minmax(0,1fr)); gap:28px 24px; align-items:stretch; }
+.svcp-doctor-card { min-width:0; height:100%; display:flex; flex-direction:column; padding:0; overflow:hidden; }
+.svcp-doctor-foto { width:100%; overflow:hidden; background:#eef3f8; }
+.svcp-doctor-foto img, .svcp-doctor-foto-placeholder { width:100%; height:auto; aspect-ratio:4/3; object-fit:cover; object-position:center 25%; }
+.svcp-doctor-info { display:flex; flex:1; flex-direction:column; min-width:0; padding:16px 17px 18px; }
+.svcp-doctor-nombre { line-height:1.3; overflow-wrap:anywhere; }
+.svcp-doctor-clinica, .svcp-doctor-direccion, .svcp-doctor-ciudad { overflow-wrap:anywhere; }
+.svcp-doctor-acciones { margin-top:auto; padding-top:12px; }
+.svcp-doctor-contact-actions .svcp-contact-icon { min-width:0; max-width:100%; overflow-wrap:anywhere; }
+.svcp-resultados-resumen { margin:0 0 16px; padding-bottom:12px; border-bottom:1px solid var(--svcp-line,#dce5ef); }
+.svcp-paginacion { text-align:center; }
+@media(max-width:900px) {
+ .svcp-lista-doctores { grid-template-columns:repeat(2,minmax(0,1fr)); gap:22px; }
+ .svcp-regiones-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+}
+@media(max-width:600px) {
+ .svcp-directorio-wrap { padding:0 15px 34px; }
+ .svcp-directorio-hero { margin-bottom:22px; padding:30px 18px; }
+ .svcp-directorio-hero h1 { font-size:clamp(1.8rem,8vw,2.35rem); }
+ .svcp-directorio-hero .svcp-directorio-subtitulo { font-size:.95rem; }
+ .svcp-filtros-directorio { grid-template-columns:minmax(0,1fr); gap:9px; margin-bottom:24px; }
+ .svcp-filtros-directorio input, .svcp-filtros-directorio select, .svcp-filtros-directorio button { width:100%; min-height:44px; }
+ .svcp-regiones-grid { grid-template-columns:repeat(2,minmax(0,1fr)); gap:8px; }
+ .svcp-lista-doctores { grid-template-columns:minmax(0,1fr); gap:18px; }
+ .svcp-doctor-card { display:grid; grid-template-columns:minmax(105px,36%) minmax(0,1fr); align-items:stretch; }
+ .svcp-doctor-foto { height:100%; min-height:150px; }
+ .svcp-doctor-foto img, .svcp-doctor-foto-placeholder { height:100%; min-height:150px; aspect-ratio:auto; object-fit:cover; }
+ .svcp-doctor-info { padding:13px; }
+ .svcp-doctor-nombre { font-size:1rem; }
+ .svcp-doctor-region { font-size:.75rem; }
+ .svcp-doctor-contact-actions { gap:6px; }
+ .svcp-doctor-contact-actions .svcp-contact-icon { font-size:.78rem; }
+}
+@media(max-width:380px) {
+ .svcp-doctor-card { grid-template-columns:1fr; }
+ .svcp-doctor-foto img, .svcp-doctor-foto-placeholder { aspect-ratio:16/9; min-height:0; height:auto; }
+ .svcp-regiones-grid { grid-template-columns:1fr; }
+}
+@media(max-width:760px){
+ .svcp-portal-layout{width:100%;max-width:100%;margin:16px auto;border-radius:12px;}
+ .svcp-portal-main{width:100%;}
+ .svcp-portal-sidebar{position:relative;}
+ .svcp-portal-logout{position:static;right:auto;top:auto;margin:0 0 0 auto;}
+ .svcp-portal-content{padding:15px;}
+}
+
+/* Ajustes solicitados v0.11.1 */
+.svcp-region-card{min-height:70px!important;}
+.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{aspect-ratio:1/1!important;width:100%;height:auto;object-fit:cover;object-position:center 25%;}
+.svcp-portal-preview-photo{aspect-ratio:1/1!important;max-height:none!important;}
+.svcp-portal-preview-photo img{width:100%;height:100%;object-fit:cover;object-position:center 25%;}
+@media(max-width:600px){.svcp-doctor-card{display:flex;flex-direction:column;}.svcp-doctor-foto{height:auto;min-height:0;}.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{aspect-ratio:1/1!important;min-height:0;height:auto;}}
+@media(max-width:380px){.svcp-doctor-foto img,.svcp-doctor-foto-placeholder{aspect-ratio:1/1!important;}}
+body.svcp-pagina-panel-doctor .entry-title,body.svcp-pagina-panel-doctor .wp-block-post-title,body.svcp-pagina-panel-doctor .page-title,body.svcp-pagina-panel-doctor .entry-header,
+body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-block-post-title,body.svcp-pagina-reporte-pago .page-title,body.svcp-pagina-reporte-pago .entry-header{display:none!important;}
+.svcp-live-search-status{margin:8px 0 14px;color:#687782;font-size:.9rem;}
+.svcp-lista-doctores[hidden],.svcp-doctor-card[hidden],.svcp-sin-resultados-box[hidden],.svcp-paginacion[hidden]{display:none!important;}

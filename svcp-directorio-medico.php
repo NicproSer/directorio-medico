@@ -1,0 +1,267 @@
+<?php
+/**
+ * Plugin Name: SVCP Directorio Médico
+ * Description: Directorio de doctores con membresía y aprobación manual.
+ * Version: 0.11.4 (Estado de cuenta del médico y recibos PDF)
+ * Author: NICPRODEV
+ * Text Domain: svcp-directorio
+ */
+
+if ( ! defined( 'ABSPATH' ) ) {
+    exit; // Seguridad: no acceso directo.
+}
+
+define( 'SVCP_DIR_PATH', plugin_dir_path( __FILE__ ) );
+define( 'SVCP_DIR_URL', plugin_dir_url( __FILE__ ) );
+define( 'SVCP_DIR_VERSION', '0.11.4' );
+
+/**
+ * Carga de módulos del plugin.
+ * Por ahora solo el módulo de Doctores (CPT + taxonomías + campos).
+ * El módulo de Notificaciones usa WP-Cron + wp_mail() para avisos de membresía.
+ */
+require_once SVCP_DIR_PATH . 'includes/class-svcp-cpt-doctor.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-taxonomias.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-campos-doctor.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-columnas.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-roles.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-membresia.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-registro.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-panel-doctor.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-acceso-doctor.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-membresia-cron.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-membresias.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-importacion.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-auditoria.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-gestion.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-aprobacion.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-smtp.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-dashboard.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-cron.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-pagos.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-ciclo-membresia.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-tasa-bcv.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-correos.php';
+
+/**
+ * Inicializa el plugin.
+ */
+function svcp_dir_init() {
+    SVCP_CPT_Doctor::instance();
+    SVCP_Taxonomias::instance();
+    SVCP_Campos_Doctor::instance();
+    SVCP_Admin_Columnas::instance();
+    SVCP_Roles::instance();
+    SVCP_Membresia::instance();
+    SVCP_Registro::instance();
+    SVCP_Panel_Doctor::instance();
+    SVCP_Acceso_Doctor::instance();
+    SVCP_Membresia_Cron::instance();
+    SVCP_Admin_Membresias::instance();
+    SVCP_Importacion::instance();
+    SVCP_Auditoria::instance();
+    SVCP_Admin_Gestion::instance();
+    SVCP_Aprobacion::instance();
+    SVCP_SMTP::instance();
+    SVCP_Admin_Dashboard::instance();
+    SVCP_Admin_Cron::instance();
+    SVCP_Pagos::instance();
+    SVCP_Ciclo_Membresia::instance();
+    SVCP_Tasa_BCV::inicializar();
+    SVCP_Correos::inicializar_seguridad_clave();
+    svcp_dir_actualizar_version();
+}
+add_action( 'plugins_loaded', 'svcp_dir_init' );
+
+/**
+ * Ejecuta migraciones menores al actualizar el plugin sin exigir una
+ * desactivación/reactivación manual.
+ */
+function svcp_dir_actualizar_version() {
+    $version = get_option( 'svcp_directorio_version', '' );
+    if ( version_compare( $version, SVCP_DIR_VERSION, '>=' ) ) {
+        return;
+    }
+
+    if ( class_exists( 'SVCP_Membresia_Cron' ) ) {
+        SVCP_Membresia_Cron::programar();
+    }
+    if ( class_exists( 'SVCP_Auditoria' ) ) {
+        SVCP_Auditoria::instalar();
+    }
+    if ( class_exists( 'SVCP_Aprobacion' ) ) {
+        update_option( 'svcp_aprobacion_version', '1.0.0' );
+    }
+
+    update_option( 'svcp_directorio_version', SVCP_DIR_VERSION, false );
+}
+
+/**
+ * Al activar el plugin, registramos el CPT y hacemos flush de rewrite rules
+ * para que las URLs bonitas (/directorio/estado/florida) funcionen de inmediato.
+ */
+function svcp_dir_activar() {
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-cpt-doctor.php';
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-taxonomias.php';
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-roles.php';
+
+    SVCP_CPT_Doctor::registrar_cpt();
+    SVCP_Taxonomias::registrar_taxonomias();
+    SVCP_Taxonomias::precargar_regiones();
+    SVCP_Taxonomias::migrar_estados_a_regiones();
+    SVCP_Roles::crear_rol();
+    SVCP_Roles::asegurar_capacidades();
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-membresia-cron.php';
+    SVCP_Membresia_Cron::programar();
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-auditoria.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-gestion.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-aprobacion.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-smtp.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-dashboard.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-admin-cron.php';
+    SVCP_Auditoria::instalar();
+    update_option( 'svcp_directorio_version', SVCP_DIR_VERSION, false );
+
+    flush_rewrite_rules();
+}
+register_activation_hook( __FILE__, 'svcp_dir_activar' );
+
+/**
+ * Al desactivar quitamos el rol (por limpieza), pero los doctores que ya
+ * tenían ese rol simplemente quedan sin rol asignado; sus fichas y datos
+ * no se tocan. Si reactivas el plugin, el rol se vuelve a crear.
+ */
+function svcp_dir_desactivar() {
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-roles.php';
+    require_once SVCP_DIR_PATH . 'includes/class-svcp-membresia-cron.php';
+    SVCP_Roles::eliminar_rol();
+    $pago_cron = wp_next_scheduled('svcp_recordatorio_pagos_pendientes'); if ( $pago_cron ) wp_unschedule_event($pago_cron, 'svcp_recordatorio_pagos_pendientes');
+    SVCP_Membresia_Cron::desprogramar();
+    if ( class_exists('SVCP_Tasa_BCV') ) { SVCP_Tasa_BCV::cancelar(); }
+    flush_rewrite_rules();
+}
+register_deactivation_hook( __FILE__, 'svcp_dir_desactivar' );
+
+/**
+ * Sistema de plantillas: si el tema activo tiene su propio
+ * archive-doctor.php o single-doctor.php, ese manda (así el tema
+ * puede personalizar el HTML). Si no, usamos el del plugin.
+ */
+function svcp_dir_cargar_template( $template ) {
+    if ( is_post_type_archive( 'doctor' ) ) {
+        $template_tema = locate_template( 'archive-doctor.php' );
+        return $template_tema ? $template_tema : SVCP_DIR_PATH . 'templates/archive-doctor.php';
+    }
+    if ( is_singular( 'doctor' ) ) {
+        $template_tema = locate_template( 'single-doctor.php' );
+        return $template_tema ? $template_tema : SVCP_DIR_PATH . 'templates/single-doctor.php';
+    }
+    return $template;
+}
+add_filter( 'template_include', 'svcp_dir_cargar_template' );
+
+/**
+ * Impide que una ficha individual no vigente sea visible públicamente.
+ * El administrador y el propio doctor autenticado conservan acceso.
+ */
+function svcp_dir_proteger_ficha_publica() {
+    if ( ! is_singular( 'doctor' ) || is_admin() ) {
+        return;
+    }
+
+    $post_id = get_queried_object_id();
+    if ( ! $post_id ) {
+        return;
+    }
+
+    if ( current_user_can( 'manage_options' ) || current_user_can( 'edit_doctor' ) ) {
+        return;
+    }
+
+    if ( ( class_exists( 'SVCP_Membresia' ) && ! SVCP_Membresia::puede_aparecer_en_directorio( $post_id ) ) || ( class_exists( 'SVCP_Aprobacion' ) && ! SVCP_Aprobacion::puede_publicarse( $post_id ) ) ) {
+        global $wp_query;
+        $wp_query->set_404();
+        status_header( 404 );
+        nocache_headers();
+    }
+}
+add_action( 'template_redirect', 'svcp_dir_proteger_ficha_publica' );
+
+/** En la web pública se utiliza un único catálogo; no se muestran fichas individuales. */
+function svcp_dir_unificar_vista_publica() {
+    if ( is_singular( 'doctor' ) && ! is_admin() && ! current_user_can( 'manage_options' ) && ! current_user_can( 'edit_doctor' ) ) {
+        $archivo = get_post_type_archive_link( 'doctor' );
+        if ( $archivo ) {
+            wp_safe_redirect( $archivo, 301 );
+            exit;
+        }
+    }
+}
+add_action( 'template_redirect', 'svcp_dir_unificar_vista_publica', 20 );
+
+/**
+ * SEO básico para las fichas públicas, compatible con plugins SEO porque
+ * solamente actúa si no hay una descripción/canonical equivalente definida.
+ * No expone especialidad ni información de membresía en la ficha pública.
+ */
+function svcp_dir_seo_ficha() {
+    if ( ! is_singular( 'doctor' ) ) {
+        return;
+    }
+
+    $post_id = get_queried_object_id();
+    if ( ! $post_id || ( class_exists( 'SVCP_Membresia' ) && ! SVCP_Membresia::puede_aparecer_en_directorio( $post_id ) ) || ( class_exists( 'SVCP_Aprobacion' ) && ! SVCP_Aprobacion::puede_publicarse( $post_id ) ) ) {
+        return;
+    }
+
+    $nombre  = get_the_title( $post_id );
+    $ciudad  = get_post_meta( $post_id, 'svcp_ciudad', true );
+    $clinica = get_post_meta( $post_id, 'svcp_clinica', true );
+    $partes  = array_filter( array( $ciudad, $clinica ) );
+    $desc    = sprintf( 'Perfil profesional de %s%s.', $nombre, $partes ? ' en ' . implode( ', ', $partes ) : '' );
+    $url     = get_permalink( $post_id );
+
+    echo '<meta name="description" content="' . esc_attr( wp_trim_words( $desc, 30, '' ) ) . '" />' . "\n";
+    echo '<link rel="canonical" href="' . esc_url( $url ) . '" />' . "\n";
+    echo '<meta property="og:type" content="profile" />' . "\n";
+    echo '<meta property="og:title" content="' . esc_attr( $nombre . ' | SVCP' ) . '" />' . "\n";
+    echo '<meta property="og:description" content="' . esc_attr( $desc ) . '" />' . "\n";
+    echo '<meta property="og:url" content="' . esc_url( $url ) . '" />' . "\n";
+    if ( has_post_thumbnail( $post_id ) ) {
+        echo '<meta property="og:image" content="' . esc_url( get_the_post_thumbnail_url( $post_id, 'large' ) ) . '" />' . "\n";
+    }
+}
+add_action( 'wp_head', 'svcp_dir_seo_ficha', 5 );
+
+/**
+ * CSS del directorio. Se carga siempre (es liviano); si prefieres que
+ * solo cargue en las páginas del directorio, envuelve el enqueue en
+ * un if ( is_post_type_archive('doctor') || is_singular('doctor') ... ).
+ */
+function svcp_dir_cargar_estilos() {
+    wp_enqueue_style(
+        'svcp-directorio',
+        SVCP_DIR_URL . 'assets/css/svcp-directorio.css',
+        array(),
+        SVCP_DIR_VERSION // usar la versión como "cache-buster": ver sección de actualización.
+    );
+}
+add_action( 'wp_enqueue_scripts', 'svcp_dir_cargar_estilos' );
+
+
+/** Identifica páginas del portal para ocultar el título duplicado que imprime el tema. */
+function svcp_dir_body_classes_portal( $classes ) {
+    if ( is_singular() ) {
+        $post = get_post();
+        if ( $post && has_shortcode( $post->post_content, 'svcp_panel_doctor' ) ) { $classes[] = 'svcp-pagina-panel-doctor'; }
+        if ( $post && has_shortcode( $post->post_content, 'svcp_formulario_pago' ) ) { $classes[] = 'svcp-pagina-reporte-pago'; }
+    }
+    return $classes;
+}
+add_filter( 'body_class', 'svcp_dir_body_classes_portal' );
+
+function svcp_dir_busqueda_tiempo_real() {
+    if ( ! is_post_type_archive( 'doctor' ) ) { return; }
+    wp_enqueue_script( 'svcp-directorio-live-search', SVCP_DIR_URL . 'assets/js/svcp-directorio-live-search.js', array(), SVCP_DIR_VERSION, true );
+}
+add_action( 'wp_enqueue_scripts', 'svcp_dir_busqueda_tiempo_real', 20 );
