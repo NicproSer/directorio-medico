@@ -38,6 +38,8 @@ class SVCP_Pagos {
     private function __construct() {
         add_action( 'init', array( $this, 'registrar_cpt' ) );
         add_shortcode( 'svcp_formulario_pago', array( $this, 'shortcode' ) );
+        add_shortcode( 'svcp_pagos_realizados', array( $this, 'shortcode_pagos_realizados' ) );
+        add_action( 'admin_init', array( $this, 'asegurar_pagina_pagos_realizados' ) );
         add_action( 'admin_post_svcp_enviar_pago', array( $this, 'enviar' ) );
         add_action( 'admin_post_nopriv_svcp_enviar_pago', array( $this, 'enviar' ) );
         add_action( 'admin_menu', array( $this, 'menu' ) );
@@ -120,6 +122,223 @@ class SVCP_Pagos {
 CSS;
     }
 
+
+    /**
+     * Crea la página del historial una sola vez si todavía no existe.
+     * Si el administrador ya creó una página con ese slug, se respeta su contenido.
+     */
+    public function asegurar_pagina_pagos_realizados() {
+        if ( ! current_user_can( 'manage_options' ) ) {
+            return;
+        }
+
+        $saved_page_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
+        if ( $saved_page_id && 'page' === get_post_type( $saved_page_id ) ) {
+            return;
+        }
+        delete_option( 'svcp_pagos_realizados_page_id' );
+
+        $pagina = get_page_by_path( 'pagos-realizados', OBJECT, 'page' );
+        if ( $pagina ) {
+            update_option( 'svcp_pagos_realizados_page_id', (int) $pagina->ID );
+            return;
+        }
+
+        $page_id = wp_insert_post( array(
+            'post_type'    => 'page',
+            'post_status'  => 'publish',
+            'post_title'   => 'Pagos realizados',
+            'post_name'    => 'pagos-realizados',
+            'post_content' => '[svcp_pagos_realizados]',
+        ), true );
+
+        if ( ! is_wp_error( $page_id ) && $page_id ) {
+            update_option( 'svcp_pagos_realizados_page_id', absint( $page_id ) );
+        }
+    }
+
+    /**
+     * Obtiene la ficha vinculada a la cuenta del médico, con compatibilidad
+     * para fichas antiguas asociadas por autor o correo.
+     */
+    private function obtener_doctor_del_usuario( $user_id ) {
+        $user = get_user_by( 'id', $user_id );
+        if ( ! $user || ! in_array( 'doctor_svcp', (array) $user->roles, true ) ) {
+            return 0;
+        }
+
+        $ids = get_posts( array(
+            'post_type'      => 'doctor',
+            'post_status'    => array( 'publish', 'pending', 'draft', 'private' ),
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+            'meta_key'       => 'svcp_usuario_id',
+            'meta_value'     => $user_id,
+        ) );
+        if ( $ids ) {
+            return (int) $ids[0];
+        }
+
+        $ids = get_posts( array(
+            'post_type'      => 'doctor',
+            'post_status'    => array( 'publish', 'pending', 'draft', 'private' ),
+            'author'         => $user_id,
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+        ) );
+        if ( $ids ) {
+            update_post_meta( (int) $ids[0], 'svcp_usuario_id', $user_id );
+            return (int) $ids[0];
+        }
+
+        $ids = get_posts( array(
+            'post_type'      => 'doctor',
+            'post_status'    => array( 'publish', 'pending', 'draft', 'private' ),
+            'posts_per_page' => 1,
+            'fields'         => 'ids',
+            'meta_key'       => 'svcp_correo',
+            'meta_value'     => $user->user_email,
+        ) );
+        if ( $ids ) {
+            update_post_meta( (int) $ids[0], 'svcp_usuario_id', $user_id );
+            return (int) $ids[0];
+        }
+
+        return 0;
+    }
+
+    /** Página independiente del historial de pagos del médico. */
+    public function shortcode_pagos_realizados() {
+        if ( ! is_user_logged_in() ) {
+            return '<div class="svcp-pago-aviso svcp-pago-aviso-login"><strong>Acceso requerido</strong><span>Inicia sesión con tu cuenta de médico para consultar tus pagos.</span></div>';
+        }
+
+        $user = wp_get_current_user();
+        $doctor_id = $this->obtener_doctor_del_usuario( $user->ID );
+        if ( ! $doctor_id ) {
+            return '<div class="svcp-pago-aviso"><strong>Ficha no encontrada</strong><span>No se encontró una ficha médica asociada a esta cuenta. Contacta a la SVCP para regularizar tu registro.</span></div>';
+        }
+
+        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/mi-perfil/' ) );
+        $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/reportar-pago/' ) );
+        $directorio_url = get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' );
+        $pagina_pagos_url = get_permalink( get_queried_object_id() );
+        if ( ! $pagina_pagos_url ) {
+            $pagina_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
+            $pagina_pagos_url = $pagina_id ? get_permalink( $pagina_id ) : home_url( '/pagos-realizados/' );
+        }
+
+        $pagos = get_posts( array(
+            'post_type'      => self::CPT,
+            'post_status'    => 'private',
+            'posts_per_page' => -1,
+            'orderby'        => 'date',
+            'order'          => 'DESC',
+            'fields'         => 'ids',
+            'no_found_rows'  => true,
+            'meta_query'     => array(
+                array(
+                    'key'     => self::META_DOCTOR,
+                    'value'   => $doctor_id,
+                    'compare' => '=',
+                    'type'    => 'NUMERIC',
+                ),
+            ),
+        ) );
+
+        $stats = array( 'total' => count( $pagos ), 'aprobado' => 0, 'pendiente' => 0, 'rechazado' => 0 );
+        foreach ( $pagos as $pago_id ) {
+            $estado = get_post_meta( $pago_id, self::META_ESTADO, true );
+            if ( isset( $stats[ $estado ] ) ) {
+                ++$stats[ $estado ];
+            }
+        }
+
+        $deuda_usd = max( 0, (float) get_post_meta( $doctor_id, 'svcp_membresia_saldo_pendiente_usd', true ) );
+        $tasa_hoy = class_exists( 'SVCP_Tasa_BCV' ) ? SVCP_Tasa_BCV::obtener( current_time( 'Y-m-d' ), false ) : new WP_Error( 'sin_tasa', '' );
+        $deuda_bs = ( ! is_wp_error( $tasa_hoy ) && $deuda_usd > 0 ) ? $deuda_usd * (float) $tasa_hoy['tasa'] : 0;
+        $foto = get_the_post_thumbnail_url( $doctor_id, 'thumbnail' );
+        $inicial = function_exists( 'mb_substr' ) ? mb_substr( get_the_title( $doctor_id ), 0, 1 ) : substr( get_the_title( $doctor_id ), 0, 1 );
+
+        ob_start();
+        ?>
+        <div class="svcp-portal-layout svcp-portal-payment-layout svcp-portal-history-layout">
+            <aside class="svcp-portal-sidebar" aria-label="Navegación del portal">
+                <a class="svcp-portal-brand" href="<?php echo esc_url( $portal_url ); ?>"><strong>SVCP</strong><span>Portal del médico</span></a>
+                <nav class="svcp-portal-nav">
+                    <a href="<?php echo esc_url( $portal_url ); ?>"><span aria-hidden="true">♙</span>Mi perfil</a>
+                    <a href="<?php echo esc_url( $pago_url ); ?>"><span aria-hidden="true">▤</span>Membresía y pago</a>
+                    <div class="svcp-portal-subnav"><a class="svcp-portal-subnav-link is-active" aria-current="page" href="<?php echo esc_url( $pagina_pagos_url ); ?>"><span aria-hidden="true">↳</span>Pagos realizados</a></div>
+                    <a href="<?php echo esc_url( $directorio_url ); ?>"><span aria-hidden="true">◎</span>Ver directorio</a>
+                </nav>
+                <a class="svcp-portal-logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><span aria-hidden="true">⇥</span>Cerrar sesión</a>
+            </aside>
+            <main class="svcp-portal-main">
+                <header class="svcp-portal-topbar">
+                    <div><span class="svcp-panel-eyebrow">Portal del médico</span><h1>Pagos realizados</h1></div>
+                    <div class="svcp-portal-user" aria-label="<?php echo esc_attr( $user->display_name ); ?>">
+                        <?php if ( $foto ) : ?><img src="<?php echo esc_url( $foto ); ?>" alt=""><?php else : ?><span><?php echo esc_html( strtoupper( $inicial ) ); ?></span><?php endif; ?>
+                    </div>
+                </header>
+                <div class="svcp-portal-content">
+                    <section class="svcp-portal-history-intro">
+                        <div><span class="svcp-panel-eyebrow">Membresía SVCP</span><h2>Historial de pagos</h2><p>Consulta el estado de tus reportes y descarga el comprobante PDF de cada pago aprobado.</p></div>
+                        <a class="svcp-portal-primary-button" href="<?php echo esc_url( $pago_url ); ?>">＋ Reportar un nuevo pago</a>
+                    </section>
+
+                    <section class="svcp-portal-history-stats" aria-label="Resumen de pagos">
+                        <article class="svcp-portal-history-stat"><span>Total de reportes</span><strong><?php echo esc_html( number_format_i18n( $stats['total'] ) ); ?></strong></article>
+                        <article class="svcp-portal-history-stat"><span>Aprobados</span><strong class="is-approved"><?php echo esc_html( number_format_i18n( $stats['aprobado'] ) ); ?></strong></article>
+                        <article class="svcp-portal-history-stat"><span>Pendientes</span><strong class="is-pending"><?php echo esc_html( number_format_i18n( $stats['pendiente'] ) ); ?></strong></article>
+                        <article class="svcp-portal-history-stat"><span>Rechazados</span><strong class="is-rejected"><?php echo esc_html( number_format_i18n( $stats['rechazado'] ) ); ?></strong></article>
+                    </section>
+
+                    <section class="svcp-portal-card svcp-portal-account-card">
+                        <div><h2>Estado de cuenta</h2><p>Saldo pendiente de membresía</p></div>
+                        <div class="svcp-portal-account-values">
+                            <strong>USD <?php echo esc_html( number_format_i18n( $deuda_usd, 4 ) ); ?></strong>
+                            <span><?php echo is_wp_error( $tasa_hoy ) ? 'Tasa BCV no disponible' : 'Bs. ' . esc_html( number_format_i18n( $deuda_bs, 2 ) ); ?></span>
+                        </div>
+                    </section>
+
+                    <section class="svcp-portal-card svcp-portal-payments">
+                        <div class="svcp-panel-section-heading"><h2>Pagos registrados</h2><p>Los comprobantes PDF estarán disponibles una vez aprobado cada pago.</p></div>
+                        <?php if ( $pagos ) : ?>
+                            <div class="svcp-portal-table-wrap">
+                                <table class="svcp-portal-history-table">
+                                    <thead><tr><th>Fecha</th><th>Referencia</th><th>Monto recibido</th><th>Equivalente USD</th><th>Estado</th><th>Comprobante</th></tr></thead>
+                                    <tbody>
+                                    <?php foreach ( $pagos as $pago_id ) :
+                                        $estado = get_post_meta( $pago_id, self::META_ESTADO, true ) ?: 'pendiente';
+                                        $monto = (float) get_post_meta( $pago_id, self::META_MONTO, true );
+                                        $usd = (float) get_post_meta( $pago_id, self::META_PAGO_USD, true );
+                                        $fecha = get_post_meta( $pago_id, self::META_FECHA_PAGO, true );
+                                        $referencia = get_post_meta( $pago_id, self::META_REFERENCIA, true );
+                                        $recibo = wp_nonce_url( admin_url( 'admin-post.php?action=svcp_recibo_pdf&pago_id=' . $pago_id ), 'svcp_recibo_' . $pago_id );
+                                        ?>
+                                        <tr>
+                                            <td><?php echo esc_html( $fecha ? date_i18n( get_option( 'date_format' ), strtotime( $fecha ) ) : get_the_date( get_option( 'date_format' ), $pago_id ) ); ?></td>
+                                            <td><?php echo esc_html( $referencia ? $referencia : '—' ); ?></td>
+                                            <td>Bs. <?php echo esc_html( number_format_i18n( $monto, 2 ) ); ?></td>
+                                            <td>USD <?php echo esc_html( number_format_i18n( $usd, 4 ) ); ?></td>
+                                            <td><span class="svcp-pago-estado svcp-pago-estado-<?php echo esc_attr( sanitize_html_class( $estado ) ); ?>"><?php echo esc_html( ucfirst( $estado ) ); ?></span></td>
+                                            <td><?php if ( 'aprobado' === $estado ) : ?><a class="svcp-portal-pdf-button" href="<?php echo esc_url( $recibo ); ?>">Descargar PDF</a><?php else : ?><span class="svcp-portal-pdf-pending">Disponible al aprobarse</span><?php endif; ?></td>
+                                        </tr>
+                                    <?php endforeach; ?>
+                                    </tbody>
+                                </table>
+                            </div>
+                        <?php else : ?>
+                            <div class="svcp-portal-empty-state"><span aria-hidden="true">▤</span><strong>Aún no tienes pagos registrados</strong><p>Cuando envíes un reporte de pago, aparecerá aquí con su estado de verificación.</p><a class="svcp-portal-outline-button" href="<?php echo esc_url( $pago_url ); ?>">Reportar mi primer pago</a></div>
+                        <?php endif; ?>
+                    </section>
+                </div>
+            </main>
+        </div>
+        <?php
+        return ob_get_clean();
+    }
+
     public function shortcode() {
         if ( ! is_user_logged_in() ) {
             return '<div class="svcp-pago-aviso svcp-pago-aviso-login"><strong>Acceso requerido</strong><span>Inicia sesión con tu cuenta de médico para reportar el pago de tu membresía.</span></div>';
@@ -165,7 +384,9 @@ CSS;
         }
 
         $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/mi-perfil/' ) );
-        $pagos_realizados_url = $portal_url . '#pagos-realizados';
+        $pagos_realizados_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
+        $pagos_realizados_page = get_page_by_path( 'pagos-realizados', OBJECT, 'page' );
+        $pagos_realizados_url = $pagos_realizados_id ? get_permalink( $pagos_realizados_id ) : ( $pagos_realizados_page ? get_permalink( $pagos_realizados_page ) : home_url( '/pagos-realizados/' ) );
         $user = wp_get_current_user();
         $doctor_foto = get_the_post_thumbnail_url( $doctor_id, 'thumbnail' );
         $doctor_inicial = function_exists( 'mb_substr' ) ? mb_substr( get_the_title( $doctor_id ), 0, 1 ) : substr( get_the_title( $doctor_id ), 0, 1 );
