@@ -463,3 +463,9 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 @media(max-width:900px){.svcp-portal-history-stats{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:760px){.svcp-portal-history-intro{align-items:stretch;flex-direction:column}.svcp-portal-history-intro .svcp-portal-primary-button{width:100%}.svcp-portal-account-card{align-items:flex-start;flex-direction:column}.svcp-portal-account-values{text-align:left}}
 @media(max-width:480px){.svcp-portal-history-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}.svcp-portal-history-stat{padding:12px}.svcp-portal-history-stat strong{font-size:1.3rem}}
+
+/* Estados de pago visibles en el historial del portal (frontend). */
+.svcp-portal-history-table .svcp-pago-estado{display:inline-flex;align-items:center;padding:5px 9px;border-radius:999px;font-size:.73rem;font-weight:700}
+.svcp-portal-history-table .svcp-pago-estado-aprobado{background:#e8f7f1;color:#087f5b}
+.svcp-portal-history-table .svcp-pago-estado-pendiente{background:#fff7e6;color:#9a6700}
+.svcp-portal-history-table .svcp-pago-estado-rechazado{background:#fdecec;color:#b42318}
