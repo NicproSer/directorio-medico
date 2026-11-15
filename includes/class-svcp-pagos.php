@@ -164,7 +164,25 @@ CSS;
             }
         }
 
+        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/mi-perfil/' ) );
+        $pagos_realizados_url = $portal_url . '#pagos-realizados';
+        $user = wp_get_current_user();
+        $doctor_foto = get_the_post_thumbnail_url( $doctor_id, 'thumbnail' );
+        $doctor_inicial = function_exists( 'mb_substr' ) ? mb_substr( get_the_title( $doctor_id ), 0, 1 ) : substr( get_the_title( $doctor_id ), 0, 1 );
+
         ob_start();
+        echo '<div class="svcp-portal-layout svcp-portal-payment-layout">';
+        echo '<aside class="svcp-portal-sidebar" aria-label="Navegación del portal">';
+        echo '<a class="svcp-portal-brand" href="' . esc_url( $portal_url ) . '"><strong>SVCP</strong><span>Portal del médico</span></a>';
+        echo '<nav class="svcp-portal-nav">';
+        echo '<a href="' . esc_url( $portal_url ) . '"><span aria-hidden="true">♙</span>Mi perfil</a>';
+        echo '<a class="is-active" href="' . esc_url( get_permalink() ) . '"><span aria-hidden="true">▤</span>Membresía y pago</a>';
+        echo '<div class="svcp-portal-subnav"><a class="svcp-portal-subnav-link" href="' . esc_url( $pagos_realizados_url ) . '"><span aria-hidden="true">↳</span>Pagos realizados</a></div>';
+        echo '<a href="' . esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' ) ) . '"><span aria-hidden="true">◎</span>Ver directorio</a>';
+        echo '</nav><a class="svcp-portal-logout" href="' . esc_url( wp_logout_url( home_url( '/' ) ) ) . '"><span aria-hidden="true">⇥</span>Cerrar sesión</a></aside>';
+        echo '<main class="svcp-portal-main"><header class="svcp-portal-topbar"><div><span class="svcp-panel-eyebrow">Portal del médico</span><h1>Membresía y pago</h1></div><div class="svcp-portal-user" aria-label="' . esc_attr( $user->display_name ) . '">';
+        if ( $doctor_foto ) { echo '<img src="' . esc_url( $doctor_foto ) . '" alt="">'; } else { echo '<span>' . esc_html( strtoupper( $doctor_inicial ) ) . '</span>'; }
+        echo '</div></header><div class="svcp-portal-content">';
         echo '<section class="svcp-pago-wrap" aria-labelledby="svcp-pago-titulo">';
         echo '<div class="svcp-pago-encabezado"><span class="svcp-pago-kicker">Membresía SVCP</span><h2 id="svcp-pago-titulo">Reportar pago</h2><p>Completa los datos exactamente como aparecen en tu comprobante. La membresía no se activa hasta que la sociedad verifique el pago.</p></div>';
         echo '<div class="svcp-pago-resumen"><div><span>Afiliado</span><strong>' . esc_html( get_the_title( $doctor_id ) ) . '</strong></div><div><span>Estado actual</span><strong>' . esc_html( $estado_visual ) . '</strong></div></div>';
@@ -194,7 +212,7 @@ CSS;
             <button class="svcp-pago-boton" type="submit">Enviar reporte de pago</button>
         </form>
         <?php
-        echo '</section>';
+        echo '</section></div></main></div>';
         return ob_get_clean();
     }
 
@@ -626,21 +644,67 @@ CSS;
             'Estado: APROBADO', 'Este documento acredita el registro y aprobacion del pago indicado.',
             'No sustituye una factura fiscal.'
         );
-        $content = "BT\n/F1 16 Tf\n50 790 Td\n(" . $this->pdf_escape($rows[0]) . ") Tj\n/F1 12 Tf\n0 -30 Td\n(" . $this->pdf_escape($rows[1]) . ") Tj\n/F1 10 Tf\n";
-        foreach (array_slice($rows,2) as $row) { $content .= "0 -25 Td\n(" . $this->pdf_escape($row) . ") Tj\n"; }
-        $content .= "ET";
-        $stream = "q\n" . $content . "\nQ";
+        $esc = function( $value ) { return $this->pdf_escape( $value ); };
+        $content = "q\n";
+        // Encabezado institucional y acento cromático SVCP.
+        $content .= "0.09 0.22 0.34 rg 0 650 612 192 re f\n";
+        $content .= "0.89 0.14 0.18 rg 0 644 612 6 re f\n";
+        $content .= "BT /F2 10 Tf 48 800 Td (SOCIEDAD VENEZOLANA DE COLOPROCTOLOGIA) Tj ET\n";
+        $content .= "BT /F2 22 Tf 48 758 Td (Comprobante de pago) Tj ET\n";
+        $content .= "BT /F1 10 Tf 48 735 Td (Membresia institucional - constancia de pago aprobado) Tj ET\n";
+        $content .= "0.10 0.55 0.43 rg 454 760 110 28 re f\n";
+        $content .= "BT /F2 10 Tf 477 770 Td (APROBADO) Tj ET\n";
+        // Identificador y datos del afiliado.
+        $content .= "0.95 0.97 0.98 rg 42 560 528 58 re f\n";
+        $content .= "0.82 0.87 0.90 RG 42 560 528 58 re S\n";
+        $content .= "BT /F2 8 Tf 58 598 Td (MEDICO AFILIADO) Tj ET\n";
+        $content .= "BT /F2 13 Tf 58 578 Td (" . $esc( get_the_title($doctor) ) . ") Tj ET\n";
+        $content .= "BT /F1 9 Tf 400 598 Td (COMPROBANTE No.) Tj ET\n";
+        $content .= "BT /F2 12 Tf 400 578 Td (SVCP-" . $id . ") Tj ET\n";
+        // Bloques de importes.
+        $content .= "0.93 0.96 0.98 rg 42 475 252 62 re f\n";
+        $content .= "0.91 0.97 0.95 rg 318 475 252 62 re f\n";
+        $content .= "BT /F1 9 Tf 58 515 Td (MONTO RECIBIDO) Tj ET\n";
+        $content .= "BT /F2 18 Tf 58 488 Td (Bs. " . $esc(number_format($monto,2,',','.')) . ") Tj ET\n";
+        $content .= "BT /F1 9 Tf 334 515 Td (EQUIVALENTE REGISTRADO) Tj ET\n";
+        $content .= "BT /F2 18 Tf 334 488 Td (USD " . $esc(number_format($usd,4,',','.')) . ") Tj ET\n";
+        // Detalle de la operacion en filas.
+        $details = array(
+            array('Fecha de operacion', get_post_meta($id,self::META_FECHA_PAGO,true)),
+            array('Fecha de aprobacion', get_post_meta($id,self::META_RESUELTO_EN,true)),
+            array('Referencia bancaria', get_post_meta($id,self::META_REFERENCIA,true)),
+            array('Metodo de pago', get_post_meta($id,self::META_METODO,true)),
+            array('Tasa BCV aplicada', 'Bs. ' . number_format($tasa,4,',','.') . ' por USD'),
+            array('Vigencia de tasa', get_post_meta($id,self::META_TASA_FECHA,true)),
+            array('Saldo pendiente', 'USD ' . number_format($saldo_usd,4,',','.') . ' / Bs. ' . number_format($saldo_bs,2,',','.'))
+        );
+        $y = 432;
+        foreach ( $details as $index => $detail ) {
+            if ( 0 === $index % 2 ) { $content .= "0.97 0.98 0.99 rg 42 " . ($y-9) . " 528 29 re f\n"; }
+            $content .= "BT /F1 9 Tf 58 " . $y . " Td (" . $esc($detail[0]) . ") Tj ET\n";
+            $content .= "BT /F2 9 Tf 250 " . $y . " Td (" . $esc($detail[1]) . ") Tj ET\n";
+            $y -= 34;
+        }
+        // Pie y nota legal.
+        $content .= "0.82 0.87 0.90 RG 42 165 m 570 165 l S\n";
+        $content .= "BT /F2 9 Tf 42 142 Td (Constancia interna de registro y aprobacion de pago) Tj ET\n";
+        $content .= "BT /F1 8 Tf 42 125 Td (Este documento no sustituye una factura fiscal.) Tj ET\n";
+        $content .= "BT /F1 8 Tf 42 80 Td (Sociedad Venezolana de Coloproctologia | Portal del Medico SVCP) Tj ET\n";
+        $content .= "BT /F1 8 Tf 42 64 Td (Documento generado automaticamente. Conserve este comprobante para sus registros.) Tj ET\n";
+        $content .= "Q";
+        $stream = $content;
         $objects = array();
         $objects[] = '<< /Type /Catalog /Pages 2 0 R >>';
         $objects[] = '<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
-        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R >> >> /Contents 5 0 R >>';
+        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>';
         $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
+        $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>';
         $objects[] = '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream";
         $pdf = "%PDF-1.4\n"; $offsets = array(0);
         foreach ($objects as $i=>$obj) { $offsets[] = strlen($pdf); $pdf .= ($i+1) . " 0 obj\n" . $obj . "\nendobj\n"; }
-        $xref = strlen($pdf); $pdf .= "xref\n0 6\n0000000000 65535 f \n";
-        for ($i=1;$i<=5;$i++) { $pdf .= sprintf('%010d 00000 n ', $offsets[$i]) . "\n"; }
-        $pdf .= "trailer\n<< /Size 6 /Root 1 0 R >>\nstartxref\n" . $xref . "\n%%EOF";
+        $xref = strlen($pdf); $total = count($objects) + 1; $pdf .= "xref\n0 " . $total . "\n0000000000 65535 f \n";
+        for ($i=1;$i<$total;$i++) { $pdf .= sprintf('%010d 00000 n ', $offsets[$i]) . "\n"; }
+        $pdf .= "trailer\n<< /Size " . $total . " /Root 1 0 R >>\nstartxref\n" . $xref . "\n%%EOF";
         nocache_headers(); header('Content-Type: application/pdf'); header('Content-Disposition: attachment; filename="comprobante-svcp-' . $id . '.pdf"'); header('Content-Length: ' . strlen($pdf)); echo $pdf; exit;
     }
 
