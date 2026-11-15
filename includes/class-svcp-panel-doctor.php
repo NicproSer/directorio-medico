@@ -286,6 +286,7 @@ class SVCP_Panel_Doctor {
 
         $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/reportar-pago/' ) );
         $portal_url = apply_filters( 'svcp_url_portal_medico', get_permalink() );
+        $pagos_realizados_url = $portal_url . '#pagos-realizados';
         $membership_label = $estado_label;
         $approval_label = $estado_aprobacion ? ( $estados_aprobacion[ $estado_aprobacion ] ?? $estado_aprobacion ) : __( 'En revisión', 'svcp-directorio' );
         $vigencia_label = $vencimiento ? date_i18n( get_option( 'date_format' ), strtotime( $vencimiento ) ) : __( 'No registrada', 'svcp-directorio' );
@@ -300,6 +301,7 @@ class SVCP_Panel_Doctor {
                 <nav class="svcp-portal-nav">
                     <a class="is-active" href="<?php echo esc_url( $portal_url ); ?>"><span aria-hidden="true">♙</span><?php esc_html_e( 'Mi perfil', 'svcp-directorio' ); ?></a>
                     <a href="<?php echo esc_url( $pago_url ); ?>"><span aria-hidden="true">▤</span><?php esc_html_e( 'Membresía y pago', 'svcp-directorio' ); ?></a>
+                    <div class="svcp-portal-subnav"><a href="<?php echo esc_url( $pagos_realizados_url ); ?>" class="svcp-portal-subnav-link"><span aria-hidden="true">↳</span><?php esc_html_e( 'Pagos realizados', 'svcp-directorio' ); ?></a></div>
                     <a href="<?php echo esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' ) ); ?>"><span aria-hidden="true">◎</span><?php esc_html_e( 'Ver directorio', 'svcp-directorio' ); ?></a>
                 </nav>
                 <a class="svcp-portal-logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><span aria-hidden="true">⇥</span><?php esc_html_e( 'Cerrar sesión', 'svcp-directorio' ); ?></a>
@@ -357,17 +359,47 @@ class SVCP_Panel_Doctor {
                     $deuda_bs_hoy = (!is_wp_error($tasa_hoy) && $deuda_usd > 0) ? $deuda_usd * (float)$tasa_hoy['tasa'] : 0;
                     $pagos_doctor = get_posts(array('post_type'=>'svcp_pago','post_status'=>'private','posts_per_page'=>50,'orderby'=>'date','order'=>'DESC','fields'=>'ids','meta_query'=>array(array('key'=>'_svcp_doctor_id','value'=>$post_id,'compare'=>'='))));
                     ?>
-                    <section class="svcp-portal-card svcp-portal-payments" style="margin-top:22px">
+                    <section id="pagos-realizados" class="svcp-portal-card svcp-portal-payments" style="margin-top:22px">
                         <div class="svcp-panel-section-heading"><h2>Mis pagos y estado de cuenta</h2><p>Consulta tus reportes, pagos aprobados y comprobantes.</p></div>
-                        <div class="svcp-panel-form-grid" style="margin:14px 0">
+                        <div class="svcp-portal-tabs" role="tablist" aria-label="Información de pagos">
+                            <button type="button" class="svcp-portal-tab is-active" role="tab" aria-selected="true" aria-controls="svcp-tab-estado" data-svcp-tab="svcp-tab-estado">Estado de cuenta</button>
+                            <button type="button" class="svcp-portal-tab" role="tab" aria-selected="false" aria-controls="svcp-tab-pagos" data-svcp-tab="svcp-tab-pagos">Mis pagos</button>
+                        </div>
+                        <div id="svcp-tab-estado" class="svcp-portal-tab-panel is-active" role="tabpanel">
                             <div><small>Saldo pendiente en divisa</small><strong style="display:block;font-size:22px;color:<?php echo $deuda_usd>0?'#b45309':'#087f72'; ?>">USD <?php echo esc_html(number_format_i18n($deuda_usd,4)); ?></strong></div>
                             <div><small>Equivalente al día de hoy</small><strong style="display:block;font-size:22px"> <?php echo is_wp_error($tasa_hoy) ? 'Tasa no disponible' : 'Bs. '.esc_html(number_format_i18n($deuda_bs_hoy,2)); ?></strong><?php if(!is_wp_error($tasa_hoy)&&$deuda_usd>0): ?><small>Tasa BCV <?php echo esc_html(number_format_i18n((float)$tasa_hoy['tasa'],4)); ?> · Vigencia <?php echo esc_html($tasa_hoy['fecha_vigencia']); ?></small><?php endif; ?></div>
                         </div>
-                        <?php if($pagos_doctor): ?><div style="overflow-x:auto"><table class="widefat striped"><thead><tr><th>Fecha</th><th>Referencia</th><th>Monto recibido</th><th>Equivalente USD</th><th>Estado</th><th>Comprobante</th></tr></thead><tbody>
+                        </div>
+                        <div id="svcp-tab-pagos" class="svcp-portal-tab-panel" role="tabpanel" hidden>
+                        <?php if($pagos_doctor): ?><div class="svcp-portal-table-wrap"><table class="widefat striped"><thead><tr><th>Fecha</th><th>Referencia</th><th>Monto recibido</th><th>Equivalente USD</th><th>Estado</th><th>Comprobante</th></tr></thead><tbody>
                         <?php foreach($pagos_doctor as $pago_id): $pestado=get_post_meta($pago_id,'_svcp_estado',true); $pmonto=(float)get_post_meta($pago_id,'_svcp_monto',true); $pusd=(float)get_post_meta($pago_id,'_svcp_pago_equivalente_usd',true); $recibo=wp_nonce_url(admin_url('admin-post.php?action=svcp_recibo_pdf&pago_id='.$pago_id),'svcp_recibo_'.$pago_id); ?>
                         <tr><td><?php echo esc_html(get_post_meta($pago_id,'_svcp_fecha_pago',true)); ?></td><td><?php echo esc_html(get_post_meta($pago_id,'_svcp_referencia',true)); ?></td><td>Bs. <?php echo esc_html(number_format_i18n($pmonto,2)); ?></td><td>USD <?php echo esc_html(number_format_i18n($pusd,4)); ?></td><td><?php echo esc_html(ucfirst($pestado)); ?></td><td><?php if('aprobado'===$pestado): ?><a class="button" href="<?php echo esc_url($recibo); ?>">Descargar PDF</a><?php else: ?>—<?php endif; ?></td></tr>
-                        <?php endforeach; ?></tbody></table></div><?php else: ?><p>Aún no tienes pagos registrados.</p><?php endif; ?>
+                        <?php endforeach; ?></tbody></table></div><?php else: ?><p class="svcp-portal-empty">Aún no tienes pagos registrados.</p><?php endif; ?>
+                        </div>
+                        <p class="svcp-portal-payment-action"><a class="svcp-portal-outline-button" href="<?php echo esc_url( $pago_url ); ?>">Reportar un nuevo pago</a></p>
                     </section>
+                    <script>
+                    (function(){
+                        var root=document.getElementById('pagos-realizados');
+                        if(!root || root.dataset.tabsReady==='1') return;
+                        root.dataset.tabsReady='1';
+                        var tabs=root.querySelectorAll('[data-svcp-tab]');
+                        tabs.forEach(function(tab){
+                            tab.addEventListener('click',function(){
+                                tabs.forEach(function(item){
+                                    var active=item===tab;
+                                    item.classList.toggle('is-active',active);
+                                    item.setAttribute('aria-selected',active?'true':'false');
+                                });
+                                root.querySelectorAll('.svcp-portal-tab-panel').forEach(function(panel){
+                                    var active=panel.id===tab.getAttribute('data-svcp-tab');
+                                    panel.classList.toggle('is-active',active);
+                                    panel.hidden=!active;
+                                });
+                            });
+                        });
+                    })();
+                    </script>
                 </div>
             </main>
         </div>

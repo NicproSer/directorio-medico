@@ -402,3 +402,33 @@ body.svcp-pagina-panel-doctor .entry-title,body.svcp-pagina-panel-doctor .wp-blo
 body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-block-post-title,body.svcp-pagina-reporte-pago .page-title,body.svcp-pagina-reporte-pago .entry-header{display:none!important;}
 .svcp-live-search-status{margin:8px 0 14px;color:#687782;font-size:.9rem;}
 .svcp-lista-doctores[hidden],.svcp-doctor-card[hidden],.svcp-sin-resultados-box[hidden],.svcp-paginacion[hidden]{display:none!important;}
+
+
+/* Portal SVCP: submenu, vistas internas y estructura compartida de pagos. */
+.svcp-portal-subnav{display:grid;gap:4px;margin:-4px 0 8px 26px;padding-left:12px;border-left:1px solid rgba(255,255,255,.2)}
+.svcp-portal-subnav-link{display:flex;align-items:center;gap:7px;padding:8px 10px;border-radius:8px;color:rgba(255,255,255,.78);font-size:.82rem;text-decoration:none}
+.svcp-portal-subnav-link:hover,.svcp-portal-subnav-link:focus{background:rgba(255,255,255,.1);color:#fff}
+.svcp-portal-payment-layout .svcp-portal-nav{display:grid}
+.svcp-portal-payment-layout .svcp-portal-nav a{justify-content:flex-start;text-align:left}
+.svcp-portal-payment-layout .svcp-portal-nav a span{display:inline-block}
+.svcp-portal-tabs{display:flex;gap:7px;padding:5px;margin:18px 0 16px;background:#f1f5f9;border:1px solid #e2e8f0;border-radius:11px;width:max-content;max-width:100%}
+.svcp-portal-tab{appearance:none;border:0;background:transparent;color:#526273;font:inherit;font-size:.9rem;font-weight:700;padding:10px 16px;border-radius:8px;cursor:pointer}
+.svcp-portal-tab.is-active{background:#fff;color:#173f5f;box-shadow:0 1px 5px rgba(15,40,65,.12)}
+.svcp-portal-tab-panel[hidden]{display:none!important}
+.svcp-portal-tab-panel{padding:4px 0}
+.svcp-portal-table-wrap{width:100%;overflow-x:auto;border:1px solid #e1e8ef;border-radius:10px}
+.svcp-portal-payments table{width:100%;border:0;border-collapse:collapse;min-width:650px}
+.svcp-portal-payments table th{background:#f5f8fb;color:#294b65;font-size:.75rem;text-transform:uppercase;letter-spacing:.035em}
+.svcp-portal-payments table td,.svcp-portal-payments table th{padding:12px 13px;border-bottom:1px solid #e8edf2;vertical-align:middle}
+.svcp-portal-payments table tr:last-child td{border-bottom:0}
+.svcp-portal-payments .button{border-color:#d6e0e9;color:#1f587b;border-radius:7px}
+.svcp-portal-empty{padding:18px;background:#f8fafc;border:1px dashed #d6e0e9;border-radius:9px;color:#64748b}
+.svcp-portal-payment-action{margin:16px 0 0}
+.svcp-portal-payment-layout .svcp-pago-wrap{max-width:none;margin:0}
+.svcp-portal-payment-layout .svcp-pago-encabezado{margin-bottom:20px}
+@media(max-width:760px){
+ .svcp-portal-subnav{margin-left:12px}
+ .svcp-portal-tabs{width:100%}
+ .svcp-portal-tab{flex:1;padding:10px 8px;font-size:.82rem}
+ .svcp-portal-payment-layout .svcp-portal-nav a{justify-content:center;text-align:center}
+}
