@@ -128,9 +128,15 @@ CSS;
      * Si el administrador ya creó una página con ese slug, se respeta su contenido.
      */
     public function asegurar_pagina_pagos_realizados() {
-        if ( ! current_user_can( 'manage_options' ) || get_option( 'svcp_pagos_realizados_page_id' ) ) {
+        if ( ! current_user_can( 'manage_options' ) ) {
             return;
         }
+
+        $saved_page_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
+        if ( $saved_page_id && 'page' === get_post_type( $saved_page_id ) ) {
+            return;
+        }
+        delete_option( 'svcp_pagos_realizados_page_id' );
 
         $pagina = get_page_by_path( 'pagos-realizados', OBJECT, 'page' );
         if ( $pagina ) {
@@ -225,7 +231,7 @@ CSS;
         $pagos = get_posts( array(
             'post_type'      => self::CPT,
             'post_status'    => 'private',
-            'posts_per_page' => 100,
+            'posts_per_page' => -1,
             'orderby'        => 'date',
             'order'          => 'DESC',
             'fields'         => 'ids',
