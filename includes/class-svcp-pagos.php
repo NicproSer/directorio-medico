@@ -219,13 +219,13 @@ CSS;
             return '<div class="svcp-pago-aviso"><strong>Ficha no encontrada</strong><span>No se encontró una ficha médica asociada a esta cuenta. Contacta a la SVCP para regularizar tu registro.</span></div>';
         }
 
-        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/mi-perfil/' ) );
-        $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/reportar-pago/' ) );
-        $directorio_url = get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' );
+        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/admin-miperfil/' ) );
+        $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/admin-reportarpagos/' ) );
+        $directorio_url = get_post_type_archive_link( 'doctor' ) ?: home_url( '/sociedad-directorio-medico/' );
         $pagina_pagos_url = get_permalink( get_queried_object_id() );
         if ( ! $pagina_pagos_url ) {
             $pagina_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
-            $pagina_pagos_url = $pagina_id ? get_permalink( $pagina_id ) : home_url( '/pagos-realizados/' );
+            $pagina_pagos_url = $pagina_id ? get_permalink( $pagina_id ) : home_url( '/admin-pagosrealizados/' );
         }
 
         $pagos = get_posts( array(
@@ -383,10 +383,10 @@ CSS;
             }
         }
 
-        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/mi-perfil/' ) );
+        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/admin-miperfil/' ) );
         $pagos_realizados_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
         $pagos_realizados_page = get_page_by_path( 'pagos-realizados', OBJECT, 'page' );
-        $pagos_realizados_url = $pagos_realizados_id ? get_permalink( $pagos_realizados_id ) : ( $pagos_realizados_page ? get_permalink( $pagos_realizados_page ) : home_url( '/pagos-realizados/' ) );
+        $pagos_realizados_url = $pagos_realizados_id ? get_permalink( $pagos_realizados_id ) : ( $pagos_realizados_page ? get_permalink( $pagos_realizados_page ) : home_url( '/admin-pagosrealizados/' ) );
         $user = wp_get_current_user();
         $doctor_foto = get_the_post_thumbnail_url( $doctor_id, 'thumbnail' );
         $doctor_inicial = function_exists( 'mb_substr' ) ? mb_substr( get_the_title( $doctor_id ), 0, 1 ) : substr( get_the_title( $doctor_id ), 0, 1 );
@@ -399,7 +399,7 @@ CSS;
         echo '<a href="' . esc_url( $portal_url ) . '"><span aria-hidden="true">♙</span>Mi perfil</a>';
         echo '<a class="is-active" href="' . esc_url( get_permalink() ) . '"><span aria-hidden="true">▤</span>Membresía y pago</a>';
         echo '<div class="svcp-portal-subnav"><a class="svcp-portal-subnav-link" href="' . esc_url( $pagos_realizados_url ) . '"><span aria-hidden="true">↳</span>Pagos realizados</a></div>';
-        echo '<a href="' . esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' ) ) . '"><span aria-hidden="true">◎</span>Ver directorio</a>';
+        echo '<a href="' . esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/sociedad-directorio-medico/' ) ) . '"><span aria-hidden="true">◎</span>Ver directorio</a>';
         echo '</nav><a class="svcp-portal-logout" href="' . esc_url( wp_logout_url( home_url( '/' ) ) ) . '"><span aria-hidden="true">⇥</span>Cerrar sesión</a></aside>';
         echo '<main class="svcp-portal-main"><header class="svcp-portal-topbar"><div><span class="svcp-panel-eyebrow">Portal del médico</span><h1>Membresía y pago</h1></div><div class="svcp-portal-user" aria-label="' . esc_attr( $user->display_name ) . '">';
         if ( $doctor_foto ) { echo '<img src="' . esc_url( $doctor_foto ) . '" alt="">'; } else { echo '<span>' . esc_html( strtoupper( $doctor_inicial ) ) . '</span>'; }
@@ -413,8 +413,8 @@ CSS;
         $fecha_pago_default = current_time('Y-m-d');
         $tasa_actual = class_exists('SVCP_Tasa_BCV') ? SVCP_Tasa_BCV::obtener($fecha_pago_default, false) : new WP_Error('sin_servicio','Servicio de tasas no disponible');
         if ( $saldo_usd_actual > 0 ) { $precio_usd = $saldo_usd_actual; }
-        if ( $precio_usd > 0 && ! is_wp_error($tasa_actual) ) { $equivalente = $precio_usd * (float) $tasa_actual['tasa']; echo '<div class="svcp-pago-precio-referencia" style="margin:14px 0;padding:16px;border:1px solid #b9dfe2;border-radius:10px;background:#edf8f8"><span style="display:block;font-size:12px;color:#526b76">'.( $saldo_usd_actual > 0 ? 'Saldo pendiente de membresía' : 'Precio institucional de membresía' ).'</span><strong style="display:block;font-size:20px;color:#0b5a88">USD '.esc_html(number_format_i18n($precio_usd,2)).'</strong><strong style="display:block;font-size:24px;color:#087f72">Bs. '.esc_html(number_format_i18n($equivalente,2)).'</strong><small>Tasa BCV: Bs. '.esc_html(number_format_i18n((float)$tasa_actual['tasa'],4)).' por USD · Vigencia '.esc_html(wp_date('d/m/Y',strtotime($tasa_actual['fecha_vigencia']),wp_timezone())).'. Esta cotización corresponde a hoy; si seleccionas otra fecha de pago, se consultará y guardará su tasa histórica al enviar el reporte.</small></div>'; } elseif ( $precio_usd > 0 ) { echo '<div class="svcp-pago-alerta-publico svcp-pago-alerta-error" role="alert"><strong>No se pudo consultar la tasa BCV.</strong><span>Por seguridad, no se muestra una conversión estimada. Intenta más tarde o contacta a la administración.</span></div>'; }
-        $datos_pago = class_exists( 'SVCP_SMTP' ) ? SVCP_SMTP::config() : array();
+        if ( $precio_usd > 0 && ! is_wp_error($tasa_actual) ) { $equivalente = $precio_usd * (float) $tasa_actual['tasa']; echo '<div style="margin:16px 0"><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').showModal()">Consultar monto de membresía</button></div><dialog id="svcp-precio-modal" class="svcp-precio-modal"><button type="button" class="svcp-precio-cerrar" aria-label="Cerrar" onclick="document.getElementById(\'svcp-precio-modal\').close()">×</button><span class="svcp-pago-kicker">Membresía SVCP</span><h2>'.( $saldo_usd_actual > 0 ? 'Saldo pendiente' : 'Monto institucional' ).'</h2><strong class="svcp-precio-usd">USD '.esc_html(number_format_i18n($precio_usd,2)).'</strong><strong class="svcp-precio-bs">Bs. '.esc_html(number_format_i18n($equivalente,2)).'</strong><p>Tasa BCV: Bs. '.esc_html(number_format_i18n((float)$tasa_actual['tasa'],4)).' por USD<br>Vigencia: '.esc_html(wp_date('d/m/Y',strtotime($tasa_actual['fecha_vigencia']),wp_timezone())).'</p><small>La cotización corresponde a hoy; si seleccionas otra fecha de pago, se guardará su tasa histórica.</small><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').close()">Entendido</button></dialog><style>.svcp-precio-modal{width:min(440px,calc(100% - 32px));border:0;border-radius:18px;padding:30px;color:#173f5f;box-shadow:0 24px 80px rgba(12,35,52,.28)}.svcp-precio-modal::backdrop{background:rgba(13,29,43,.62);backdrop-filter:blur(3px)}.svcp-precio-modal h2{margin:8px 0 18px}.svcp-precio-usd,.svcp-precio-bs{display:block;font-size:26px;margin:8px 0}.svcp-precio-usd{color:#0b5a88}.svcp-precio-bs{color:#087f72}.svcp-precio-modal p,.svcp-precio-modal small{color:#61717c;line-height:1.6}.svcp-precio-cerrar{float:right;border:0;background:transparent;font-size:28px;cursor:pointer;color:#61717c}</style>'; } elseif ( $precio_usd > 0 ) { echo '<div class="svcp-pago-alerta-publico svcp-pago-alerta-error" role="alert"><strong>No se pudo consultar la tasa BCV.</strong><span>Por seguridad, no se muestra una conversión estimada. Intenta más tarde o contacta a la administración.</span></div>'; }
+        $datos_pago = class_exists( 'SVCP_Ciclo_Membresia' ) ? SVCP_Ciclo_Membresia::settings() : array();
         $campos_pago = array(
             'Banco' => isset( $datos_pago['payment_bank'] ) ? $datos_pago['payment_bank'] : '',
             'Tipo de cuenta' => isset( $datos_pago['payment_account_type'] ) ? $datos_pago['payment_account_type'] : '',
