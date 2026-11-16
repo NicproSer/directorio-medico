@@ -53,9 +53,9 @@ class SVCP_CPT_Doctor {
         $args = array(
             'labels'             => $labels,
             'public'             => true,
-            'has_archive'        => 'directorio', // /directorio/
+            'has_archive'        => 'sociedad-directorio-medico', // /sociedad-directorio-medico/
             'rewrite'            => array(
-                'slug'       => 'directorio',
+                'slug'       => 'sociedad-directorio-medico',
                 'with_front' => false,
             ),
             'menu_icon'          => 'dashicons-groups',
