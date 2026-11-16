@@ -155,7 +155,7 @@ class SVCP_Registro {
         }
 
         if ( class_exists( 'SVCP_Correos' ) ) {
-            SVCP_Correos::enviar( $correo, 'registro', array( 'nombre' => $nombre, 'url_panel' => home_url( '/' ) ) );
+            SVCP_Correos::enviar( $correo, 'registro', array( 'nombre' => $nombre, 'url_panel' => home_url( '/admin-miperfil/' ) ) );
         } else {
             wp_mail( $correo, 'Gracias por registrarte en la SVCP', 'Hola ' . $nombre . ', gracias por registrarte. Tu ficha está pendiente de revisión.' );
         }

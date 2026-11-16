@@ -265,3 +265,20 @@ function svcp_dir_busqueda_tiempo_real() {
     wp_enqueue_script( 'svcp-directorio-live-search', SVCP_DIR_URL . 'assets/js/svcp-directorio-live-search.js', array(), SVCP_DIR_VERSION, true );
 }
 add_action( 'wp_enqueue_scripts', 'svcp_dir_busqueda_tiempo_real', 20 );
+
+/** Normaliza las URL públicas del portal SVCP sin reemplazar el contenido existente. */
+function svcp_dir_normalizar_urls_portal() {
+    if ( ! current_user_can( 'manage_options' ) ) { return; }
+    $rutas = array( 'svcp_login_doctor' => 'admin-iniciosesion', 'svcp_registro_doctor' => 'admin-crearcuenta', 'svcp_panel_doctor' => 'admin-miperfil', 'svcp_formulario_pago' => 'admin-reportarpagos', 'svcp_pagos_realizados' => 'admin-pagosrealizados' );
+    foreach ( $rutas as $shortcode => $slug ) {
+        $paginas = get_pages( array( 'post_status' => 'publish', 'number' => -1 ) );
+        foreach ( $paginas as $pagina ) {
+            if ( has_shortcode( $pagina->post_content, $shortcode ) && $pagina->post_name !== $slug ) { wp_update_post( array( 'ID' => $pagina->ID, 'post_name' => $slug ) ); }
+        }
+    }
+    $pagos = get_page_by_path( 'admin-pagosrealizados', OBJECT, 'page' );
+    if ( ! $pagos ) { $old = get_page_by_path( 'pagos-realizados', OBJECT, 'page' ); if ( $old ) { wp_update_post( array( 'ID' => $old->ID, 'post_name' => 'admin-pagosrealizados' ) ); } }
+    $pagos = get_page_by_path( 'admin-pagosrealizados', OBJECT, 'page' );
+    if ( ! $pagos ) { $id = wp_insert_post( array( 'post_type' => 'page', 'post_status' => 'publish', 'post_title' => 'Pagos realizados', 'post_name' => 'admin-pagosrealizados', 'post_content' => '[svcp_pagos_realizados]' ), true ); if ( ! is_wp_error( $id ) && $id ) { update_option( 'svcp_pagos_realizados_page_id', absint( $id ) ); } }
+}
+add_action( 'admin_init', 'svcp_dir_normalizar_urls_portal', 30 );
