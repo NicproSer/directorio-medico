@@ -33,11 +33,11 @@ class SVCP_Acceso_Doctor {
 
         foreach ( $paginas as $pagina ) {
             if ( has_shortcode( $pagina->post_content, 'svcp_panel_doctor' ) ) {
-                return get_permalink( $pagina->ID );
+                return home_url( '/admin-crearcuenta/' );
             }
         }
 
-        return home_url( '/' );
+        return home_url( '/admin-miperfil/' );
     }
 
     /**
@@ -50,7 +50,7 @@ class SVCP_Acceso_Doctor {
                 return get_permalink( $pagina->ID );
             }
         }
-        return '';
+        return home_url( '/admin-crearcuenta/' );
     }
 
     /**
