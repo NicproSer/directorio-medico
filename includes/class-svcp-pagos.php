@@ -375,7 +375,7 @@ CSS;
 
         $mensaje = '';
         if ( isset( $_GET['svcp_pago_enviado'] ) && '1' === sanitize_key( wp_unslash( $_GET['svcp_pago_enviado'] ) ) ) {
-            $mensaje = '<div class="svcp-pago-alerta-publico" role="status"><strong>Reporte recibido.</strong><span>Tu pago quedó pendiente de verificación. Te enviaremos un correo cuando sea aprobado o rechazado.</span></div>';
+            $mensaje = '<dialog class="svcp-pago-modal" id="svcp-pago-modal" aria-labelledby="svcp-pago-modal-titulo"><div class="svcp-pago-modal-icon" aria-hidden="true">✓</div><h2 id="svcp-pago-modal-titulo">¡Reporte enviado!</h2><p>Tu pago quedó registrado y está pendiente de verificación por la administración.</p><p>Te enviaremos un correo cuando sea aprobado o rechazado.</p><button type="button" class="svcp-pago-modal-cerrar" onclick="document.getElementById(\'svcp-pago-modal\').close()">Entendido</button></dialog><style>.svcp-pago-modal{width:min(440px,calc(100% - 32px));border:0;border-radius:18px;padding:30px;text-align:center;color:#173f5f;box-shadow:0 24px 80px rgba(12,35,52,.28)}.svcp-pago-modal::backdrop{background:rgba(13,29,43,.62);backdrop-filter:blur(3px)}.svcp-pago-modal-icon{width:58px;height:58px;margin:0 auto 16px;border-radius:50%;display:grid;place-items:center;background:#e7f7ef;color:#087f5b;font-size:30px;font-weight:700}.svcp-pago-modal h2{margin:0 0 12px;font-size:24px}.svcp-pago-modal p{color:#61717c;line-height:1.6;margin:0 0 10px}.svcp-pago-modal-cerrar{margin-top:14px;border:0;border-radius:9px;background:#173f5f;color:#fff;padding:12px 24px;font-weight:700;cursor:pointer}.svcp-pago-modal-cerrar:hover{background:#1f6f8b}</style><script>(function(){var d=document.getElementById("svcp-pago-modal");if(d&&typeof d.showModal==="function"){d.showModal();d.addEventListener("click",function(e){if(e.target===d){d.close();}});}})();</script>';
         } elseif ( isset( $_GET['svcp_pago_error'] ) ) {
             $error = sanitize_text_field( rawurldecode( wp_unslash( $_GET['svcp_pago_error'] ) ) );
             if ( $error ) {
@@ -414,6 +414,29 @@ CSS;
         $tasa_actual = class_exists('SVCP_Tasa_BCV') ? SVCP_Tasa_BCV::obtener($fecha_pago_default, false) : new WP_Error('sin_servicio','Servicio de tasas no disponible');
         if ( $saldo_usd_actual > 0 ) { $precio_usd = $saldo_usd_actual; }
         if ( $precio_usd > 0 && ! is_wp_error($tasa_actual) ) { $equivalente = $precio_usd * (float) $tasa_actual['tasa']; echo '<div class="svcp-pago-precio-referencia" style="margin:14px 0;padding:16px;border:1px solid #b9dfe2;border-radius:10px;background:#edf8f8"><span style="display:block;font-size:12px;color:#526b76">'.( $saldo_usd_actual > 0 ? 'Saldo pendiente de membresía' : 'Precio institucional de membresía' ).'</span><strong style="display:block;font-size:20px;color:#0b5a88">USD '.esc_html(number_format_i18n($precio_usd,2)).'</strong><strong style="display:block;font-size:24px;color:#087f72">Bs. '.esc_html(number_format_i18n($equivalente,2)).'</strong><small>Tasa BCV: Bs. '.esc_html(number_format_i18n((float)$tasa_actual['tasa'],4)).' por USD · Vigencia '.esc_html(wp_date('d/m/Y',strtotime($tasa_actual['fecha_vigencia']),wp_timezone())).'. Esta cotización corresponde a hoy; si seleccionas otra fecha de pago, se consultará y guardará su tasa histórica al enviar el reporte.</small></div>'; } elseif ( $precio_usd > 0 ) { echo '<div class="svcp-pago-alerta-publico svcp-pago-alerta-error" role="alert"><strong>No se pudo consultar la tasa BCV.</strong><span>Por seguridad, no se muestra una conversión estimada. Intenta más tarde o contacta a la administración.</span></div>'; }
+        $datos_pago = class_exists( 'SVCP_SMTP' ) ? SVCP_SMTP::config() : array();
+        $campos_pago = array(
+            'Banco' => isset( $datos_pago['payment_bank'] ) ? $datos_pago['payment_bank'] : '',
+            'Tipo de cuenta' => isset( $datos_pago['payment_account_type'] ) ? $datos_pago['payment_account_type'] : '',
+            'Número de cuenta' => isset( $datos_pago['payment_account_number'] ) ? $datos_pago['payment_account_number'] : '',
+            'Titular' => isset( $datos_pago['payment_holder'] ) ? $datos_pago['payment_holder'] : '',
+            'RIF / Cédula' => isset( $datos_pago['payment_document'] ) ? $datos_pago['payment_document'] : '',
+            'Teléfono pago móvil' => isset( $datos_pago['payment_phone'] ) ? $datos_pago['payment_phone'] : '',
+            'Correo asociado' => isset( $datos_pago['payment_email'] ) ? $datos_pago['payment_email'] : '',
+        );
+        $hay_datos_pago = (bool) array_filter( $campos_pago );
+        if ( $hay_datos_pago || ! empty( $datos_pago['payment_instructions'] ) ) {
+            echo '<section class="svcp-pago-datos-institucionales" style="margin:18px 0;padding:20px;border:1px solid #dce7ed;border-radius:14px;background:#fff"><div style="margin-bottom:14px"><span class="svcp-pago-kicker">Canales oficiales</span><h3 style="margin:5px 0;color:#173f5f">Datos para realizar el pago</h3><p style="margin:0;color:#647681">Utiliza estos datos para efectuar tu transferencia, depósito o pago móvil.</p></div><div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));gap:12px">';
+            foreach ( $campos_pago as $etiqueta => $valor ) {
+                if ( '' === trim( (string) $valor ) ) { continue; }
+                echo '<div style="padding:12px;border:1px solid #e8eef2;border-radius:9px;background:#f8fafb"><small style="display:block;color:#687782;margin-bottom:4px">' . esc_html( $etiqueta ) . '</small><strong style="color:#173f5f;overflow-wrap:anywhere">' . esc_html( $valor ) . '</strong></div>';
+            }
+            echo '</div>';
+            if ( ! empty( $datos_pago['payment_instructions'] ) ) {
+                echo '<p style="margin:14px 0 0;padding:12px;background:#edf8f8;border-radius:8px;color:#36545f;white-space:pre-line">' . esc_html( $datos_pago['payment_instructions'] ) . '</p>';
+            }
+            echo '</section>';
+        }
         echo $mensaje; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- contenido generado y escapado internamente.
         ?>
         <form class="svcp-form-pago" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
@@ -567,7 +590,12 @@ CSS;
             $url_comprobante = $url_admin; // El enlace del correo lleva al panel; la descarga privada genera nonce en sesión administrativa.
             $nombre_seguro = esc_html($doctor_title);
             $body = '<!doctype html><html><body style="margin:0;background:#f2f5f8;font-family:Arial,Helvetica,sans-serif;color:#243746;padding:24px 10px"><div style="max-width:640px;margin:0 auto;background:#fff;border:1px solid #dfe7ee;border-radius:16px;overflow:hidden"><div style="background:#173f5f;padding:26px 30px;color:#fff"><div style="font-size:30px">🧾</div><div style="font-size:11px;letter-spacing:2px;color:#cde6eb;margin-top:8px">SOCIEDAD VENEZOLANA DE COLOPROCTOLOGÍA</div><h1 style="font-size:24px;margin:12px 0 4px">Nuevo pago por verificar</h1><p style="margin:0;color:#e2edf2">Se requiere revisión administrativa</p></div><div style="padding:26px 30px"><p style="font-size:16px;line-height:1.6">Se recibió un nuevo reporte de pago de <strong>'.$nombre_seguro.'</strong>.</p><div style="background:#f6f9fb;border:1px solid #e1e8ed;border-radius:12px;padding:18px"><p style="margin:0 0 10px"><span style="color:#667783">Depositante</span><br><strong>'.esc_html($depositante).'</strong></p><p style="margin:0 0 10px"><span style="color:#667783">Monto reportado</span><br><strong style="font-size:22px;color:#173f5f">Bs. '.esc_html($data[self::META_MONTO]).'</strong><br><span style="color:#667783">Equivalente recibido a la tasa de esa fecha</span><br><strong>USD '.esc_html($data[self::META_PAGO_USD]).'</strong></p><p style="margin:0 0 10px"><span style="color:#667783">Fecha del pago / tasa BCV</span><br><strong>'.esc_html($fecha_pago).' · Bs. '.esc_html($snapshot_bcv['tasa']).' por USD (vigencia '.esc_html($snapshot_bcv['fecha_vigencia']).')</strong></p><p style="margin:0 0 10px"><span style="color:#667783">Precio institucional</span><br><strong>USD '.esc_html(number_format($precio_usd_snapshot,2,'.','')).' · Equivalente Bs. '.esc_html(number_format($equivalente_snapshot,2,'.','')).'</strong></p><p style="margin:0 0 10px"><span style="color:#667783">Referencia</span><br><strong>'.esc_html($referencia).'</strong></p><p style="margin:0"><span style="color:#667783">Método</span><br><strong>'.esc_html($metodo).'</strong></p></div><p style="text-align:center;margin:26px 0 12px"><a href="'.$url_comprobante.'" style="display:inline-block;background:#e5232e;color:#fff;text-decoration:none;font-weight:bold;padding:12px 20px;border-radius:7px">Abrir reporte y comprobante privado</a></p><p style="font-size:12px;color:#667783;line-height:1.6;margin-top:24px">Verifica la información y el comprobante antes de aprobar. El envío del formulario no activa la membresía.</p></div><div style="background:#f7f9fa;padding:16px 30px;color:#667783;font-size:12px">Notificación automática del Directorio Médico SVCP · NICPRODEV</div></div></body></html>';
-            wp_mail( $admin, $subject, $body, array('Content-Type: text/html; charset=UTF-8') );
+            $headers = array( 'Content-Type: text/html; charset=UTF-8' );
+            $cc_pagos = class_exists( 'SVCP_SMTP' ) ? SVCP_SMTP::config() : array();
+            if ( ! empty( $cc_pagos['pagos_cc_email'] ) && is_email( $cc_pagos['pagos_cc_email'] ) && strtolower( $cc_pagos['pagos_cc_email'] ) !== strtolower( $admin ) ) {
+                $headers[] = 'Cc: ' . sanitize_email( $cc_pagos['pagos_cc_email'] );
+            }
+            wp_mail( $admin, $subject, $body, $headers );
         }
 
         $uid_doctor = absint( get_post_meta( $doctor, 'svcp_usuario_id', true ) );
