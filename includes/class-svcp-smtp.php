@@ -35,6 +35,15 @@ class SVCP_SMTP {
             'password'     => '',
             'from_email'   => '',
             'from_name'    => 'Sociedad Venezolana de Coloproctología',
+            'pagos_cc_email' => '',
+            'payment_bank' => '',
+            'payment_account_type' => '',
+            'payment_account_number' => '',
+            'payment_holder' => '',
+            'payment_document' => '',
+            'payment_phone' => '',
+            'payment_email' => '',
+            'payment_instructions' => '',
         );
     }
 
@@ -115,9 +124,20 @@ class SVCP_SMTP {
             'password'   => $password,
             'from_email' => isset( $_POST['from_email'] ) ? sanitize_email( wp_unslash( $_POST['from_email'] ) ) : '',
             'from_name'  => isset( $_POST['from_name'] ) ? sanitize_text_field( wp_unslash( $_POST['from_name'] ) ) : '',
+            'pagos_cc_email' => isset( $_POST['pagos_cc_email'] ) ? sanitize_email( wp_unslash( $_POST['pagos_cc_email'] ) ) : '',
+            'payment_bank' => isset( $_POST['payment_bank'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_bank'] ) ) : '',
+            'payment_account_type' => isset( $_POST['payment_account_type'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_account_type'] ) ) : '',
+            'payment_account_number' => isset( $_POST['payment_account_number'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_account_number'] ) ) : '',
+            'payment_holder' => isset( $_POST['payment_holder'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_holder'] ) ) : '',
+            'payment_document' => isset( $_POST['payment_document'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_document'] ) ) : '',
+            'payment_phone' => isset( $_POST['payment_phone'] ) ? sanitize_text_field( wp_unslash( $_POST['payment_phone'] ) ) : '',
+            'payment_email' => isset( $_POST['payment_email'] ) ? sanitize_email( wp_unslash( $_POST['payment_email'] ) ) : '',
+            'payment_instructions' => isset( $_POST['payment_instructions'] ) ? sanitize_textarea_field( wp_unslash( $_POST['payment_instructions'] ) ) : '',
         );
 
         if ( ! in_array( $config['encryption'], array( 'tls', 'ssl', 'none' ), true ) ) { $config['encryption'] = 'tls'; }
+        if ( ! empty( $config['pagos_cc_email'] ) && ! is_email( $config['pagos_cc_email'] ) ) { $config['pagos_cc_email'] = ''; }
+        if ( ! empty( $config['payment_email'] ) && ! is_email( $config['payment_email'] ) ) { $config['payment_email'] = ''; }
         update_option( self::OPTION, $config, false );
         wp_safe_redirect( add_query_arg( array( 'post_type'=>'doctor', 'page'=>'svcp-correo', 'svcp_smtp'=>'saved' ), admin_url( 'edit.php' ) ) );
         exit;
@@ -166,6 +186,20 @@ class SVCP_SMTP {
                     <tr><th scope="row"><label for="svcp_smtp_password">Contraseña SMTP</label></th><td><input class="regular-text" type="password" id="svcp_smtp_password" name="password" value="" autocomplete="new-password"><p class="description"><?php echo $password_const ? 'La contraseña está definida mediante SVCP_SMTP_PASSWORD en wp-config.php.' : 'Déjala vacía para conservar la contraseña guardada actualmente.'; ?></p></td></tr>
                     <tr><th scope="row"><label for="svcp_smtp_from_email">Correo remitente</label></th><td><input class="regular-text" type="email" id="svcp_smtp_from_email" name="from_email" value="<?php echo esc_attr( $config['from_email'] ); ?>"><p class="description">Preferiblemente usa una dirección del mismo dominio del sitio.</p></td></tr>
                     <tr><th scope="row"><label for="svcp_smtp_from_name">Nombre remitente</label></th><td><input class="regular-text" id="svcp_smtp_from_name" name="from_name" value="<?php echo esc_attr( $config['from_name'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_pagos_cc_email">Correo para copias de pagos</label></th><td><input class="regular-text" type="email" id="svcp_pagos_cc_email" name="pagos_cc_email" value="<?php echo esc_attr( $config['pagos_cc_email'] ); ?>" placeholder="tesoreria@svcp86.org"><p class="description">Recibirá una copia de las notificaciones cuando un médico reporte un pago. Es opcional.</p></td></tr>
+                </table>
+                <hr style="margin:24px 0">
+                <h2>Datos de pago visibles para los médicos</h2>
+                <p>Actualiza aquí las cuentas y las instrucciones que aparecerán en la sección «Membresía y pago» del portal.</p>
+                <table class="form-table" role="presentation">
+                    <tr><th scope="row"><label for="svcp_payment_bank">Banco</label></th><td><input class="regular-text" id="svcp_payment_bank" name="payment_bank" value="<?php echo esc_attr( $config['payment_bank'] ); ?>" placeholder="Nombre del banco"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_account_type">Tipo de cuenta</label></th><td><input class="regular-text" id="svcp_payment_account_type" name="payment_account_type" value="<?php echo esc_attr( $config['payment_account_type'] ); ?>" placeholder="Corriente / Ahorro"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_account_number">Número de cuenta</label></th><td><input class="regular-text" id="svcp_payment_account_number" name="payment_account_number" value="<?php echo esc_attr( $config['payment_account_number'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_holder">Titular de la cuenta</label></th><td><input class="regular-text" id="svcp_payment_holder" name="payment_holder" value="<?php echo esc_attr( $config['payment_holder'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_document">RIF / Cédula del titular</label></th><td><input class="regular-text" id="svcp_payment_document" name="payment_document" value="<?php echo esc_attr( $config['payment_document'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_phone">Teléfono para pago móvil</label></th><td><input class="regular-text" id="svcp_payment_phone" name="payment_phone" value="<?php echo esc_attr( $config['payment_phone'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_email">Correo asociado al pago</label></th><td><input class="regular-text" type="email" id="svcp_payment_email" name="payment_email" value="<?php echo esc_attr( $config['payment_email'] ); ?>"></td></tr>
+                    <tr><th scope="row"><label for="svcp_payment_instructions">Instrucciones adicionales</label></th><td><textarea class="large-text" rows="4" id="svcp_payment_instructions" name="payment_instructions"><?php echo esc_textarea( $config['payment_instructions'] ); ?></textarea></td></tr>
                 </table>
                 <?php submit_button( 'Guardar configuración' ); ?>
             </form>
