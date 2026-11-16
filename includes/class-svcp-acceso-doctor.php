@@ -24,19 +24,6 @@ class SVCP_Acceso_Doctor {
      * Busca la página que contiene [svcp_panel_doctor].
      */
     private function obtener_url_panel() {
-        $paginas = get_pages(
-            array(
-                'post_status' => 'publish',
-                'number'      => -1,
-            )
-        );
-
-        foreach ( $paginas as $pagina ) {
-            if ( has_shortcode( $pagina->post_content, 'svcp_panel_doctor' ) ) {
-                return home_url( '/admin-crearcuenta/' );
-            }
-        }
-
         return home_url( '/admin-miperfil/' );
     }
 
@@ -44,12 +31,6 @@ class SVCP_Acceso_Doctor {
      * Busca la página pública que contiene el formulario de registro.
      */
     private function obtener_url_registro() {
-        $paginas = get_pages( array( 'post_status' => 'publish', 'number' => -1 ) );
-        foreach ( $paginas as $pagina ) {
-            if ( has_shortcode( $pagina->post_content, 'svcp_registro_doctor' ) ) {
-                return get_permalink( $pagina->ID );
-            }
-        }
         return home_url( '/admin-crearcuenta/' );
     }
 
@@ -97,11 +78,14 @@ class SVCP_Acceso_Doctor {
 
         ob_start();
         ?>
-        <div class="svcp-login-box">
-            <h2><?php esc_html_e( 'Acceso de médicos', 'svcp-directorio' ); ?></h2>
+        <div class="svcp-login-box svcp-auth-card">
+            <div class="svcp-auth-heading">
+                <span class="svcp-auth-mark" aria-hidden="true">SVCP</span>
+                <span class="svcp-auth-eyebrow"><?php esc_html_e( 'Sociedad Venezolana de Coloproctología', 'svcp-directorio' ); ?></span>
+                <h2><?php esc_html_e( 'Bienvenido de nuevo', 'svcp-directorio' ); ?></h2>
             <p class="svcp-login-description">
-                <?php esc_html_e( 'Ingresa con el correo electrónico o usuario de tu cuenta.', 'svcp-directorio' ); ?>
-            </p>
+                <?php esc_html_e( 'Accede a tu espacio profesional para gestionar tu perfil y membresía.', 'svcp-directorio' ); ?>
+            </p></div>
 
             <?php
             wp_login_form(

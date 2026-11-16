@@ -79,7 +79,7 @@ class SVCP_Registro {
             return;
         }
 
-        // Validar fotografía opcional: solo 1:1 o 4:3.
+        // Validar fotografía opcional: únicamente formato cuadrado 1:1.
         if ( ! empty( $_FILES['svcp_foto']['name'] ) ) {
             $tmp = $_FILES['svcp_foto']['tmp_name'] ?? '';
             $size = $tmp ? @getimagesize( $tmp ) : false;
@@ -88,8 +88,8 @@ class SVCP_Registro {
                 return;
             }
             $ratio = $size[0] / $size[1];
-            if ( abs( $ratio - 1 ) > 0.03 && abs( $ratio - ( 4 / 3 ) ) > 0.03 ) {
-                $this->errores[] = __( 'La fotografía debe tener formato 1:1 o 4:3.', 'svcp-directorio' );
+            if ( abs( $ratio - 1 ) > 0.03 ) {
+                $this->errores[] = __( 'La fotografía debe ser cuadrada (formato 1:1).', 'svcp-directorio' );
                 return;
             }
         }
@@ -173,7 +173,13 @@ class SVCP_Registro {
 
         $regiones = get_terms( array( 'taxonomy' => 'region', 'hide_empty' => false ) );
         ?>
-        <form class="svcp-form svcp-form-registro" method="post" enctype="multipart/form-data">
+        <form class="svcp-form svcp-form-registro svcp-auth-register" method="post" enctype="multipart/form-data">
+            <header class="svcp-auth-heading svcp-register-heading">
+                <span class="svcp-auth-mark" aria-hidden="true">SVCP</span>
+                <span class="svcp-auth-eyebrow"><?php esc_html_e( 'Sociedad Venezolana de Coloproctología', 'svcp-directorio' ); ?></span>
+                <h2><?php esc_html_e( 'Crear cuenta profesional', 'svcp-directorio' ); ?></h2>
+                <p><?php esc_html_e( 'Registra tus datos para solicitar tu acceso al portal médico de la SVCP.', 'svcp-directorio' ); ?></p>
+            </header>
             <?php wp_nonce_field( 'svcp_registro', 'svcp_registro_nonce' ); ?>
             <input type="text" name="svcp_web" style="display:none" tabindex="-1" autocomplete="off" />
 
@@ -247,11 +253,12 @@ class SVCP_Registro {
                 <input type="url" name="svcp_sitio_web" />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Foto (opcional, 1:1 o 4:3)', 'svcp-directorio' ); ?></label>
+                <label><?php esc_html_e( 'Fotografía de perfil (opcional)', 'svcp-directorio' ); ?></label>
                 <input type="file" name="svcp_foto" accept="image/jpeg,image/png,image/webp" />
-                <small><?php esc_html_e( 'La fotografía debe ser cuadrada (1:1) o horizontal 4:3.', 'svcp-directorio' ); ?></small>
+                <small><?php esc_html_e( 'Utiliza una imagen cuadrada (1:1). Formatos JPG, PNG o WebP.', 'svcp-directorio' ); ?></small>
             </div>
 
+            <p class="svcp-auth-required-note"><?php esc_html_e( '* Campos obligatorios. Tu ficha quedará pendiente de revisión administrativa.', 'svcp-directorio' ); ?></p>
             <button type="submit" class="svcp-btn-registro"><?php esc_html_e( 'Crear mi perfil', 'svcp-directorio' ); ?></button>
         </form>
         <?php

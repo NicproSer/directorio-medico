@@ -469,3 +469,39 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 .svcp-portal-history-table .svcp-pago-estado-aprobado{background:#e8f7f1;color:#087f5b}
 .svcp-portal-history-table .svcp-pago-estado-pendiente{background:#fff7e6;color:#9a6700}
 .svcp-portal-history-table .svcp-pago-estado-rechazado{background:#fdecec;color:#b42318}
+
+
+/* v0.12.0 — Acceso y registro renovados */
+.svcp-auth-card,.svcp-auth-register{--svcp-auth-blue:#173f5f;--svcp-auth-cyan:#1f6f8b;--svcp-auth-border:#dce6ed;max-width:760px;margin:clamp(24px,5vw,64px) auto;padding:clamp(22px,4vw,42px);background:#fff;border:1px solid var(--svcp-auth-border);border-radius:22px;box-shadow:0 22px 65px rgba(23,63,95,.10);box-sizing:border-box;color:#173042}
+.svcp-auth-card{max-width:500px}
+.svcp-auth-heading{text-align:center;margin:0 auto 28px}
+.svcp-auth-mark{display:grid;place-items:center;width:62px;height:62px;margin:0 auto 14px;border-radius:18px;background:linear-gradient(145deg,#5074fd,#304597);color:#fff;font-size:17px;font-weight:900;letter-spacing:.04em;box-shadow:0 9px 22px rgba(48,69,151,.22)}
+.svcp-auth-eyebrow{display:block;margin-bottom:8px;color:#0f8b8d;font-size:.72rem;font-weight:800;letter-spacing:.12em;text-transform:uppercase}
+.svcp-auth-heading h2{margin:0 0 9px;color:#173f5f;font-size:clamp(1.55rem,3vw,2rem);line-height:1.2}
+.svcp-auth-heading p,.svcp-login-description{max-width:540px;margin:0 auto;color:#667987;font-size:.96rem;line-height:1.65}
+.svcp-auth-card form{margin:0}
+.svcp-auth-card .login-username,.svcp-auth-card .login-password{margin:0 0 18px}
+.svcp-auth-card label,.svcp-auth-register .svcp-form-row label{display:block;margin-bottom:7px;color:#294b65;font-size:.88rem;font-weight:700}
+.svcp-auth-card input[type=text],.svcp-auth-card input[type=email],.svcp-auth-card input[type=password],.svcp-auth-register input:not([type=file]),.svcp-auth-register select{width:100%;min-height:48px;padding:12px 14px;border:1px solid #d8e2e9;border-radius:10px;background:#fbfdfe;color:#173042;font:inherit;box-sizing:border-box;transition:border-color .18s,box-shadow .18s,background .18s}
+.svcp-auth-card input:focus,.svcp-auth-register input:focus,.svcp-auth-register select:focus{outline:0;border-color:#1f6f8b;background:#fff;box-shadow:0 0 0 4px rgba(31,111,139,.12)}
+.svcp-auth-card .login-remember{display:flex;align-items:center;gap:8px;margin:4px 0 0;color:#60717d;font-size:.88rem}
+.svcp-auth-card .login-remember label{display:inline;margin:0;font-weight:500}
+.svcp-auth-card .login-submit{margin:20px 0 0}
+.svcp-auth-card .login-submit input[type=submit],.svcp-auth-register .svcp-btn-registro{width:100%;min-height:50px;padding:13px 20px;border:0;border-radius:11px;background:linear-gradient(135deg,#5074fd,#304597);color:#fff;font-size:.96rem;font-weight:800;letter-spacing:.01em;box-shadow:0 8px 18px rgba(48,69,151,.18);transition:transform .18s,filter .18s;cursor:pointer}
+.svcp-auth-card .login-submit input[type=submit]:hover,.svcp-auth-register .svcp-btn-registro:hover{filter:brightness(1.06);transform:translateY(-1px)}
+.svcp-auth-card .svcp-login-links{margin-top:17px;text-align:center}
+.svcp-auth-card .svcp-login-links a,.svcp-auth-card .svcp-login-register-cta a{color:#1f6f8b;font-size:.88rem;font-weight:700;text-decoration:none}
+.svcp-auth-card .svcp-login-register-cta{margin-top:26px;padding:19px;border:1px solid #e1eaf0;border-radius:13px;background:#f6f9fc;text-align:center}
+.svcp-auth-card .svcp-login-register-cta p{margin:0 0 11px;color:#60717d;font-size:.9rem}
+.svcp-auth-card .svcp-login-register-cta .svcp-btn-register{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 17px;border:1px solid #c8d9e5;border-radius:9px;background:#fff;color:#173f5f}
+.svcp-auth-register{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px}
+.svcp-register-heading,.svcp-auth-register>.svcp-form-errores,.svcp-auth-register>.svcp-auth-required-note,.svcp-auth-register>.svcp-btn-registro{grid-column:1/-1}
+.svcp-register-heading{margin-bottom:22px}
+.svcp-auth-register .svcp-form-row{min-width:0;margin:0 0 17px}
+.svcp-auth-register .svcp-form-row input[type=file]{width:100%;max-width:100%;padding:11px;border:1px dashed #cbd9e3;border-radius:10px;background:#f8fafc;box-sizing:border-box}
+.svcp-auth-register .svcp-form-row small{color:#718391;line-height:1.5}
+.svcp-auth-required-note{margin:5px 0 14px;color:#718391;font-size:.82rem}
+.svcp-auth-register .svcp-btn-registro{margin-top:2px}
+.svcp-auth-register .svcp-form-errores{grid-column:1/-1}
+.svcp-auth-register .svcp-registro-exito{grid-column:1/-1;padding:18px;border:1px solid #bce5d4;border-radius:12px;background:#effaf5;color:#176b4c;line-height:1.6}
+@media(max-width:620px){.svcp-auth-card,.svcp-auth-register{margin:20px auto;padding:22px 17px;border-radius:16px}.svcp-auth-register{grid-template-columns:1fr;gap:0}.svcp-register-heading,.svcp-auth-register>.svcp-form-errores,.svcp-auth-register>.svcp-auth-required-note,.svcp-auth-register>.svcp-btn-registro{grid-column:1}.svcp-auth-mark{width:54px;height:54px;border-radius:15px}}
