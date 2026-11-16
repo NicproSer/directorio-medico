@@ -76,7 +76,7 @@ class SVCP_Campos_Doctor {
             );
         }
         echo '</table>';
-        echo '<p class="description">' . esc_html__( 'La fotografía debe ser cuadrada (1:1) o horizontal 4:3. El sistema rechazará una relación diferente.', 'svcp-directorio' ) . '</p>';
+        echo '<p class="description">' . esc_html__( 'La fotografía debe ser cuadrada (formato 1:1). El sistema rechazará imágenes con otra proporción.', 'svcp-directorio' ) . '</p>';
     }
 
     public function render_metabox_cuenta( $post ) {
