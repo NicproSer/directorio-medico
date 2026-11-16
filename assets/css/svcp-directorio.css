@@ -240,7 +240,7 @@
 .svcp-lista-doctores{grid-template-columns:repeat(3,minmax(0,1fr));gap:24px 28px}
 .svcp-doctor-card{border:0;border-radius:0;box-shadow:none;border-bottom:1px solid var(--svcp-line);padding:0 0 22px;overflow:visible;min-width:0}
 .svcp-doctor-card:hover{box-shadow:none}
-.svcp-doctor-foto{display:block;width:100%;height:auto;overflow:hidden;border-radius:8px;background:var(--svcp-soft);aspect-ratio:4/3}
+.svcp-doctor-foto{display:block;width:100%;height:auto;overflow:hidden;border-radius:8px;background:var(--svcp-soft)}
 .svcp-doctor-foto img,.svcp-doctor-foto-placeholder{display:flex;width:100%;height:100%;min-height:0;aspect-ratio:4/3;object-fit:cover;background:var(--svcp-soft);align-items:center;justify-content:center}
 .svcp-doctor-foto-placeholder{color:var(--svcp-blue);font-weight:800;font-size:2rem;letter-spacing:.08em}
 .svcp-doctor-foto-placeholder span{font-size:2rem;color:var(--svcp-blue)}
