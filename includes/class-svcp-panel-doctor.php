@@ -240,8 +240,8 @@ class SVCP_Panel_Doctor {
         }
 
         $ratio = (float) $info[0] / (float) $info[1];
-        if ( abs( $ratio - 1 ) > 0.03 && abs( $ratio - ( 4 / 3 ) ) > 0.03 ) {
-            return new WP_Error( 'svcp_foto_ratio', __( 'La fotografía debe tener formato 1:1 o 4:3.', 'svcp-directorio' ) );
+        if ( abs( $ratio - 1 ) > 0.03 ) {
+            return new WP_Error( 'svcp_foto_ratio', __( 'La fotografía debe ser cuadrada (formato 1:1).', 'svcp-directorio' ) );
         }
 
         return true;
@@ -337,7 +337,7 @@ class SVCP_Panel_Doctor {
                                 <h3><?php echo esc_html( get_the_title( $post_id ) ); ?></h3><p class="svcp-portal-region"><?php echo esc_html( strtoupper( $region_nombre ) ); ?><?php echo $this->valor_visible( get_post_meta( $post_id, 'svcp_ciudad', true ) ) ? ' · ' . esc_html( strtoupper( get_post_meta( $post_id, 'svcp_ciudad', true ) ) ) : ''; ?></p>
                                 <?php if ( $public_url ) : ?><a class="svcp-portal-outline-button" href="<?php echo esc_url( $public_url ); ?>" target="_blank" rel="noopener noreferrer"><?php esc_html_e( 'Ver ficha pública', 'svcp-directorio' ); ?></a><?php endif; ?>
                             </section>
-                            <section class="svcp-portal-card svcp-portal-photo-card"><h2><?php esc_html_e( 'Fotografía de perfil', 'svcp-directorio' ); ?></h2><p class="svcp-portal-muted"><?php esc_html_e( 'JPG, PNG o WebP · máx. 5 MB · formato 1:1 o 4:3', 'svcp-directorio' ); ?></p>
+                            <section class="svcp-portal-card svcp-portal-photo-card"><h2><?php esc_html_e( 'Fotografía de perfil', 'svcp-directorio' ); ?></h2><p class="svcp-portal-muted"><?php esc_html_e( 'JPG, PNG o WebP · máx. 5 MB · imagen cuadrada 1:1', 'svcp-directorio' ); ?></p>
                                 <label class="svcp-portal-upload" for="svcp_foto"><span aria-hidden="true">⇧</span><span><?php esc_html_e( 'Seleccionar nueva fotografía', 'svcp-directorio' ); ?></span><input type="file" id="svcp_foto" name="svcp_foto" accept="image/jpeg,image/png,image/webp"></label>
                             </section>
                         </div>
