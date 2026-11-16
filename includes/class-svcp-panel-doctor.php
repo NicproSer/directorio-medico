@@ -284,11 +284,11 @@ class SVCP_Panel_Doctor {
         $foto_url = get_the_post_thumbnail_url( $post_id, 'medium' );
         $estado_label = $estados[ $estado ] ?? $estado;
 
-        $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/reportar-pago/' ) );
-        $portal_url = apply_filters( 'svcp_url_portal_medico', get_permalink() );
+        $pago_url = apply_filters( 'svcp_url_portal_pagos', home_url( '/admin-reportarpagos/' ) );
+        $portal_url = apply_filters( 'svcp_url_portal_medico', home_url( '/admin-miperfil/' ) );
         $pagos_realizados_id = absint( get_option( 'svcp_pagos_realizados_page_id' ) );
         $pagos_realizados_page = get_page_by_path( 'pagos-realizados', OBJECT, 'page' );
-        $pagos_realizados_url = $pagos_realizados_id ? get_permalink( $pagos_realizados_id ) : ( $pagos_realizados_page ? get_permalink( $pagos_realizados_page ) : home_url( '/pagos-realizados/' ) );
+        $pagos_realizados_url = $pagos_realizados_id ? get_permalink( $pagos_realizados_id ) : ( $pagos_realizados_page ? get_permalink( $pagos_realizados_page ) : home_url( '/admin-pagosrealizados/' ) );
         $membership_label = $estado_label;
         $approval_label = $estado_aprobacion ? ( $estados_aprobacion[ $estado_aprobacion ] ?? $estado_aprobacion ) : __( 'En revisión', 'svcp-directorio' );
         $vigencia_label = $vencimiento ? date_i18n( get_option( 'date_format' ), strtotime( $vencimiento ) ) : __( 'No registrada', 'svcp-directorio' );
@@ -304,7 +304,7 @@ class SVCP_Panel_Doctor {
                     <a class="is-active" href="<?php echo esc_url( $portal_url ); ?>"><span aria-hidden="true">♙</span><?php esc_html_e( 'Mi perfil', 'svcp-directorio' ); ?></a>
                     <a href="<?php echo esc_url( $pago_url ); ?>"><span aria-hidden="true">▤</span><?php esc_html_e( 'Membresía y pago', 'svcp-directorio' ); ?></a>
                     <div class="svcp-portal-subnav"><a href="<?php echo esc_url( $pagos_realizados_url ); ?>" class="svcp-portal-subnav-link"><span aria-hidden="true">↳</span><?php esc_html_e( 'Pagos realizados', 'svcp-directorio' ); ?></a></div>
-                    <a href="<?php echo esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/directorio/' ) ); ?>"><span aria-hidden="true">◎</span><?php esc_html_e( 'Ver directorio', 'svcp-directorio' ); ?></a>
+                    <a href="<?php echo esc_url( get_post_type_archive_link( 'doctor' ) ?: home_url( '/sociedad-directorio-medico/' ) ); ?>"><span aria-hidden="true">◎</span><?php esc_html_e( 'Ver directorio', 'svcp-directorio' ); ?></a>
                 </nav>
                 <a class="svcp-portal-logout" href="<?php echo esc_url( wp_logout_url( home_url( '/' ) ) ); ?>"><span aria-hidden="true">⇥</span><?php esc_html_e( 'Cerrar sesión', 'svcp-directorio' ); ?></a>
             </aside>
