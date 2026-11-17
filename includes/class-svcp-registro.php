@@ -79,20 +79,8 @@ class SVCP_Registro {
             return;
         }
 
-        // Validar fotografía opcional: únicamente formato cuadrado 1:1.
-        if ( ! empty( $_FILES['svcp_foto']['name'] ) ) {
-            $tmp = $_FILES['svcp_foto']['tmp_name'] ?? '';
-            $size = $tmp ? @getimagesize( $tmp ) : false;
-            if ( ! $size || empty( $size[0] ) || empty( $size[1] ) ) {
-                $this->errores[] = __( 'La fotografía no es una imagen válida.', 'svcp-directorio' );
-                return;
-            }
-            $ratio = $size[0] / $size[1];
-            if ( abs( $ratio - 1 ) > 0.03 ) {
-                $this->errores[] = __( 'La fotografía debe ser cuadrada (formato 1:1).', 'svcp-directorio' );
-                return;
-            }
-        }
+        // La imagen es opcional. WordPress valida el tipo MIME real al procesar la subida;
+        // el recorte y la proporción se aplican visualmente en las tarjetas del directorio.
 
         // 1. Crear usuario.
         $username = sanitize_user( current( explode( '@', $correo ) ) . '_' . wp_generate_password( 4, false ) );
@@ -145,13 +133,23 @@ class SVCP_Registro {
             }
         }
 
-        // Notificación HTML institucional al administrador.
+        // Notificación al administrador en cada registro completado correctamente.
+        $datos_notificacion = array(
+            'nombre' => $nombre,
+            'correo' => $correo,
+            'clinica' => $clinica,
+            'doctor_id' => $post_id,
+            'url' => admin_url( 'edit.php?post_type=doctor&page=svcp-aprobaciones' ),
+        );
         if ( class_exists( 'SVCP_Correos' ) ) {
-            SVCP_Correos::notificar_admin( 'doctor_nuevo', array(
-                'nombre' => $nombre, 'correo' => $correo, 'clinica' => $clinica,
-                'doctor_id' => $post_id,
-                'url' => admin_url( 'edit.php?post_type=doctor&page=svcp-aprobaciones' ),
-            ) );
+            SVCP_Correos::notificar_admin( 'doctor_nuevo', $datos_notificacion );
+        } else {
+            $admin_email = sanitize_email( get_option( 'admin_email' ) );
+            if ( is_email( $admin_email ) ) {
+                $asunto = 'Nuevo registro de doctor pendiente de revisión · SVCP';
+                $mensaje = "Se ha creado una nueva cuenta de doctor.\n\nNombre: {$nombre}\nCorreo: {$correo}\nClínica: {$clinica}\n\nRevisar: " . admin_url( 'edit.php?post_type=doctor&page=svcp-aprobaciones' );
+                wp_mail( $admin_email, $asunto, $mensaje );
+            }
         }
 
         if ( class_exists( 'SVCP_Correos' ) ) {
@@ -252,8 +250,8 @@ class SVCP_Registro {
             </div>
             <div class="svcp-form-row">
                 <label><?php esc_html_e( 'Fotografía de perfil (opcional)', 'svcp-directorio' ); ?></label>
-                <input type="file" name="svcp_foto" accept="image/jpeg,image/png,image/webp" />
-                <small><?php esc_html_e( 'Utiliza una imagen cuadrada (1:1). Formatos JPG, PNG o WebP.', 'svcp-directorio' ); ?></small>
+                <input type="file" name="svcp_foto" accept="image/*" />
+                <small><?php esc_html_e( 'La imagen se ajustará automáticamente al formato de las tarjetas del directorio.', 'svcp-directorio' ); ?></small>
             </div>
 
             <p class="svcp-auth-required-note"><?php esc_html_e( '* Campos obligatorios. Tu ficha quedará pendiente de revisión administrativa.', 'svcp-directorio' ); ?></p>
