@@ -44,6 +44,25 @@ require_once SVCP_DIR_PATH . 'includes/class-svcp-tasa-bcv.php';
 require_once SVCP_DIR_PATH . 'includes/class-svcp-correos.php';
 require_once SVCP_DIR_PATH . 'includes/class-svcp-directorio-publico.php';
 
+/** Carga Font Awesome 7.3.1 para los iconos sociales del portal y directorio. */
+function svcp_dir_cargar_font_awesome() {
+    wp_enqueue_style(
+        'svcp-font-awesome',
+        'https://cdnjs.cloudflare.com/ajax/libs/font-awesome/7.3.1/css/all.min.css',
+        array(),
+        '7.3.1'
+    );
+}
+add_action( 'wp_enqueue_scripts', 'svcp_dir_cargar_font_awesome', 5 );
+
+function svcp_dir_font_awesome_integrity( $html, $handle, $href, $media ) {
+    if ( 'svcp-font-awesome' !== $handle ) {
+        return $html;
+    }
+    return '<link rel="stylesheet" id="svcp-font-awesome-css" href="' . esc_url( $href ) . '" integrity="sha512-QeR2VH+lsBE5LSAe1Q5EnTBbe7XTBubt8dG93Y7gidSgdMCr8nVqKcfKAMyN96SV8KDbZVTDXChatu5G2KQGzg==" crossorigin="anonymous" referrerpolicy="no-referrer" media="' . esc_attr( $media ) . '" />';
+}
+add_filter( 'style_loader_tag', 'svcp_dir_font_awesome_integrity', 10, 4 );
+
 /**
  * Inicializa el plugin.
  */
