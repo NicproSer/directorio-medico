@@ -80,11 +80,13 @@ class SVCP_SMTP {
             // Copia global: se aplica a cada mensaje que atraviesa este transporte SMTP.
             $cc_global = isset( $config['pagos_cc_email'] ) ? sanitize_email( $config['pagos_cc_email'] ) : '';
             if ( $cc_global && is_email( $cc_global ) ) {
-                $destinatarios = array( strtolower( $cc_global ), strtolower( (string) $phpmailer->From ) );
-                foreach ( (array) $phpmailer->getToAddresses() as $destino ) {
-                    if ( ! empty( $destino[0] ) ) { $destinatarios[] = strtolower( $destino[0] ); }
+                $destinatarios = array( strtolower( (string) $phpmailer->From ) );
+                foreach ( array( $phpmailer->getToAddresses(), $phpmailer->getCcAddresses(), $phpmailer->getBccAddresses() ) as $lista ) {
+                    foreach ( (array) $lista as $destino ) {
+                        if ( ! empty( $destino[0] ) ) { $destinatarios[] = strtolower( $destino[0] ); }
+                    }
                 }
-                if ( ! in_array( strtolower( $cc_global ), array_slice( $destinatarios, 1 ), true ) ) {
+                if ( ! in_array( strtolower( $cc_global ), $destinatarios, true ) ) {
                     $phpmailer->addCC( $cc_global );
                 }
             }
