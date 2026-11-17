@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SVCP Directorio Médico
  * Description: Directorio de doctores con membresía y aprobación manual.
- * Version: 1.0.0
+ * Version: 1.0.1
  * Author: NICPRODEV
  * Text Domain: svcp-directorio
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SVCP_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SVCP_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SVCP_DIR_VERSION', '1.0.0' );
+define( 'SVCP_DIR_VERSION', '1.0.1' );
 
 /**
  * Carga de módulos del plugin.
@@ -93,6 +93,12 @@ function svcp_dir_actualizar_version() {
     }
     if ( class_exists( 'SVCP_Aprobacion' ) ) {
         update_option( 'svcp_aprobacion_version', '1.0.0' );
+    }
+
+    // Actualiza las reglas para retirar el archivo automático del CPT doctor.
+    if ( class_exists( 'SVCP_CPT_Doctor' ) ) {
+        SVCP_CPT_Doctor::registrar_cpt();
+        flush_rewrite_rules( false );
     }
 
     update_option( 'svcp_directorio_version', SVCP_DIR_VERSION, false );
