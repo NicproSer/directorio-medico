@@ -175,10 +175,8 @@ class SVCP_Registro {
         ?>
         <form class="svcp-form svcp-form-registro svcp-auth-register" method="post" enctype="multipart/form-data">
             <header class="svcp-auth-heading svcp-register-heading">
-                <span class="svcp-auth-mark" aria-hidden="true">SVCP</span>
-                <span class="svcp-auth-eyebrow"><?php esc_html_e( 'Sociedad Venezolana de Coloproctología', 'svcp-directorio' ); ?></span>
-                <h2><?php esc_html_e( 'Crear cuenta profesional', 'svcp-directorio' ); ?></h2>
-                <p><?php esc_html_e( 'Registra tus datos para solicitar tu acceso al portal médico de la SVCP.', 'svcp-directorio' ); ?></p>
+                <img class="svcp-auth-logo" src="https://svcp86.org/wp-content/uploads/2021/10/SVCP_Logo__ICO.png" alt="SVCP" loading="eager">
+                <h2><?php esc_html_e( 'Crear cuenta', 'svcp-directorio' ); ?></h2>
             </header>
             <?php wp_nonce_field( 'svcp_registro', 'svcp_registro_nonce' ); ?>
             <input type="text" name="svcp_web" style="display:none" tabindex="-1" autocomplete="off" />
@@ -259,7 +257,7 @@ class SVCP_Registro {
             </div>
 
             <p class="svcp-auth-required-note"><?php esc_html_e( '* Campos obligatorios. Tu ficha quedará pendiente de revisión administrativa.', 'svcp-directorio' ); ?></p>
-            <button type="submit" class="svcp-btn-registro"><?php esc_html_e( 'Crear mi perfil', 'svcp-directorio' ); ?></button>
+            <button type="submit" class="svcp-btn-registro"><?php esc_html_e( 'Crear cuenta', 'svcp-directorio' ); ?></button>
         </form>
         <?php
         return ob_get_clean();
