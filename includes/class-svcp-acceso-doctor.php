@@ -107,6 +107,7 @@ class SVCP_Acceso_Doctor {
             <?php $url_registro = $this->obtener_url_registro(); ?>
             <?php if ( $url_registro ) : ?>
                 <div class="svcp-login-register-cta">
+                    <p><?php esc_html_e( '¿Aún no tienes una cuenta?', 'svcp-directorio' ); ?></p>
                     <a class="svcp-btn-register" href="<?php echo esc_url( $url_registro ); ?>">
                         <?php esc_html_e( 'Crear cuenta', 'svcp-directorio' ); ?>
                     </a>
