@@ -80,12 +80,9 @@ class SVCP_Acceso_Doctor {
         ?>
         <div class="svcp-login-box svcp-auth-card">
             <div class="svcp-auth-heading">
-                <span class="svcp-auth-mark" aria-hidden="true">SVCP</span>
-                <span class="svcp-auth-eyebrow"><?php esc_html_e( 'Sociedad Venezolana de Coloproctología', 'svcp-directorio' ); ?></span>
-                <h2><?php esc_html_e( 'Bienvenido de nuevo', 'svcp-directorio' ); ?></h2>
-            <p class="svcp-login-description">
-                <?php esc_html_e( 'Accede a tu espacio profesional para gestionar tu perfil y membresía.', 'svcp-directorio' ); ?>
-            </p></div>
+                <img class="svcp-auth-logo" src="https://svcp86.org/wp-content/uploads/2021/10/SVCP_Logo__ICO.png" alt="SVCP" loading="eager">
+                <h2><?php esc_html_e( 'Iniciar sesión', 'svcp-directorio' ); ?></h2>
+            </div>
 
             <?php
             wp_login_form(
@@ -110,14 +107,12 @@ class SVCP_Acceso_Doctor {
             <?php $url_registro = $this->obtener_url_registro(); ?>
             <?php if ( $url_registro ) : ?>
                 <div class="svcp-login-register-cta">
-                    <p><?php esc_html_e( '¿Eres médico y todavía no tienes una cuenta?', 'svcp-directorio' ); ?></p>
                     <a class="svcp-btn-register" href="<?php echo esc_url( $url_registro ); ?>">
-                        <?php esc_html_e( 'Crear cuenta de doctor', 'svcp-directorio' ); ?>
+                        <?php esc_html_e( 'Crear cuenta', 'svcp-directorio' ); ?>
                     </a>
                 </div>
             <?php else : ?>
                 <div class="svcp-login-register-cta">
-                    <p><?php esc_html_e( '¿Eres médico y todavía no tienes una cuenta? Completa el siguiente formulario para registrarte.', 'svcp-directorio' ); ?></p>
                     <?php if ( class_exists( 'SVCP_Registro' ) ) { echo SVCP_Registro::instance()->render_shortcode(); } ?>
                 </div>
             <?php endif; ?>

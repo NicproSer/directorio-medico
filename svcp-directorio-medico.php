@@ -42,6 +42,7 @@ require_once SVCP_DIR_PATH . 'includes/class-svcp-pagos.php';
 require_once SVCP_DIR_PATH . 'includes/class-svcp-ciclo-membresia.php';
 require_once SVCP_DIR_PATH . 'includes/class-svcp-tasa-bcv.php';
 require_once SVCP_DIR_PATH . 'includes/class-svcp-correos.php';
+require_once SVCP_DIR_PATH . 'includes/class-svcp-directorio-publico.php';
 
 /**
  * Inicializa el plugin.
@@ -69,6 +70,7 @@ function svcp_dir_init() {
     SVCP_Ciclo_Membresia::instance();
     SVCP_Tasa_BCV::inicializar();
     SVCP_Correos::inicializar_seguridad_clave();
+    SVCP_Directorio_Publico::instance();
     svcp_dir_actualizar_version();
 }
 add_action( 'plugins_loaded', 'svcp_dir_init' );

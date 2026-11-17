@@ -35,7 +35,7 @@ class SVCP_SMTP {
             'password'     => '',
             'from_email'   => '',
             'from_name'    => 'Sociedad Venezolana de Coloproctología',
-            'pagos_cc_email' => '',
+            'pagos_cc_email' => '', // Dirección global para copias de todos los mensajes SMTP.
         );
     }
 
@@ -75,6 +75,20 @@ class SVCP_SMTP {
 
             if ( is_email( $config['from_email'] ) ) {
                 $phpmailer->setFrom( $config['from_email'], $config['from_name'], false );
+            }
+
+            // Copia global: se aplica a cada mensaje que atraviesa este transporte SMTP.
+            $cc_global = isset( $config['pagos_cc_email'] ) ? sanitize_email( $config['pagos_cc_email'] ) : '';
+            if ( $cc_global && is_email( $cc_global ) ) {
+                $destinatarios = array( strtolower( (string) $phpmailer->From ) );
+                foreach ( array( $phpmailer->getToAddresses(), $phpmailer->getCcAddresses(), $phpmailer->getBccAddresses() ) as $lista ) {
+                    foreach ( (array) $lista as $destino ) {
+                        if ( ! empty( $destino[0] ) ) { $destinatarios[] = strtolower( $destino[0] ); }
+                    }
+                }
+                if ( ! in_array( strtolower( $cc_global ), $destinatarios, true ) ) {
+                    $phpmailer->addCC( $cc_global );
+                }
             }
         } catch ( Exception $e ) {
             set_transient( 'svcp_smtp_last_error', $e->getMessage(), HOUR_IN_SECONDS );
@@ -169,7 +183,7 @@ class SVCP_SMTP {
                     <tr><th scope="row"><label for="svcp_smtp_password">Contraseña SMTP</label></th><td><input class="regular-text" type="password" id="svcp_smtp_password" name="password" value="" autocomplete="new-password"><p class="description"><?php echo $password_const ? 'La contraseña está definida mediante SVCP_SMTP_PASSWORD en wp-config.php.' : 'Déjala vacía para conservar la contraseña guardada actualmente.'; ?></p></td></tr>
                     <tr><th scope="row"><label for="svcp_smtp_from_email">Correo remitente</label></th><td><input class="regular-text" type="email" id="svcp_smtp_from_email" name="from_email" value="<?php echo esc_attr( $config['from_email'] ); ?>"><p class="description">Preferiblemente usa una dirección del mismo dominio del sitio.</p></td></tr>
                     <tr><th scope="row"><label for="svcp_smtp_from_name">Nombre remitente</label></th><td><input class="regular-text" id="svcp_smtp_from_name" name="from_name" value="<?php echo esc_attr( $config['from_name'] ); ?>"></td></tr>
-                    <tr><th scope="row"><label for="svcp_pagos_cc_email">Correo para copias de pagos</label></th><td><input class="regular-text" type="email" id="svcp_pagos_cc_email" name="pagos_cc_email" value="<?php echo esc_attr( $config['pagos_cc_email'] ); ?>" placeholder="tesoreria@svcp86.org"><p class="description">Recibirá una copia de las notificaciones cuando un médico reporte un pago. Es opcional.</p></td></tr>
+                    <tr><th scope="row"><label for="svcp_pagos_cc_email">Correo para copia global (todos los correos)</label></th><td><input class="regular-text" type="email" id="svcp_pagos_cc_email" name="pagos_cc_email" value="<?php echo esc_attr( $config['pagos_cc_email'] ); ?>" placeholder="tesoreria@svcp86.org"><p class="description">Recibirá una copia de cada correo enviado mediante el SMTP del plugin. Déjalo vacío si no deseas copias.</p></td></tr>
                 </table>
                 <?php submit_button( 'Guardar configuración' ); ?>
             </form>
