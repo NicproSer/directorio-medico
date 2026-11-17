@@ -248,9 +248,19 @@ class SVCP_Panel_Doctor {
     }
 
     private function campo( $key, $label, $value, $type = 'text', $required = false ) {
+        $iconos = array(
+            'svcp_facebook' => '<i class="fa-brands fa-facebook-f" aria-hidden="true"></i>',
+            'svcp_whatsapp' => '<i class="fa-brands fa-whatsapp" aria-hidden="true"></i>',
+            'svcp_twitter' => '<i class="fa-brands fa-x-twitter" aria-hidden="true"></i>',
+            'svcp_instagram' => '<i class="fa-brands fa-instagram" aria-hidden="true"></i>',
+            'svcp_linkedin' => '<i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>',
+            'svcp_sitio_web' => '<i class="fa-solid fa-globe" aria-hidden="true"></i>',
+        );
+        $icono = $iconos[ $key ] ?? '';
         printf(
-            '<div class="svcp-panel-field"><label for="%1$s">%2$s%3$s</label><input type="%4$s" id="%1$s" name="%1$s" value="%5$s"%6$s></div>',
+            '<div class="svcp-panel-field"><label for="%1$s">%2$s%3$s%4$s</label><input type="%5$s" id="%1$s" name="%1$s" value="%6$s"%7$s></div>',
             esc_attr( $key ),
+            $icono,
             esc_html( $label ),
             $required ? ' *' : '',
             esc_attr( $type ),
@@ -271,6 +281,11 @@ class SVCP_Panel_Doctor {
 
         $user = wp_get_current_user();
         $estado = SVCP_Membresia::obtener_estado( $post_id );
+        $mostrar_aviso_membresia = (bool) get_user_meta( $user->ID, 'svcp_aviso_membresia_pendiente', true );
+        if ( $mostrar_aviso_membresia ) {
+            delete_user_meta( $user->ID, 'svcp_aviso_membresia_pendiente' );
+            $mostrar_aviso_membresia = in_array( $estado, array( SVCP_Membresia::ESTADO_POR_VENCER, SVCP_Membresia::ESTADO_VENCIDA ), true );
+        }
         $estados = SVCP_Membresia::estados();
         $estado_aprobacion = class_exists( 'SVCP_Aprobacion' ) ? SVCP_Aprobacion::obtener_estado( $post_id ) : '';
         $estados_aprobacion = class_exists( 'SVCP_Aprobacion' ) ? SVCP_Aprobacion::estados() : array();
@@ -297,6 +312,25 @@ class SVCP_Panel_Doctor {
 
         ob_start();
         ?>
+        <?php if ( $mostrar_aviso_membresia ) : ?>
+            <div class="svcp-modal-overlay svcp-modal-open" role="dialog" aria-modal="true" aria-labelledby="svcp-membresia-modal-title" data-svcp-modal>
+                <div class="svcp-modal-card svcp-modal-membership">
+                    <button type="button" class="svcp-modal-close" data-svcp-modal-close aria-label="<?php esc_attr_e( 'Cerrar', 'svcp-directorio' ); ?>">&times;</button>
+                    <span class="svcp-modal-icon"><i class="fa-solid fa-wallet" aria-hidden="true"></i></span>
+                    <?php if ( SVCP_Membresia::ESTADO_POR_VENCER === $estado ) : ?>
+                        <h2 id="svcp-membresia-modal-title"><?php esc_html_e( 'Tu membresía está por vencer', 'svcp-directorio' ); ?></h2>
+                        <p><?php esc_html_e( 'Tu membresía está próxima a vencer. Te recomendamos realizar el pago de renovación para mantener tu condición de miembro y evitar interrupciones en tu presencia en el directorio.', 'svcp-directorio' ); ?></p>
+                    <?php else : ?>
+                        <h2 id="svcp-membresia-modal-title"><?php esc_html_e( 'Completa el pago de tu membresía', 'svcp-directorio' ); ?></h2>
+                        <p><?php esc_html_e( 'Para completar tu proceso de incorporación a la SVCP, debes realizar el pago de la membresía y reportarlo desde el portal. Una vez recibido, el equipo administrativo podrá verificarlo y continuar con la activación de tu cuenta.', 'svcp-directorio' ); ?></p>
+                    <?php endif; ?>
+                    <div class="svcp-modal-actions">
+                        <a class="svcp-modal-button" href="<?php echo esc_url( $pago_url ); ?>"><?php esc_html_e( 'Reportar pago de membresía', 'svcp-directorio' ); ?></a>
+                        <button type="button" class="svcp-modal-secondary" data-svcp-modal-close><?php esc_html_e( 'Lo haré más tarde', 'svcp-directorio' ); ?></button>
+                    </div>
+                </div>
+            </div>
+        <?php endif; ?>
         <div class="svcp-portal-layout">
             <aside class="svcp-portal-sidebar" aria-label="<?php esc_attr_e( 'Navegación del portal', 'svcp-directorio' ); ?>">
                 <a class="svcp-portal-brand" href="<?php echo esc_url( $portal_url ); ?>"><strong>SVCP</strong><span><?php esc_html_e( 'Portal del médico', 'svcp-directorio' ); ?></span></a>
