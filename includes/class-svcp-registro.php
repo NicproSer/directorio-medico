@@ -158,7 +158,9 @@ class SVCP_Registro {
             wp_mail( $correo, 'Gracias por registrarte en la SVCP', 'Hola ' . $nombre . ', gracias por registrarte. Tu ficha está pendiente de revisión.' );
         }
 
-        $this->exito = true;
+        // Redirigir al inicio de sesión después de completar el registro.
+        wp_safe_redirect( home_url( '/admin-iniciosesion/' ) );
+        exit;
     }
 
     public function render_shortcode() {
