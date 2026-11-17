@@ -53,7 +53,7 @@ class SVCP_CPT_Doctor {
         $args = array(
             'labels'             => $labels,
             'public'             => true,
-            'has_archive'        => 'sociedad-directorio-medico', // /sociedad-directorio-medico/
+            'has_archive'        => false, // El catálogo se publica únicamente mediante el shortcode en una página creada manualmente.
             'rewrite'            => array(
                 'slug'       => 'sociedad-directorio-medico',
                 'with_front' => false,
