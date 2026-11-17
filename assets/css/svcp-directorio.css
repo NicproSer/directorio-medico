@@ -507,8 +507,7 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 .svcp-auth-logo{display:block;width:104px;height:auto;max-width:42vw;object-fit:contain}
 .svcp-auth-heading h2{margin:0;color:#173f5f;font-size:clamp(1.5rem,3vw,2rem);line-height:1.2}
 .svcp-login-register-cta{margin-top:22px}
-.svcp-login-register-cta>p{display:none}
 
 /* La proporción se adapta en la tarjeta; no condiciona la imagen subida por el médico. */
 .svcp-doctor-foto{width:100%;overflow:hidden;}
-.svcp-doctor-foto img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:center;}
+.svcp-doctor-foto img{display:block;width:100%;height:auto;aspect-ratio:1/1;object-fit:cover;object-position:center 25%;}
