@@ -1103,7 +1103,17 @@ CSS;
                     wp_mail( $user->user_email, 'Pago aprobado · Membresía SVCP', 'Hola ' . $user->display_name . ', tu pago fue aprobado. Vigencia hasta ' . $nuevo );
                 }
             }
-            $this->redirigir_admin( 'aprobado' );
+            $url_aprobaciones = add_query_arg(
+                array(
+                    'post_type' => 'doctor',
+                    'page' => 'svcp-aprobaciones',
+                    'doctor_id' => $doctor,
+                    'svcp_pago_aprobado' => '1',
+                ),
+                admin_url( 'edit.php' )
+            );
+            wp_safe_redirect( $url_aprobaciones );
+            exit;
         }
 
         if ( 'rechazar' === $decision ) {

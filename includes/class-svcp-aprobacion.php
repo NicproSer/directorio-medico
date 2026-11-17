@@ -224,6 +224,8 @@ class SVCP_Aprobacion {
     public function render_admin() {
         if ( ! current_user_can( 'edit_doctors' ) ) { wp_die( esc_html__( 'No tienes permisos.', 'svcp-directorio' ) ); }
         $estado_filtro = isset( $_GET['estado'] ) ? sanitize_key( wp_unslash( $_GET['estado'] ) ) : '';
+        $doctor_pago_aprobado = isset( $_GET['doctor_id'] ) ? absint( $_GET['doctor_id'] ) : 0;
+        $pago_aprobado = isset( $_GET['svcp_pago_aprobado'] ) && '1' === sanitize_text_field( wp_unslash( $_GET['svcp_pago_aprobado'] ) );
         $args = array(
             'post_type'      => 'doctor',
             'post_status'    => 'any',
@@ -234,6 +236,10 @@ class SVCP_Aprobacion {
         if ( $estado_filtro && isset( self::estados()[ $estado_filtro ] ) ) {
             $args['meta_query'] = array( array( 'key' => self::META, 'value' => $estado_filtro ) );
         }
+        if ( $doctor_pago_aprobado && 'doctor' === get_post_type( $doctor_pago_aprobado ) ) {
+            $args['post__in'] = array( $doctor_pago_aprobado );
+            $args['posts_per_page'] = 1;
+        }
         $doctores = get_posts( $args );
         $conteos = array_fill_keys( array_keys( self::estados() ), 0 );
         foreach ( get_posts( array( 'post_type'=>'doctor', 'post_status'=>'any', 'posts_per_page'=>-1, 'fields'=>'ids' ) ) as $id ) {
@@ -243,6 +249,7 @@ class SVCP_Aprobacion {
         <div class="wrap">
             <h1><?php esc_html_e( 'Aprobaciones del Directorio', 'svcp-directorio' ); ?></h1>
             <p class="description">Gestiona el ciclo de revisión de las fichas sin depender únicamente del estado interno de WordPress.</p>
+            <?php if ( $pago_aprobado ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'El pago fue aprobado y la membresía quedó actualizada. Ahora puedes continuar con la revisión y aprobación de la ficha del médico.', 'svcp-directorio' ); ?></p></div><?php endif; ?>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0;">
                 <?php foreach ( self::estados() as $key => $label ) : ?>
                     <a class="button" href="<?php echo esc_url( add_query_arg( array( 'post_type'=>'doctor', 'page'=>'svcp-aprobaciones', 'estado'=>$key ), admin_url('edit.php') ) ); ?>"><strong><?php echo esc_html( $conteos[$key] ); ?></strong> <?php echo esc_html( $label ); ?></a>
