@@ -158,16 +158,25 @@ class SVCP_Registro {
             wp_mail( $correo, 'Gracias por registrarte en la SVCP', 'Hola ' . $nombre . ', gracias por registrarte. Tu ficha está pendiente de revisión.' );
         }
 
-        // Redirigir al inicio de sesión después de completar el registro.
-        wp_safe_redirect( home_url( '/admin-iniciosesion/' ) );
-        exit;
+        // El resultado se muestra en un modal; luego se redirige al inicio de sesión.
+        $this->exito = true;
     }
 
     public function render_shortcode() {
         ob_start();
 
         if ( $this->exito ) {
-            echo '<p class="svcp-registro-exito">' . esc_html__( '¡Gracias por registrarte! Tu ficha fue creada y está pendiente de revisión. Ya puedes iniciar sesión para revisar tu perfil y continuar con el proceso de membresía.', 'svcp-directorio' ) . '</p>';
+            ?>
+            <div class="svcp-modal-overlay svcp-modal-open" role="dialog" aria-modal="true" aria-labelledby="svcp-registro-modal-title" data-svcp-modal>
+                <div class="svcp-modal-card svcp-modal-success">
+                    <span class="svcp-modal-icon"><i class="fa-solid fa-circle-check" aria-hidden="true"></i></span>
+                    <h2 id="svcp-registro-modal-title"><?php esc_html_e( '¡Cuenta creada exitosamente!', 'svcp-directorio' ); ?></h2>
+                    <p><?php esc_html_e( 'Tu cuenta y ficha fueron creadas. Tu ficha quedará pendiente de revisión administrativa. En breve serás dirigido al inicio de sesión.', 'svcp-directorio' ); ?></p>
+                    <a class="svcp-modal-button" href="<?php echo esc_url( home_url( '/admin-iniciosesion/' ) ); ?>"><?php esc_html_e( 'Ir a iniciar sesión', 'svcp-directorio' ); ?></a>
+                </div>
+            </div>
+            <script>(function(){var target=<?php echo wp_json_encode( home_url( '/admin-iniciosesion/' ) ); ?>;window.setTimeout(function(){window.location.assign(target);},2800);})();</script>
+            <?php
             return ob_get_clean();
         }
 
@@ -182,10 +191,14 @@ class SVCP_Registro {
             <input type="text" name="svcp_web" style="display:none" tabindex="-1" autocomplete="off" />
 
             <?php if ( ! empty( $this->errores ) ) : ?>
-                <div class="svcp-form-errores">
-                    <?php foreach ( $this->errores as $error ) : ?>
-                        <p><?php echo esc_html( $error ); ?></p>
-                    <?php endforeach; ?>
+                <div class="svcp-modal-overlay svcp-modal-open" role="alertdialog" aria-modal="true" aria-labelledby="svcp-registro-error-title" data-svcp-modal>
+                    <div class="svcp-modal-card svcp-modal-error">
+                        <button type="button" class="svcp-modal-close" data-svcp-modal-close aria-label="<?php esc_attr_e( 'Cerrar', 'svcp-directorio' ); ?>">&times;</button>
+                        <span class="svcp-modal-icon"><i class="fa-solid fa-circle-exclamation" aria-hidden="true"></i></span>
+                        <h2 id="svcp-registro-error-title"><?php esc_html_e( 'No se pudo crear la cuenta', 'svcp-directorio' ); ?></h2>
+                        <div class="svcp-modal-messages"><?php foreach ( $this->errores as $error ) : ?><p><?php echo esc_html( $error ); ?></p><?php endforeach; ?></div>
+                        <button type="button" class="svcp-modal-button" data-svcp-modal-close><?php esc_html_e( 'Revisar formulario', 'svcp-directorio' ); ?></button>
+                    </div>
                 </div>
             <?php endif; ?>
 
@@ -210,7 +223,7 @@ class SVCP_Registro {
                 <input type="password" name="svcp_clave" minlength="8" required />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'WhatsApp (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp (opcional)</label>
                 <input type="text" name="svcp_whatsapp" />
             </div>
             <div class="svcp-form-row">
@@ -231,23 +244,23 @@ class SVCP_Registro {
                 </select>
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Facebook (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-brands fa-facebook-f" aria-hidden="true"></i> Facebook (opcional)</label>
                 <input type="url" name="svcp_facebook" />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Instagram (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-brands fa-instagram" aria-hidden="true"></i> Instagram (opcional)</label>
                 <input type="url" name="svcp_instagram" />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Twitter / X (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-brands fa-x-twitter" aria-hidden="true"></i> X / Twitter (opcional)</label>
                 <input type="url" name="svcp_twitter" />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'LinkedIn (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-brands fa-linkedin-in" aria-hidden="true"></i> LinkedIn (opcional)</label>
                 <input type="url" name="svcp_linkedin" />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Sitio web (opcional)', 'svcp-directorio' ); ?></label>
+                <label><i class="fa-solid fa-globe" aria-hidden="true"></i> Sitio web (opcional)</label>
                 <input type="url" name="svcp_sitio_web" />
             </div>
             <div class="svcp-form-row">
