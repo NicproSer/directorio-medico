@@ -505,3 +505,10 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 .svcp-auth-register .svcp-form-errores{grid-column:1/-1}
 .svcp-auth-register .svcp-registro-exito{grid-column:1/-1;padding:18px;border:1px solid #bce5d4;border-radius:12px;background:#effaf5;color:#176b4c;line-height:1.6}
 @media(max-width:620px){.svcp-auth-card,.svcp-auth-register{margin:20px auto;padding:22px 17px;border-radius:16px}.svcp-auth-register{grid-template-columns:1fr;gap:0}.svcp-register-heading,.svcp-auth-register>.svcp-form-errores,.svcp-auth-register>.svcp-auth-required-note,.svcp-auth-register>.svcp-btn-registro{grid-column:1}.svcp-auth-mark{width:54px;height:54px;border-radius:15px}}
+
+/* Acceso y registro: logo institucional y encabezados sin textos accesorios. */
+.svcp-auth-heading{display:flex;flex-direction:column;align-items:center;gap:12px;margin:0 auto 26px;text-align:center}
+.svcp-auth-logo{display:block;width:104px;height:auto;max-width:42vw;object-fit:contain}
+.svcp-auth-heading h2{margin:0;color:#173f5f;font-size:clamp(1.5rem,3vw,2rem);line-height:1.2}
+.svcp-login-register-cta{margin-top:22px}
+.svcp-login-register-cta>p{display:none}
