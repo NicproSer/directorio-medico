@@ -18,6 +18,14 @@ class SVCP_Acceso_Doctor {
     private function __construct() {
         add_shortcode( 'svcp_login_doctor', array( $this, 'render_login' ) );
         add_filter( 'login_redirect', array( $this, 'redirigir_doctor_despues_login' ), 10, 3 );
+        add_action( 'wp_login', array( $this, 'marcar_inicio_sesion_doctor' ), 10, 2 );
+    }
+
+    /** Marca el inicio de sesión para mostrar el aviso de membresía en el portal. */
+    public function marcar_inicio_sesion_doctor( $user_login, $user ) {
+        if ( $user instanceof WP_User && in_array( 'doctor_svcp', (array) $user->roles, true ) ) {
+            update_user_meta( $user->ID, 'svcp_aviso_membresia_pendiente', 1 );
+        }
     }
 
     /**
