@@ -489,7 +489,7 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 .svcp-auth-card .svcp-login-links a,.svcp-auth-card .svcp-login-register-cta a{color:#1f6f8b;font-size:.88rem;font-weight:700;text-decoration:none}
 .svcp-auth-card .svcp-login-register-cta{margin-top:26px;padding:19px;border:1px solid #e1eaf0;border-radius:13px;background:#f6f9fc;text-align:center}
 .svcp-auth-card .svcp-login-register-cta p{margin:0 0 11px;color:#60717d;font-size:.9rem}
-.svcp-auth-card .svcp-login-register-cta .svcp-btn-register{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 17px;border:1px solid #c8d9e5;border-radius:9px;background:#fff;color:#173f5f}
+.svcp-auth-card .svcp-login-register-cta .svcp-btn-register{display:inline-flex;align-items:center;justify-content:center;min-height:42px;padding:9px 17px;border:1px solid #c8d9e5;border-radius:9px;background:#fff;color:#173f5f !important}
 .svcp-auth-register{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:0 20px}
 .svcp-register-heading,.svcp-auth-register>.svcp-form-errores,.svcp-auth-register>.svcp-auth-required-note,.svcp-auth-register>.svcp-btn-registro{grid-column:1/-1}
 .svcp-register-heading{margin-bottom:22px}
