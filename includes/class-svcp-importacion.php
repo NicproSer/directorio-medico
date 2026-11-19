@@ -11,6 +11,8 @@ class SVCP_Importacion {
         'id' => 'ID',
         'nombre' => 'Nombre',
         'correo' => 'Correo',
+        'correo_2' => 'Correo 2',
+        'correo_3' => 'Correo 3',
         'telefono' => 'Telefono',
         'telefono_2' => 'Telefono 2',
         'telefono_3' => 'Telefono 3',
@@ -19,6 +21,8 @@ class SVCP_Importacion {
         'clinica_2' => 'Clinica 2',
         'clinica_3' => 'Clinica 3',
         'direccion' => 'Direccion',
+        'direccion_2' => 'Direccion 2',
+        'direccion_3' => 'Direccion 3',
         'ciudad' => 'Ciudad',
         'region' => 'Region',
         'facebook' => 'Facebook',
@@ -135,10 +139,16 @@ class SVCP_Importacion {
             if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $id, 'svcp_telefono', true ) ); }
             $clinicas = get_post_meta( $id, 'svcp_clinicas', true );
             if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $id, 'svcp_clinica', true ) ); }
+            $direcciones = get_post_meta( $id, 'svcp_direcciones', true );
+            if ( ! is_array( $direcciones ) || empty( $direcciones ) ) { $direcciones = array( get_post_meta( $id, 'svcp_direccion', true ) ); }
+            $correos = get_post_meta( $id, 'svcp_correos', true );
+            if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $id, 'svcp_correo', true ) ); }
             $row = array(
                 $id,
                 get_the_title( $id ),
-                get_post_meta( $id, 'svcp_correo', true ),
+                $correos[0] ?? '',
+                $correos[1] ?? '',
+                $correos[2] ?? '',
                 $telefonos[0] ?? '',
                 $telefonos[1] ?? '',
                 $telefonos[2] ?? '',
@@ -146,7 +156,9 @@ class SVCP_Importacion {
                 $clinicas[0] ?? '',
                 $clinicas[1] ?? '',
                 $clinicas[2] ?? '',
-                get_post_meta( $id, 'svcp_direccion', true ),
+                $direcciones[0] ?? '',
+                $direcciones[1] ?? '',
+                $direcciones[2] ?? '',
                 get_post_meta( $id, 'svcp_ciudad', true ),
                 ! empty( $region ) ? $region[0] : '',
                 get_post_meta( $id, 'svcp_facebook', true ),
@@ -175,7 +187,7 @@ class SVCP_Importacion {
 
     private function limpiar_encabezado( $value ) {
         $value = preg_replace( '/^\xEF\xBB\xBF/', '', (string) $value );
-        return sanitize_title( remove_accents( trim( $value ) ) );
+        return str_replace( '-', '_', sanitize_title( remove_accents( trim( $value ) ) ) );
     }
 
     private function normalizar_nombre( $value ) {
@@ -303,6 +315,24 @@ class SVCP_Importacion {
             );
             foreach ( $campos as $source => $meta ) { $this->actualizar_meta( $id, $data, $source, $meta ); }
             // Mantiene sincronizados los campos históricos y las nuevas listas al importar CSV.
+            if ( array_key_exists( 'direccion', $data ) || array_key_exists( 'direccion_2', $data ) || array_key_exists( 'direccion_3', $data ) ) {
+                $direcciones_importadas = array();
+                foreach ( array( 'direccion', 'direccion_2', 'direccion_3' ) as $clave_direccion ) {
+                    $valor = sanitize_text_field( $data[ $clave_direccion ] ?? '' );
+                    if ( '' !== trim( $valor ) ) { $direcciones_importadas[] = $valor; }
+                }
+                update_post_meta( $id, 'svcp_direcciones', $direcciones_importadas );
+                update_post_meta( $id, 'svcp_direccion', $direcciones_importadas[0] ?? '' );
+            }
+            if ( array_key_exists( 'correo', $data ) || array_key_exists( 'correo_2', $data ) || array_key_exists( 'correo_3', $data ) ) {
+                $correos_importados = array();
+                foreach ( array( 'correo', 'correo_2', 'correo_3' ) as $clave_correo ) {
+                    $valor = sanitize_email( $data[ $clave_correo ] ?? '' );
+                    if ( is_email( $valor ) ) { $correos_importados[] = $valor; }
+                }
+                update_post_meta( $id, 'svcp_correos', $correos_importados );
+                update_post_meta( $id, 'svcp_correo', $correos_importados[0] ?? '' );
+            }
             if ( array_key_exists( 'telefono', $data ) || array_key_exists( 'telefono_2', $data ) || array_key_exists( 'telefono_3', $data ) ) {
                 $telefonos_importados = array();
                 foreach ( array( 'telefono', 'telefono_2', 'telefono_3' ) as $clave_telefono ) {

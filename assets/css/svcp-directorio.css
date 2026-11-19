@@ -533,3 +533,12 @@ body.svcp-pagina-reporte-pago .entry-title,body.svcp-pagina-reporte-pago .wp-blo
 .svcp-doctor-contact-actions .svcp-social-icon{display:inline-flex;align-items:center;justify-content:center;width:36px;height:36px;padding:0;border-radius:50%;font-size:1rem}
 .svcp-doctor-contact-actions .svcp-social-icon i{line-height:1}
 @media(max-width:480px){.svcp-modal-overlay{padding:14px}.svcp-modal-card{padding:28px 20px;border-radius:16px}.svcp-modal-actions>*{width:100%;box-sizing:border-box}}
+
+/* v1.0.5 — campos de contacto progresivos y separación visual en el portal. */
+.svcp-add-field-link{display:inline-block;margin-top:7px;color:#0b5a88!important;text-decoration:underline!important;text-underline-offset:2px;font-size:.88rem;font-weight:600;cursor:pointer}
+.svcp-add-field-link:hover{color:#005b5b!important}
+.svcp-add-field-link[hidden]{display:none!important}
+.svcp-repeatable-field-row{display:flex;align-items:center;gap:8px;margin:4px 0}
+.svcp-repeatable-field-row input{flex:1;min-width:0}
+.svcp-remove-field-link{border:0;background:transparent;color:#b42318;text-decoration:underline;cursor:pointer;font:inherit;font-size:.82rem;padding:6px}
+.svcp-portal-layout .svcp-panel-field input,.svcp-portal-layout .svcp-panel-field select,.svcp-portal-layout .svcp-panel-field textarea{margin:4px 0}
