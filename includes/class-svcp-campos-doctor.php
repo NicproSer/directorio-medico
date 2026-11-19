@@ -10,7 +10,6 @@ class SVCP_Campos_Doctor {
             'svcp_whatsapp'   => array( 'WhatsApp', 'text', false, 'sanitize_text_field' ),
             'svcp_direccion'  => array( 'Dirección', 'text', false, 'sanitize_text_field' ),
             'svcp_ciudad'     => array( 'Ciudad', 'text', true, 'sanitize_text_field' ),
-            'svcp_correo'     => array( 'Correo', 'email', true, 'sanitize_email' ),
             'svcp_facebook'   => array( 'Facebook (opcional)', 'url', false, 'esc_url_raw' ),
             'svcp_instagram'  => array( 'Instagram (opcional)', 'url', false, 'esc_url_raw' ),
             'svcp_twitter'    => array( 'Twitter / X (opcional)', 'url', false, 'esc_url_raw' ),
@@ -41,7 +40,7 @@ class SVCP_Campos_Doctor {
             ) );
         }
 
-        foreach ( array( 'svcp_telefono', 'svcp_clinica' ) as $key ) {
+        foreach ( array( 'svcp_telefono', 'svcp_clinica', 'svcp_correo' ) as $key ) {
             register_post_meta( 'doctor', $key, array(
                 'type' => 'string', 'single' => true, 'show_in_rest' => true,
                 'sanitize_callback' => 'sanitize_text_field',
