@@ -41,6 +41,14 @@ class SVCP_Campos_Doctor {
             ) );
         }
 
+        foreach ( array( 'svcp_telefono', 'svcp_clinica' ) as $key ) {
+            register_post_meta( 'doctor', $key, array(
+                'type' => 'string', 'single' => true, 'show_in_rest' => true,
+                'sanitize_callback' => 'sanitize_text_field',
+                'auth_callback' => function() { return current_user_can( 'edit_doctor' ); },
+            ) );
+        }
+
         foreach ( array( 'svcp_telefonos', 'svcp_clinicas' ) as $key ) {
             register_post_meta( 'doctor', $key, array(
                 'type' => 'array', 'single' => true, 'show_in_rest' => array(
