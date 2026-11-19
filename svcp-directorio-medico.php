@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SVCP Directorio Médico
  * Description: Directorio de doctores con membresía y aprobación manual.
- * Version: 1.0.3
+ * Version: 1.0.4
  * Author: NICPRODEV
  * Text Domain: svcp-directorio
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SVCP_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SVCP_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SVCP_DIR_VERSION', '1.0.3' );
+define( 'SVCP_DIR_VERSION', '1.0.4' );
 
 /**
  * Carga de módulos del plugin.
