@@ -48,7 +48,7 @@ class SVCP_Campos_Doctor {
             ) );
         }
 
-        foreach ( array( 'svcp_telefonos', 'svcp_clinicas', 'svcp_correos' ) as $key ) {
+        foreach ( array( 'svcp_telefonos', 'svcp_clinicas', 'svcp_correos', 'svcp_direcciones' ) as $key ) {
             register_post_meta( 'doctor', $key, array(
                 'type' => 'array', 'single' => true, 'show_in_rest' => array(
                     'schema' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'maxItems' => 3 ),
@@ -90,6 +90,8 @@ class SVCP_Campos_Doctor {
         if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $post->ID, 'svcp_telefono', true ) ); }
         $clinicas = get_post_meta( $post->ID, 'svcp_clinicas', true );
         if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $post->ID, 'svcp_clinica', true ) ); }
+        $direcciones = get_post_meta( $post->ID, 'svcp_direcciones', true );
+        if ( ! is_array( $direcciones ) || empty( $direcciones ) ) { $direcciones = array( get_post_meta( $post->ID, 'svcp_direccion', true ) ); }
         $correos = get_post_meta( $post->ID, 'svcp_correos', true );
         if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $post->ID, 'svcp_correo', true ) ); }
         echo '<tr><th><label>Teléfonos de contacto *</label></th><td>';
@@ -106,6 +108,11 @@ class SVCP_Campos_Doctor {
             );
         }
         echo '<p class="description">Máximo 3 clínicas. La primera es obligatoria.</p></td></tr>';
+        echo '<tr><th><label>Direcciones</label></th><td>';
+        for ( $i = 0; $i < 3; $i++ ) {
+            printf( '<p><input type="text" class="widefat" name="svcp_direcciones[]" value="%1$s" placeholder="%2$s"></p>', esc_attr( $direcciones[ $i ] ?? '' ), esc_attr( 0 === $i ? 'Dirección principal (opcional)' : 'Dirección adicional (opcional)' ) );
+        }
+        echo '<p class="description">Máximo 3 direcciones, todas opcionales.</p></td></tr>';
         echo '<tr><th><label>Correos de contacto</label></th><td>';
         for ( $i = 0; $i < 3; $i++ ) {
             printf( '<p><input type="email" class="widefat" name="svcp_correos[]" value="%1$s" placeholder="%2$s" %3$s></p>',
@@ -309,6 +316,12 @@ class SVCP_Campos_Doctor {
                 $values = array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
                 update_post_meta( $post_id, 'svcp_' . $plural, $values );
                 update_post_meta( $post_id, $legacy_key, $values[0] ?? '' );
+            }
+            if ( isset( $_POST['svcp_direcciones'] ) && is_array( $_POST['svcp_direcciones'] ) ) {
+                $direcciones = array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( wp_unslash( $value ) ) : ''; }, $_POST['svcp_direcciones'] ), 0, 3 );
+                $direcciones = array_values( array_filter( $direcciones, function( $value ) { return '' !== trim( $value ); } ) );
+                update_post_meta( $post_id, 'svcp_direcciones', $direcciones );
+                update_post_meta( $post_id, 'svcp_direccion', $direcciones[0] ?? '' );
             }
             if ( isset( $_POST['svcp_correos'] ) && is_array( $_POST['svcp_correos'] ) ) {
                 $correos = array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_email( wp_unslash( $value ) ) : ''; }, $_POST['svcp_correos'] ), 0, 3 );
