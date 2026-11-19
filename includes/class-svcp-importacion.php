@@ -290,6 +290,15 @@ class SVCP_Importacion {
                 'membresia_referencia' => 'svcp_membresia_referencia', 'membresia_monto' => 'svcp_membresia_monto',
             );
             foreach ( $campos as $source => $meta ) { $this->actualizar_meta( $id, $data, $source, $meta ); }
+            // Mantiene sincronizados los campos históricos y las nuevas listas al importar CSV.
+            if ( array_key_exists( 'telefono', $data ) ) {
+                $telefono_importado = sanitize_text_field( $data['telefono'] );
+                update_post_meta( $id, 'svcp_telefonos', '' !== $telefono_importado ? array( $telefono_importado ) : array() );
+            }
+            if ( array_key_exists( 'clinica', $data ) ) {
+                $clinica_importada = sanitize_text_field( $data['clinica'] );
+                update_post_meta( $id, 'svcp_clinicas', '' !== $clinica_importada ? array( $clinica_importada ) : array() );
+            }
             if ( $region ) { wp_set_object_terms( $id, array( $region ), 'region', false ); }
 
             if ( isset( $data['membresia_estado'] ) ) {
