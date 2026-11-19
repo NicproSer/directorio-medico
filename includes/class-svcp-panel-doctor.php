@@ -114,7 +114,11 @@ class SVCP_Panel_Doctor {
         $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
         $clinicas  = array_values( array_filter( $clinicas, function( $value ) { return '' !== trim( $value ); } ) );
         $whatsapp  = sanitize_text_field( wp_unslash( $_POST['svcp_whatsapp'] ?? '' ) );
-        $direccion = sanitize_text_field( wp_unslash( $_POST['svcp_direccion'] ?? '' ) );
+        $direcciones = isset( $_POST['svcp_direcciones'] ) && is_array( $_POST['svcp_direcciones'] )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_direcciones'] ) ), 0, 3 )
+            : array();
+        $direcciones = array_values( array_filter( $direcciones, function( $value ) { return '' !== trim( $value ); } ) );
+        $direccion = $direcciones[0] ?? '';
         $ciudad    = sanitize_text_field( wp_unslash( $_POST['svcp_ciudad'] ?? '' ) );
         $region_id = absint( $_POST['svcp_region'] ?? 0 );
         $facebook  = esc_url_raw( wp_unslash( $_POST['svcp_facebook'] ?? '' ) );
@@ -184,6 +188,7 @@ class SVCP_Panel_Doctor {
         update_post_meta( $post_id, 'svcp_telefonos', $telefonos );
         update_post_meta( $post_id, 'svcp_clinicas', $clinicas );
         update_post_meta( $post_id, 'svcp_correos', array_slice( array_values( array_unique( array_merge( array( $correo ), $correos_adicionales ) ) ), 0, 3 ) );
+        update_post_meta( $post_id, 'svcp_direcciones', $direcciones );
 
         wp_set_object_terms( $post_id, array( $region_id ), 'region' );
 
@@ -442,7 +447,25 @@ class SVCP_Panel_Doctor {
                                     <?php endfor; ?>
                                     <small><?php esc_html_e( 'Máximo 3 clínicas. La primera es obligatoria.', 'svcp-directorio' ); ?></small>
                                 </div>
-                                <div class="svcp-panel-field"><label for="svcp_direccion"><?php esc_html_e( 'Dirección', 'svcp-directorio' ); ?></label><textarea id="svcp_direccion" name="svcp_direccion" rows="3"><?php echo esc_textarea( get_post_meta( $post_id, 'svcp_direccion', true ) ); ?></textarea></div>
+                                <?php
+                                $direcciones_guardadas = get_post_meta( $post_id, 'svcp_direcciones', true );
+                                if ( ! is_array( $direcciones_guardadas ) || empty( $direcciones_guardadas ) ) { $direcciones_guardadas = array( get_post_meta( $post_id, 'svcp_direccion', true ) ); }
+                                $direcciones_guardadas = array_slice( array_values( array_filter( $direcciones_guardadas ) ), 0, 3 );
+                                if ( empty( $direcciones_guardadas ) ) { $direcciones_guardadas = array( '' ); }
+                                ?>
+                                <div class="svcp-panel-field svcp-repeatable-field" data-svcp-repeatable data-max="3" data-field-type="text" data-field-name="svcp_direcciones[]" data-field-placeholder="Dirección adicional (opcional)">
+                                    <label><?php esc_html_e( 'Direcciones (opcional)', 'svcp-directorio' ); ?></label>
+                                    <div data-svcp-field-list>
+                                        <?php foreach ( $direcciones_guardadas as $indice => $direccion_guardada ) : ?>
+                                            <?php if ( 0 === $indice ) : ?>
+                                                <input type="text" name="svcp_direcciones[]" value="<?php echo esc_attr( $direccion_guardada ); ?>" placeholder="Dirección principal (opcional)">
+                                            <?php else : ?>
+                                                <div class="svcp-repeatable-field-row"><input type="text" name="svcp_direcciones[]" value="<?php echo esc_attr( $direccion_guardada ); ?>" placeholder="Dirección adicional (opcional)"><button type="button" class="svcp-remove-field-link" aria-label="Quitar dirección">Quitar</button></div>
+                                            <?php endif; ?>
+                                        <?php endforeach; ?>
+                                    </div>
+                                    <a href="#" class="svcp-add-field-link" data-svcp-add-field <?php echo count( $direcciones_guardadas ) >= 3 ? 'hidden' : ''; ?>><?php esc_html_e( 'Agregar otra dirección', 'svcp-directorio' ); ?></a>
+                                </div>
                                 <div class="svcp-panel-field"><label for="svcp_region"><?php esc_html_e( 'Región', 'svcp-directorio' ); ?> *</label><select id="svcp_region" name="svcp_region" required><option value=""><?php esc_html_e( 'Selecciona…', 'svcp-directorio' ); ?></option><?php foreach ( $regiones as $region ) : ?><option value="<?php echo esc_attr( $region->term_id ); ?>" <?php selected( $region_id, $region->term_id ); ?>><?php echo esc_html( $region->name ); ?></option><?php endforeach; ?></select></div>
                             </section>
                             <section class="svcp-portal-card"><div class="svcp-panel-section-heading svcp-portal-section-heading"><h2><?php esc_html_e( 'Redes y sitio web', 'svcp-directorio' ); ?></h2><p><?php esc_html_e( 'Agrega únicamente enlaces profesionales.', 'svcp-directorio' ); ?></p></div><div class="svcp-panel-form-grid"><?php $this->campo( 'svcp_facebook', 'Facebook', get_post_meta( $post_id, 'svcp_facebook', true ), 'url' ); $this->campo( 'svcp_instagram', 'Instagram', get_post_meta( $post_id, 'svcp_instagram', true ), 'url' ); $this->campo( 'svcp_twitter', 'Twitter / X', get_post_meta( $post_id, 'svcp_twitter', true ), 'url' ); $this->campo( 'svcp_linkedin', 'LinkedIn', get_post_meta( $post_id, 'svcp_linkedin', true ), 'url' ); $this->campo( 'svcp_sitio_web', 'Sitio web', get_post_meta( $post_id, 'svcp_sitio_web', true ), 'url' ); ?></div></section>
