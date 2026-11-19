@@ -97,9 +97,17 @@ class SVCP_Panel_Doctor {
 
         $nombre    = sanitize_text_field( wp_unslash( $_POST['svcp_nombre'] ?? '' ) );
         $correo    = sanitize_email( wp_unslash( $_POST['svcp_correo'] ?? '' ) );
-        $telefono  = sanitize_text_field( wp_unslash( $_POST['svcp_telefono'] ?? '' ) );
+        $telefonos = isset( $_POST['svcp_telefonos'] ) && is_array( $_POST['svcp_telefonos'] )
+            ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST['svcp_telefonos'] ) ), 0, 3 )
+            : array();
+        $clinicas = isset( $_POST['svcp_clinicas'] ) && is_array( $_POST['svcp_clinicas'] )
+            ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST['svcp_clinicas'] ) ), 0, 3 )
+            : array();
+        $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
+        $clinicas  = array_values( array_filter( $clinicas, function( $value ) { return '' !== trim( $value ); } ) );
+        $telefono  = $telefonos[0] ?? '';
         $whatsapp  = sanitize_text_field( wp_unslash( $_POST['svcp_whatsapp'] ?? '' ) );
-        $clinica   = sanitize_text_field( wp_unslash( $_POST['svcp_clinica'] ?? '' ) );
+        $clinica   = $clinicas[0] ?? '';
         $direccion = sanitize_text_field( wp_unslash( $_POST['svcp_direccion'] ?? '' ) );
         $ciudad    = sanitize_text_field( wp_unslash( $_POST['svcp_ciudad'] ?? '' ) );
         $region_id = absint( $_POST['svcp_region'] ?? 0 );
@@ -167,6 +175,8 @@ class SVCP_Panel_Doctor {
         foreach ( $campos as $key => $value ) {
             update_post_meta( $post_id, $key, $value );
         }
+        update_post_meta( $post_id, 'svcp_telefonos', $telefonos );
+        update_post_meta( $post_id, 'svcp_clinicas', $clinicas );
 
         wp_set_object_terms( $post_id, array( $region_id ), 'region' );
 
@@ -379,7 +389,29 @@ class SVCP_Panel_Doctor {
                         <div class="svcp-portal-form-column">
                             <section class="svcp-portal-card"><div class="svcp-panel-section-heading svcp-portal-section-heading"><h2><?php esc_html_e( 'Datos profesionales y de contacto', 'svcp-directorio' ); ?></h2><p><?php esc_html_e( 'Estos datos aparecen en tu ficha pública.', 'svcp-directorio' ); ?></p></div>
                                 <div class="svcp-panel-form-grid">
-                                    <?php $this->campo( 'svcp_nombre', 'Nombre y apellido', get_the_title( $post_id ), 'text', true ); $this->campo( 'svcp_correo', 'Correo de contacto', get_post_meta( $post_id, 'svcp_correo', true ) ?: $user->user_email, 'email', true ); $this->campo( 'svcp_telefono', 'Teléfono', get_post_meta( $post_id, 'svcp_telefono', true ), 'text', true ); $this->campo( 'svcp_whatsapp', 'WhatsApp', get_post_meta( $post_id, 'svcp_whatsapp', true ) ); $this->campo( 'svcp_clinica', 'Clínica u Hospital', get_post_meta( $post_id, 'svcp_clinica', true ), 'text', true ); $this->campo( 'svcp_ciudad', 'Ciudad', get_post_meta( $post_id, 'svcp_ciudad', true ), 'text', true ); ?>
+                                    <?php $this->campo( 'svcp_nombre', 'Nombre y apellido', get_the_title( $post_id ), 'text', true ); $this->campo( 'svcp_correo', 'Correo de contacto', get_post_meta( $post_id, 'svcp_correo', true ) ?: $user->user_email, 'email', true ); $this->campo( 'svcp_whatsapp', 'WhatsApp', get_post_meta( $post_id, 'svcp_whatsapp', true ) ); $this->campo( 'svcp_ciudad', 'Ciudad', get_post_meta( $post_id, 'svcp_ciudad', true ), 'text', true ); ?>
+                                </div>
+                                <?php
+                                $telefonos_guardados = get_post_meta( $post_id, 'svcp_telefonos', true );
+                                if ( ! is_array( $telefonos_guardados ) || empty( $telefonos_guardados ) ) { $telefonos_guardados = array( get_post_meta( $post_id, 'svcp_telefono', true ) ); }
+                                $telefonos_guardados = array_slice( array_values( array_filter( $telefonos_guardados ) ), 0, 3 );
+                                $clinicas_guardadas = get_post_meta( $post_id, 'svcp_clinicas', true );
+                                if ( ! is_array( $clinicas_guardadas ) || empty( $clinicas_guardadas ) ) { $clinicas_guardadas = array( get_post_meta( $post_id, 'svcp_clinica', true ) ); }
+                                $clinicas_guardadas = array_slice( array_values( array_filter( $clinicas_guardadas ) ), 0, 3 );
+                                ?>
+                                <div class="svcp-panel-field">
+                                    <label><?php esc_html_e( 'Teléfonos de contacto *', 'svcp-directorio' ); ?></label>
+                                    <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                                        <input type="tel" name="svcp_telefonos[]" value="<?php echo esc_attr( $telefonos_guardados[ $i ] ?? '' ); ?>" placeholder="<?php echo esc_attr( 0 === $i ? 'Teléfono principal' : 'Teléfono adicional (opcional)' ); ?>" <?php echo 0 === $i ? 'required' : ''; ?>>
+                                    <?php endfor; ?>
+                                    <small><?php esc_html_e( 'Máximo 3 teléfonos. El primero es obligatorio.', 'svcp-directorio' ); ?></small>
+                                </div>
+                                <div class="svcp-panel-field">
+                                    <label><?php esc_html_e( 'Clínicas u hospitales donde trabaja *', 'svcp-directorio' ); ?></label>
+                                    <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                                        <input type="text" name="svcp_clinicas[]" value="<?php echo esc_attr( $clinicas_guardadas[ $i ] ?? '' ); ?>" placeholder="<?php echo esc_attr( 0 === $i ? 'Clínica u hospital principal' : 'Clínica u hospital adicional (opcional)' ); ?>" <?php echo 0 === $i ? 'required' : ''; ?>>
+                                    <?php endfor; ?>
+                                    <small><?php esc_html_e( 'Máximo 3 clínicas. La primera es obligatoria.', 'svcp-directorio' ); ?></small>
                                 </div>
                                 <div class="svcp-panel-field"><label for="svcp_direccion"><?php esc_html_e( 'Dirección', 'svcp-directorio' ); ?></label><textarea id="svcp_direccion" name="svcp_direccion" rows="3"><?php echo esc_textarea( get_post_meta( $post_id, 'svcp_direccion', true ) ); ?></textarea></div>
                                 <div class="svcp-panel-field"><label for="svcp_region"><?php esc_html_e( 'Región', 'svcp-directorio' ); ?> *</label><select id="svcp_region" name="svcp_region" required><option value=""><?php esc_html_e( 'Selecciona…', 'svcp-directorio' ); ?></option><?php foreach ( $regiones as $region ) : ?><option value="<?php echo esc_attr( $region->term_id ); ?>" <?php selected( $region_id, $region->term_id ); ?>><?php echo esc_html( $region->name ); ?></option><?php endforeach; ?></select></div>
