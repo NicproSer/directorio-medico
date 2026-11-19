@@ -67,7 +67,11 @@ class SVCP_Registro {
         $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
         $clinicas  = array_values( array_filter( $clinicas, function( $value ) { return '' !== trim( $value ); } ) );
         $whatsapp  = sanitize_text_field( $_POST['svcp_whatsapp'] ?? '' );
-        $direccion = sanitize_text_field( $_POST['svcp_direccion'] ?? '' );
+        $direcciones = isset( $_POST['svcp_direcciones'] ) && is_array( $_POST['svcp_direcciones'] )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_direcciones'] ) ), 0, 3 )
+            : array();
+        $direcciones = array_values( array_filter( $direcciones, function( $value ) { return '' !== trim( $value ); } ) );
+        $direccion = $direcciones[0] ?? '';
         $ciudad    = sanitize_text_field( $_POST['svcp_ciudad'] ?? '' );
         $region_id = absint( $_POST['svcp_region'] ?? 0 );
         $facebook  = esc_url_raw( $_POST['svcp_facebook'] ?? '' );
@@ -126,6 +130,7 @@ class SVCP_Registro {
         update_post_meta( $post_id, 'svcp_telefonos', $telefonos );
         update_post_meta( $post_id, 'svcp_whatsapp', $whatsapp );
         update_post_meta( $post_id, 'svcp_direccion', $direccion );
+        update_post_meta( $post_id, 'svcp_direcciones', $direcciones );
         update_post_meta( $post_id, 'svcp_ciudad', $ciudad );
         update_post_meta( $post_id, 'svcp_correo', $correo );
         update_post_meta( $post_id, 'svcp_correos', array_slice( array_values( array_unique( array_merge( array( $correo ), $correos_adicionales ) ) ), 0, 3 ) );
@@ -253,9 +258,11 @@ class SVCP_Registro {
                 <label><i class="fa-brands fa-whatsapp" aria-hidden="true"></i> WhatsApp (opcional)</label>
                 <input type="text" name="svcp_whatsapp" />
             </div>
-            <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Dirección (opcional)', 'svcp-directorio' ); ?></label>
-                <input type="text" name="svcp_direccion" />
+            <div class="svcp-form-row svcp-repeatable-field" data-svcp-repeatable data-max="3" data-field-type="text" data-field-name="svcp_direcciones[]" data-field-placeholder="Dirección adicional (opcional)">
+                <label><?php esc_html_e( 'Direcciones (opcional)', 'svcp-directorio' ); ?></label>
+                <div data-svcp-field-list><input type="text" name="svcp_direcciones[]" placeholder="Dirección principal (opcional)" /></div>
+                <a href="#" class="svcp-add-field-link" data-svcp-add-field><?php esc_html_e( 'Agregar otra dirección', 'svcp-directorio' ); ?></a>
+                <small><?php esc_html_e( 'Puedes registrar hasta 3 direcciones. Todas son opcionales.', 'svcp-directorio' ); ?></small>
             </div>
             <div class="svcp-form-row">
                 <label><?php esc_html_e( 'Ciudad *', 'svcp-directorio' ); ?></label>
