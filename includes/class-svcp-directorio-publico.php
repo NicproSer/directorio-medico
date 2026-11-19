@@ -114,14 +114,17 @@ class SVCP_Directorio_Publico {
                             $correos = get_post_meta( $id, 'svcp_correos', true );
                             if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $id, 'svcp_correo', true ) ); }
                             $correos = array_values( array_filter( array_slice( $correos, 0, 3 ), 'is_email' ) );
-                            $direccion = get_post_meta( $id, 'svcp_direccion', true );
+                            $direcciones = get_post_meta( $id, 'svcp_direcciones', true );
+                            if ( ! is_array( $direcciones ) || empty( $direcciones ) ) { $direcciones = array( get_post_meta( $id, 'svcp_direccion', true ) ); }
+                            $direcciones = array_values( array_filter( array_slice( $direcciones, 0, 3 ) ) );
+                            $direccion = $direcciones[0] ?? '';
                             $facebook = get_post_meta( $id, 'svcp_facebook', true );
                             $instagram = get_post_meta( $id, 'svcp_instagram', true );
                             $linkedin = get_post_meta( $id, 'svcp_linkedin', true );
                             $twitter = get_post_meta( $id, 'svcp_twitter', true );
                             $terms = get_the_terms( $id, 'region' );
                             $region_nombre = ( $terms && ! is_wp_error( $terms ) ) ? $terms[0]->name : '';
-                            $texto = implode( ' ', array_filter( array_merge( array( get_the_title(), $ciudad, $direccion, $region_nombre ), $clinicas ) ) );
+                            $texto = implode( ' ', array_filter( array_merge( array( get_the_title(), $ciudad, $region_nombre ), $direcciones, $clinicas ) ) );
                         ?>
                             <article class="svcp-doctor-card" data-svcp-doctor-card data-search="<?php echo esc_attr( remove_accents( strtolower( $texto ) ) ); ?>" data-region="<?php echo esc_attr( $region_nombre ); ?>">
                                 <div class="svcp-doctor-foto" aria-hidden="true"><?php if ( has_post_thumbnail() ) { the_post_thumbnail( 'medium', array( 'loading' => 'lazy' ) ); } else { ?><div class="svcp-doctor-foto-placeholder"><span><?php echo esc_html( strtoupper( implode( '', array_slice( preg_split( '/\s+/', trim( wp_strip_all_tags( get_the_title() ) ) ), 0, 2 ) ) ) ); ?></span></div><?php } ?></div>
@@ -129,7 +132,7 @@ class SVCP_Directorio_Publico {
                                     <h2 class="svcp-doctor-nombre"><?php the_title(); ?></h2>
                                     <?php if ( $region_nombre ) : ?><p class="svcp-doctor-region"><?php echo esc_html( $region_nombre ); ?></p><?php endif; ?>
                                     <?php if ( $clinicas ) : ?><div class="svcp-doctor-clinicas"><strong><?php esc_html_e( 'Clínicas:', 'svcp-directorio' ); ?></strong><?php foreach ( $clinicas as $nombre_clinica ) : ?><p class="svcp-doctor-clinica"><?php echo esc_html( $nombre_clinica ); ?></p><?php endforeach; ?></div><?php endif; ?>
-                                    <?php if ( $direccion ) : ?><p class="svcp-doctor-direccion"><?php echo esc_html( $direccion ); ?></p><?php endif; ?>
+                                    <?php foreach ( $direcciones as $direccion_item ) : ?><p class="svcp-doctor-direccion"><?php echo esc_html( $direccion_item ); ?></p><?php endforeach; ?>
                                     <?php if ( $ciudad ) : ?><p class="svcp-doctor-ciudad"><?php echo esc_html( $ciudad ); ?></p><?php endif; ?>
                                     <div class="svcp-doctor-acciones svcp-doctor-contact-actions">
                                         <?php foreach ( $telefonos as $telefono ) : ?><a class="svcp-contact-icon" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $telefono ) ); ?>">☎ <span><?php echo esc_html( $telefono ); ?></span></a><?php endforeach; ?>
