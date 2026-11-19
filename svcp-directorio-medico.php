@@ -2,7 +2,7 @@
 /**
  * Plugin Name: SVCP Directorio Médico
  * Description: Directorio de doctores con membresía y aprobación manual.
- * Version: 1.0.4
+ * Version: 1.0.5
  * Author: NICPRODEV
  * Text Domain: svcp-directorio
  */
@@ -13,7 +13,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 
 define( 'SVCP_DIR_PATH', plugin_dir_path( __FILE__ ) );
 define( 'SVCP_DIR_URL', plugin_dir_url( __FILE__ ) );
-define( 'SVCP_DIR_VERSION', '1.0.4' );
+define( 'SVCP_DIR_VERSION', '1.0.5' );
 
 /**
  * Carga de módulos del plugin.
@@ -60,6 +60,42 @@ function svcp_dir_modal_interactions() {
         if (event.target.matches('[data-svcp-modal]')) {
             event.target.classList.remove('svcp-modal-open');
             window.setTimeout(function() { event.target.remove(); }, 220);
+        }
+    });
+    document.addEventListener('click', function(event) {
+        var add = event.target.closest('[data-svcp-add-field]');
+        if (!add) return;
+        event.preventDefault();
+        var group = add.closest('[data-svcp-repeatable]');
+        if (!group) return;
+        var list = group.querySelector('[data-svcp-field-list]');
+        var max = parseInt(group.getAttribute('data-max') || '3', 10);
+        if (!list || list.querySelectorAll('input').length >= max) return;
+        var wrapper = document.createElement('div');
+        wrapper.className = 'svcp-repeatable-field-row';
+        var input = document.createElement('input');
+        input.type = group.getAttribute('data-field-type') || 'text';
+        input.name = group.getAttribute('data-field-name') || '';
+        input.placeholder = group.getAttribute('data-field-placeholder') || '';
+        wrapper.appendChild(input);
+        var remove = document.createElement('button');
+        remove.type = 'button';
+        remove.className = 'svcp-remove-field-link';
+        remove.setAttribute('aria-label', 'Quitar campo');
+        remove.textContent = 'Quitar';
+        wrapper.appendChild(remove);
+        list.appendChild(wrapper);
+        if (list.querySelectorAll('input').length >= max) add.hidden = true;
+    });
+    document.addEventListener('click', function(event) {
+        var remove = event.target.closest('.svcp-remove-field-link');
+        if (!remove) return;
+        var group = remove.closest('[data-svcp-repeatable]');
+        var row = remove.closest('.svcp-repeatable-field-row');
+        if (row) row.remove();
+        if (group) {
+            var add = group.querySelector('[data-svcp-add-field]');
+            if (add) add.hidden = false;
         }
     });
     document.addEventListener('keydown', function(event) {
