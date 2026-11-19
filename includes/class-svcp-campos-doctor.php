@@ -49,7 +49,7 @@ class SVCP_Campos_Doctor {
             ) );
         }
 
-        foreach ( array( 'svcp_telefonos', 'svcp_clinicas' ) as $key ) {
+        foreach ( array( 'svcp_telefonos', 'svcp_clinicas', 'svcp_correos' ) as $key ) {
             register_post_meta( 'doctor', $key, array(
                 'type' => 'array', 'single' => true, 'show_in_rest' => array(
                     'schema' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'maxItems' => 3 ),
@@ -91,6 +91,8 @@ class SVCP_Campos_Doctor {
         if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $post->ID, 'svcp_telefono', true ) ); }
         $clinicas = get_post_meta( $post->ID, 'svcp_clinicas', true );
         if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $post->ID, 'svcp_clinica', true ) ); }
+        $correos = get_post_meta( $post->ID, 'svcp_correos', true );
+        if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $post->ID, 'svcp_correo', true ) ); }
         echo '<tr><th><label>Teléfonos de contacto *</label></th><td>';
         for ( $i = 0; $i < 3; $i++ ) {
             printf( '<p><input type="tel" class="widefat" name="svcp_telefonos[]" value="%1$s" placeholder="%2$s" %3$s></p>',
@@ -105,6 +107,13 @@ class SVCP_Campos_Doctor {
             );
         }
         echo '<p class="description">Máximo 3 clínicas. La primera es obligatoria.</p></td></tr>';
+        echo '<tr><th><label>Correos de contacto</label></th><td>';
+        for ( $i = 0; $i < 3; $i++ ) {
+            printf( '<p><input type="email" class="widefat" name="svcp_correos[]" value="%1$s" placeholder="%2$s" %3$s></p>',
+                esc_attr( $correos[ $i ] ?? '' ), esc_attr( 0 === $i ? 'Correo principal' : 'Correo adicional (opcional)' ), 0 === $i ? 'required' : ''
+            );
+        }
+        echo '<p class="description">Máximo 3 correos. El primero es el correo principal de la cuenta.</p></td></tr>';
         foreach ( self::campos_editables_por_doctor() as $key => $config ) {
             list( $label, $tipo, $requerido ) = $config;
             $valor = get_post_meta( $post->ID, $key, true );
@@ -301,6 +310,12 @@ class SVCP_Campos_Doctor {
                 $values = array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
                 update_post_meta( $post_id, 'svcp_' . $plural, $values );
                 update_post_meta( $post_id, $legacy_key, $values[0] ?? '' );
+            }
+            if ( isset( $_POST['svcp_correos'] ) && is_array( $_POST['svcp_correos'] ) ) {
+                $correos = array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_email( wp_unslash( $value ) ) : ''; }, $_POST['svcp_correos'] ), 0, 3 );
+                $correos = array_values( array_unique( array_filter( $correos, 'is_email' ) ) );
+                update_post_meta( $post_id, 'svcp_correos', $correos );
+                update_post_meta( $post_id, 'svcp_correo', $correos[0] ?? '' );
             }
         }
 
