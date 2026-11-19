@@ -12,8 +12,12 @@ class SVCP_Importacion {
         'nombre' => 'Nombre',
         'correo' => 'Correo',
         'telefono' => 'Telefono',
+        'telefono_2' => 'Telefono 2',
+        'telefono_3' => 'Telefono 3',
         'whatsapp' => 'WhatsApp',
         'clinica' => 'Clinica',
+        'clinica_2' => 'Clinica 2',
+        'clinica_3' => 'Clinica 3',
         'direccion' => 'Direccion',
         'ciudad' => 'Ciudad',
         'region' => 'Region',
@@ -127,13 +131,21 @@ class SVCP_Importacion {
 
         foreach ( $ids as $id ) {
             $region = wp_get_post_terms( $id, 'region', array( 'fields' => 'names' ) );
+            $telefonos = get_post_meta( $id, 'svcp_telefonos', true );
+            if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $id, 'svcp_telefono', true ) ); }
+            $clinicas = get_post_meta( $id, 'svcp_clinicas', true );
+            if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $id, 'svcp_clinica', true ) ); }
             $row = array(
                 $id,
                 get_the_title( $id ),
                 get_post_meta( $id, 'svcp_correo', true ),
-                get_post_meta( $id, 'svcp_telefono', true ),
+                $telefonos[0] ?? '',
+                $telefonos[1] ?? '',
+                $telefonos[2] ?? '',
                 get_post_meta( $id, 'svcp_whatsapp', true ),
-                get_post_meta( $id, 'svcp_clinica', true ),
+                $clinicas[0] ?? '',
+                $clinicas[1] ?? '',
+                $clinicas[2] ?? '',
                 get_post_meta( $id, 'svcp_direccion', true ),
                 get_post_meta( $id, 'svcp_ciudad', true ),
                 ! empty( $region ) ? $region[0] : '',
@@ -291,13 +303,23 @@ class SVCP_Importacion {
             );
             foreach ( $campos as $source => $meta ) { $this->actualizar_meta( $id, $data, $source, $meta ); }
             // Mantiene sincronizados los campos históricos y las nuevas listas al importar CSV.
-            if ( array_key_exists( 'telefono', $data ) ) {
-                $telefono_importado = sanitize_text_field( $data['telefono'] );
-                update_post_meta( $id, 'svcp_telefonos', '' !== $telefono_importado ? array( $telefono_importado ) : array() );
+            if ( array_key_exists( 'telefono', $data ) || array_key_exists( 'telefono_2', $data ) || array_key_exists( 'telefono_3', $data ) ) {
+                $telefonos_importados = array();
+                foreach ( array( 'telefono', 'telefono_2', 'telefono_3' ) as $clave_telefono ) {
+                    $valor = sanitize_text_field( $data[ $clave_telefono ] ?? '' );
+                    if ( '' !== $valor ) { $telefonos_importados[] = $valor; }
+                }
+                update_post_meta( $id, 'svcp_telefonos', $telefonos_importados );
+                update_post_meta( $id, 'svcp_telefono', $telefonos_importados[0] ?? '' );
             }
-            if ( array_key_exists( 'clinica', $data ) ) {
-                $clinica_importada = sanitize_text_field( $data['clinica'] );
-                update_post_meta( $id, 'svcp_clinicas', '' !== $clinica_importada ? array( $clinica_importada ) : array() );
+            if ( array_key_exists( 'clinica', $data ) || array_key_exists( 'clinica_2', $data ) || array_key_exists( 'clinica_3', $data ) ) {
+                $clinicas_importadas = array();
+                foreach ( array( 'clinica', 'clinica_2', 'clinica_3' ) as $clave_clinica ) {
+                    $valor = sanitize_text_field( $data[ $clave_clinica ] ?? '' );
+                    if ( '' !== $valor ) { $clinicas_importadas[] = $valor; }
+                }
+                update_post_meta( $id, 'svcp_clinicas', $clinicas_importadas );
+                update_post_meta( $id, 'svcp_clinica', $clinicas_importadas[0] ?? '' );
             }
             if ( $region ) { wp_set_object_terms( $id, array( $region ), 'region', false ); }
 
