@@ -402,6 +402,7 @@ class SVCP_Panel_Doctor {
                                 $telefonos_guardados = get_post_meta( $post_id, 'svcp_telefonos', true );
                                 if ( ! is_array( $telefonos_guardados ) || empty( $telefonos_guardados ) ) { $telefonos_guardados = array( get_post_meta( $post_id, 'svcp_telefono', true ) ); }
                                 $telefonos_guardados = array_slice( array_values( array_filter( $telefonos_guardados ) ), 0, 3 );
+                                if ( empty( $telefonos_guardados ) ) { $telefonos_guardados = array( '' ); }
                                 $clinicas_guardadas = get_post_meta( $post_id, 'svcp_clinicas', true );
                                 if ( ! is_array( $clinicas_guardadas ) || empty( $clinicas_guardadas ) ) { $clinicas_guardadas = array( get_post_meta( $post_id, 'svcp_clinica', true ) ); }
                                 $clinicas_guardadas = array_slice( array_values( array_filter( $clinicas_guardadas ) ), 0, 3 );
@@ -410,10 +411,14 @@ class SVCP_Panel_Doctor {
                                     <label><?php esc_html_e( 'Teléfonos de contacto', 'svcp-directorio' ); ?></label>
                                     <div data-svcp-field-list>
                                         <?php foreach ( $telefonos_guardados as $indice => $telefono_guardado ) : ?>
-                                            <input type="tel" name="svcp_telefonos[]" value="<?php echo esc_attr( $telefono_guardado ); ?>" placeholder="<?php echo esc_attr( 0 === $indice ? 'Teléfono principal' : 'Teléfono adicional (opcional)' ); ?>" <?php echo 0 === $indice ? 'required' : ''; ?>>
+                                            <?php if ( 0 === $indice ) : ?>
+                                                <input type="tel" name="svcp_telefonos[]" value="<?php echo esc_attr( $telefono_guardado ); ?>" placeholder="Teléfono principal" required>
+                                            <?php else : ?>
+                                                <div class="svcp-repeatable-field-row"><input type="tel" name="svcp_telefonos[]" value="<?php echo esc_attr( $telefono_guardado ); ?>" placeholder="Teléfono adicional (opcional)"><button type="button" class="svcp-remove-field-link" aria-label="Quitar teléfono">Quitar</button></div>
+                                            <?php endif; ?>
                                         <?php endforeach; ?>
                                     </div>
-                                    <a href="#" class="svcp-add-field-link" data-svcp-add-field><?php esc_html_e( 'Agregar otro teléfono', 'svcp-directorio' ); ?></a>
+                                    <a href="#" class="svcp-add-field-link" data-svcp-add-field <?php echo count( $telefonos_guardados ) >= 3 ? 'hidden' : ''; ?>><?php esc_html_e( 'Agregar otro teléfono', 'svcp-directorio' ); ?></a>
                                 </div>
                                 <?php
                                 $correos_guardados = get_post_meta( $post_id, 'svcp_correos', true );
@@ -424,10 +429,10 @@ class SVCP_Panel_Doctor {
                                     <label><?php esc_html_e( 'Correos adicionales', 'svcp-directorio' ); ?></label>
                                     <div data-svcp-field-list>
                                         <?php foreach ( array_slice( $correos_guardados, 1 ) as $correo_adicional ) : ?>
-                                            <input type="email" name="svcp_correos_adicionales[]" value="<?php echo esc_attr( $correo_adicional ); ?>" placeholder="Correo adicional (opcional)">
+                                            <div class="svcp-repeatable-field-row"><input type="email" name="svcp_correos_adicionales[]" value="<?php echo esc_attr( $correo_adicional ); ?>" placeholder="Correo adicional (opcional)"><button type="button" class="svcp-remove-field-link" aria-label="Quitar correo">Quitar</button></div>
                                         <?php endforeach; ?>
                                     </div>
-                                    <a href="#" class="svcp-add-field-link" data-svcp-add-field><?php esc_html_e( 'Agregar otro correo', 'svcp-directorio' ); ?></a>
+                                    <a href="#" class="svcp-add-field-link" data-svcp-add-field <?php echo count( $correos_guardados ) >= 3 ? 'hidden' : ''; ?>><?php esc_html_e( 'Agregar otro correo', 'svcp-directorio' ); ?></a>
                                     <small><?php esc_html_e( 'El correo principal se edita en el campo superior. Máximo 2 adicionales.', 'svcp-directorio' ); ?></small>
                                 </div>
                                 <div class="svcp-panel-field">
