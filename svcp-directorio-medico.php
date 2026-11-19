@@ -98,6 +98,12 @@ function svcp_dir_modal_interactions() {
             if (add) add.hidden = false;
         }
     });
+    document.querySelectorAll('[data-svcp-repeatable]').forEach(function(group) {
+        var list = group.querySelector('[data-svcp-field-list]');
+        var add = group.querySelector('[data-svcp-add-field]');
+        var max = parseInt(group.getAttribute('data-max') || '3', 10);
+        if (list && add && list.querySelectorAll('input').length >= max) add.hidden = true;
+    });
     document.addEventListener('keydown', function(event) {
         if (event.key === 'Escape') {
             document.querySelectorAll('[data-svcp-modal].svcp-modal-open').forEach(function(modal) {
