@@ -56,10 +56,10 @@ class SVCP_Registro {
         $clinicas = isset( $_POST['svcp_clinicas'] ) && is_array( $_POST['svcp_clinicas'] )
             ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST['svcp_clinicas'] ) ), 0, 3 )
             : array();
+        $telefono = $telefonos[0] ?? '';
+        $clinica  = $clinicas[0] ?? '';
         $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
         $clinicas  = array_values( array_filter( $clinicas, function( $value ) { return '' !== trim( $value ); } ) );
-        $telefono  = $telefonos[0] ?? '';
-        $clinica   = $clinicas[0] ?? '';
         $whatsapp  = sanitize_text_field( $_POST['svcp_whatsapp'] ?? '' );
         $direccion = sanitize_text_field( $_POST['svcp_direccion'] ?? '' );
         $ciudad    = sanitize_text_field( $_POST['svcp_ciudad'] ?? '' );
