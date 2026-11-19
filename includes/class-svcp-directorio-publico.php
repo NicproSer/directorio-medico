@@ -111,7 +111,9 @@ class SVCP_Directorio_Publico {
                             $clinica = $clinicas[0] ?? '';
                             $ciudad = get_post_meta( $id, 'svcp_ciudad', true );
                             $whatsapp = get_post_meta( $id, 'svcp_whatsapp', true );
-                            $correo = get_post_meta( $id, 'svcp_correo', true );
+                            $correos = get_post_meta( $id, 'svcp_correos', true );
+                            if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $id, 'svcp_correo', true ) ); }
+                            $correos = array_values( array_filter( array_slice( $correos, 0, 3 ), 'is_email' ) );
                             $direccion = get_post_meta( $id, 'svcp_direccion', true );
                             $facebook = get_post_meta( $id, 'svcp_facebook', true );
                             $instagram = get_post_meta( $id, 'svcp_instagram', true );
@@ -131,7 +133,7 @@ class SVCP_Directorio_Publico {
                                     <?php if ( $ciudad ) : ?><p class="svcp-doctor-ciudad"><?php echo esc_html( $ciudad ); ?></p><?php endif; ?>
                                     <div class="svcp-doctor-acciones svcp-doctor-contact-actions">
                                         <?php foreach ( $telefonos as $telefono ) : ?><a class="svcp-contact-icon" href="tel:<?php echo esc_attr( preg_replace( '/[^0-9+]/', '', $telefono ) ); ?>">☎ <span><?php echo esc_html( $telefono ); ?></span></a><?php endforeach; ?>
-                                        <?php if ( $correo && is_email( $correo ) ) : ?><a class="svcp-contact-icon svcp-contact-email" href="mailto:<?php echo esc_attr( $correo ); ?>">✉ <span><?php echo esc_html( $correo ); ?></span></a><?php endif; ?>
+                                        <?php foreach ( $correos as $correo ) : ?><a class="svcp-contact-icon svcp-contact-email" href="mailto:<?php echo esc_attr( $correo ); ?>">✉ <span><?php echo esc_html( $correo ); ?></span></a><?php endforeach; ?>
                                         <?php if ( $whatsapp ) : ?><a class="svcp-social-icon" href="https://wa.me/<?php echo esc_attr( preg_replace( '/[^0-9]/', '', $whatsapp ) ); ?>" target="_blank" rel="noopener noreferrer" aria-label="WhatsApp"><i class="fa-brands fa-whatsapp" aria-hidden="true"></i></a><?php endif; ?>
                                         <?php if ( $facebook ) : ?><a class="svcp-social-icon" href="<?php echo esc_url( $facebook ); ?>" target="_blank" rel="noopener noreferrer" aria-label="Facebook"><i class="fa-brands fa-facebook-f" aria-hidden="true"></i></a><?php endif; ?>
                                         <?php if ( $twitter ) : ?><a class="svcp-social-icon" href="<?php echo esc_url( $twitter ); ?>" target="_blank" rel="noopener noreferrer" aria-label="X"><i class="fa-brands fa-x-twitter" aria-hidden="true"></i></a><?php endif; ?>
