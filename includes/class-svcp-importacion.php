@@ -137,12 +137,14 @@ class SVCP_Importacion {
             if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $id, 'svcp_telefono', true ) ); }
             $clinicas = get_post_meta( $id, 'svcp_clinicas', true );
             if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $id, 'svcp_clinica', true ) ); }
+            $correos = get_post_meta( $id, 'svcp_correos', true );
+            if ( ! is_array( $correos ) || empty( $correos ) ) { $correos = array( get_post_meta( $id, 'svcp_correo', true ) ); }
             $row = array(
                 $id,
                 get_the_title( $id ),
-                ( get_post_meta( $id, 'svcp_correos', true )[0] ?? get_post_meta( $id, 'svcp_correo', true ) ),
-                ( get_post_meta( $id, 'svcp_correos', true )[1] ?? '' ),
-                ( get_post_meta( $id, 'svcp_correos', true )[2] ?? '' ),
+                $correos[0] ?? '',
+                $correos[1] ?? '',
+                $correos[2] ?? '',
                 $telefonos[0] ?? '',
                 $telefonos[1] ?? '',
                 $telefonos[2] ?? '',
@@ -179,7 +181,7 @@ class SVCP_Importacion {
 
     private function limpiar_encabezado( $value ) {
         $value = preg_replace( '/^\xEF\xBB\xBF/', '', (string) $value );
-        return sanitize_title( remove_accents( trim( $value ) ) );
+        return str_replace( '-', '_', sanitize_title( remove_accents( trim( $value ) ) ) );
     }
 
     private function normalizar_nombre( $value ) {
