@@ -7,9 +7,7 @@ class SVCP_Campos_Doctor {
 
     private static function campos_editables_por_doctor() {
         return array(
-            'svcp_telefono'   => array( 'Teléfono', 'text', true, 'sanitize_text_field' ),
             'svcp_whatsapp'   => array( 'WhatsApp', 'text', false, 'sanitize_text_field' ),
-            'svcp_clinica'    => array( 'Clínica u Hospital', 'text', true, 'sanitize_text_field' ),
             'svcp_direccion'  => array( 'Dirección', 'text', false, 'sanitize_text_field' ),
             'svcp_ciudad'     => array( 'Ciudad', 'text', true, 'sanitize_text_field' ),
             'svcp_correo'     => array( 'Correo', 'email', true, 'sanitize_email' ),
@@ -43,6 +41,20 @@ class SVCP_Campos_Doctor {
             ) );
         }
 
+        foreach ( array( 'svcp_telefonos', 'svcp_clinicas' ) as $key ) {
+            register_post_meta( 'doctor', $key, array(
+                'type' => 'array', 'single' => true, 'show_in_rest' => array(
+                    'schema' => array( 'type' => 'array', 'items' => array( 'type' => 'string' ), 'maxItems' => 3 ),
+                ),
+                'sanitize_callback' => function( $values ) {
+                    if ( ! is_array( $values ) ) { return array(); }
+                    $values = array_slice( array_map( 'sanitize_text_field', $values ), 0, 3 );
+                    return array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
+                },
+                'auth_callback' => function() { return current_user_can( 'edit_doctor' ); },
+            ) );
+        }
+
         foreach ( array( 'svcp_membresia_estado', 'svcp_membresia_inicio', 'svcp_membresia_vencimiento', 'svcp_membresia_ultimo_pago', 'svcp_membresia_metodo_pago', 'svcp_membresia_referencia', 'svcp_membresia_monto' ) as $key ) {
             register_post_meta( 'doctor', $key, array(
                 'type' => 'string', 'single' => true, 'show_in_rest' => false,
@@ -67,6 +79,24 @@ class SVCP_Campos_Doctor {
         wp_nonce_field( 'svcp_guardar_campos', 'svcp_campos_nonce' );
         echo '<p class="description">' . esc_html__( 'Especialidad: Coloproctología. La región se selecciona en el panel de Regiones.', 'svcp-directorio' ) . '</p>';
         echo '<table class="form-table">';
+        $telefonos = get_post_meta( $post->ID, 'svcp_telefonos', true );
+        if ( ! is_array( $telefonos ) || empty( $telefonos ) ) { $telefonos = array( get_post_meta( $post->ID, 'svcp_telefono', true ) ); }
+        $clinicas = get_post_meta( $post->ID, 'svcp_clinicas', true );
+        if ( ! is_array( $clinicas ) || empty( $clinicas ) ) { $clinicas = array( get_post_meta( $post->ID, 'svcp_clinica', true ) ); }
+        echo '<tr><th><label>Teléfonos de contacto *</label></th><td>';
+        for ( $i = 0; $i < 3; $i++ ) {
+            printf( '<p><input type="tel" class="widefat" name="svcp_telefonos[]" value="%1$s" placeholder="%2$s" %3$s></p>',
+                esc_attr( $telefonos[ $i ] ?? '' ), esc_attr( 0 === $i ? 'Teléfono principal' : 'Teléfono adicional (opcional)' ), 0 === $i ? 'required' : ''
+            );
+        }
+        echo '<p class="description">Máximo 3 teléfonos. El primero es obligatorio.</p></td></tr>';
+        echo '<tr><th><label>Clínicas u hospitales *</label></th><td>';
+        for ( $i = 0; $i < 3; $i++ ) {
+            printf( '<p><input type="text" class="widefat" name="svcp_clinicas[]" value="%1$s" placeholder="%2$s" %3$s></p>',
+                esc_attr( $clinicas[ $i ] ?? '' ), esc_attr( 0 === $i ? 'Clínica u hospital principal' : 'Clínica u hospital adicional (opcional)' ), 0 === $i ? 'required' : ''
+            );
+        }
+        echo '<p class="description">Máximo 3 clínicas. La primera es obligatoria.</p></td></tr>';
         foreach ( self::campos_editables_por_doctor() as $key => $config ) {
             list( $label, $tipo, $requerido ) = $config;
             $valor = get_post_meta( $post->ID, $key, true );
@@ -255,6 +285,14 @@ class SVCP_Campos_Doctor {
                     $valor = wp_unslash( $_POST[ $key ] );
                     update_post_meta( $post_id, $key, call_user_func( $sanitizer, $valor ) );
                 }
+            }
+            foreach ( array( 'telefonos' => 'svcp_telefono', 'clinicas' => 'svcp_clinica' ) as $plural => $legacy_key ) {
+                $values = isset( $_POST[ 'svcp_' . $plural ] ) && is_array( $_POST[ 'svcp_' . $plural ] )
+                    ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'svcp_' . $plural ] ) ), 0, 3 )
+                    : array();
+                $values = array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
+                update_post_meta( $post_id, 'svcp_' . $plural, $values );
+                update_post_meta( $post_id, $legacy_key, $values[0] ?? '' );
             }
         }
 
