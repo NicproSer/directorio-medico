@@ -56,7 +56,7 @@ class SVCP_Campos_Doctor {
                 ),
                 'sanitize_callback' => function( $values ) {
                     if ( ! is_array( $values ) ) { return array(); }
-                    $values = array_slice( array_map( 'sanitize_text_field', $values ), 0, 3 );
+                    $values = array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, $values ), 0, 3 );
                     return array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
                 },
                 'auth_callback' => function() { return current_user_can( 'edit_doctor' ); },
@@ -296,7 +296,7 @@ class SVCP_Campos_Doctor {
             }
             foreach ( array( 'telefonos' => 'svcp_telefono', 'clinicas' => 'svcp_clinica' ) as $plural => $legacy_key ) {
                 $values = isset( $_POST[ 'svcp_' . $plural ] ) && is_array( $_POST[ 'svcp_' . $plural ] )
-                    ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST[ 'svcp_' . $plural ] ) ), 0, 3 )
+                    ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST[ 'svcp_' . $plural ] ) ), 0, 3 )
                     : array();
                 $values = array_values( array_filter( $values, function( $value ) { return '' !== trim( $value ); } ) );
                 update_post_meta( $post_id, 'svcp_' . $plural, $values );
