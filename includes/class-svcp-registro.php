@@ -50,8 +50,18 @@ class SVCP_Registro {
         $nombre    = sanitize_text_field( $_POST['svcp_nombre'] ?? '' );
         $correo    = sanitize_email( $_POST['svcp_correo'] ?? '' );
         $clave     = $_POST['svcp_clave'] ?? '';
-        $clinica   = sanitize_text_field( $_POST['svcp_clinica'] ?? '' );
-        $telefono  = sanitize_text_field( $_POST['svcp_telefono'] ?? '' );
+        $telefonos = isset( $_POST['svcp_telefonos'] ) && is_array( $_POST['svcp_telefonos'] )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_telefonos'] ) ), 0, 3 )
+            : array();
+        $clinicas = isset( $_POST['svcp_clinicas'] ) && is_array( $_POST['svcp_clinicas'] )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_clinicas'] ) ), 0, 3 )
+            : array();
+        if ( empty( $telefonos ) && ! empty( $_POST['svcp_telefono'] ) ) { $telefonos = array( sanitize_text_field( wp_unslash( $_POST['svcp_telefono'] ) ) ); }
+        if ( empty( $clinicas ) && ! empty( $_POST['svcp_clinica'] ) ) { $clinicas = array( sanitize_text_field( wp_unslash( $_POST['svcp_clinica'] ) ) ); }
+        $telefono = $telefonos[0] ?? '';
+        $clinica  = $clinicas[0] ?? '';
+        $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
+        $clinicas  = array_values( array_filter( $clinicas, function( $value ) { return '' !== trim( $value ); } ) );
         $whatsapp  = sanitize_text_field( $_POST['svcp_whatsapp'] ?? '' );
         $direccion = sanitize_text_field( $_POST['svcp_direccion'] ?? '' );
         $ciudad    = sanitize_text_field( $_POST['svcp_ciudad'] ?? '' );
@@ -108,6 +118,8 @@ class SVCP_Registro {
 
         update_post_meta( $post_id, 'svcp_clinica', $clinica );
         update_post_meta( $post_id, 'svcp_telefono', $telefono );
+        update_post_meta( $post_id, 'svcp_clinicas', $clinicas );
+        update_post_meta( $post_id, 'svcp_telefonos', $telefonos );
         update_post_meta( $post_id, 'svcp_whatsapp', $whatsapp );
         update_post_meta( $post_id, 'svcp_direccion', $direccion );
         update_post_meta( $post_id, 'svcp_ciudad', $ciudad );
@@ -207,12 +219,18 @@ class SVCP_Registro {
                 <input type="text" name="svcp_nombre" required />
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Clínica u Hospital *', 'svcp-directorio' ); ?></label>
-                <input type="text" name="svcp_clinica" required />
+                <label><?php esc_html_e( 'Clínicas u hospitales donde trabaja *', 'svcp-directorio' ); ?></label>
+                <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                    <input type="text" name="svcp_clinicas[]" placeholder="<?php echo esc_attr( 1 === $i ? 'Clínica u hospital adicional (opcional)' : ( 2 === $i ? 'Otra clínica u hospital (opcional)' : 'Clínica u hospital principal' ) ); ?>" <?php echo 0 === $i ? 'required' : ''; ?> />
+                <?php endfor; ?>
+                <small><?php esc_html_e( 'Puedes registrar hasta 3 clínicas. La primera es obligatoria.', 'svcp-directorio' ); ?></small>
             </div>
             <div class="svcp-form-row">
-                <label><?php esc_html_e( 'Teléfono *', 'svcp-directorio' ); ?></label>
-                <input type="text" name="svcp_telefono" required />
+                <label><?php esc_html_e( 'Teléfonos de contacto *', 'svcp-directorio' ); ?></label>
+                <?php for ( $i = 0; $i < 3; $i++ ) : ?>
+                    <input type="tel" name="svcp_telefonos[]" placeholder="<?php echo esc_attr( 1 === $i ? 'Teléfono adicional (opcional)' : ( 2 === $i ? 'Otro teléfono (opcional)' : 'Teléfono principal' ) ); ?>" <?php echo 0 === $i ? 'required' : ''; ?> />
+                <?php endfor; ?>
+                <small><?php esc_html_e( 'Puedes registrar hasta 3 teléfonos. El primero es obligatorio.', 'svcp-directorio' ); ?></small>
             </div>
             <div class="svcp-form-row">
                 <label><?php esc_html_e( 'Correo *', 'svcp-directorio' ); ?></label>
