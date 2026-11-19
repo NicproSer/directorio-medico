@@ -98,11 +98,13 @@ class SVCP_Panel_Doctor {
         $nombre    = sanitize_text_field( wp_unslash( $_POST['svcp_nombre'] ?? '' ) );
         $correo    = sanitize_email( wp_unslash( $_POST['svcp_correo'] ?? '' ) );
         $telefonos = isset( $_POST['svcp_telefonos'] ) && is_array( $_POST['svcp_telefonos'] )
-            ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST['svcp_telefonos'] ) ), 0, 3 )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_telefonos'] ) ), 0, 3 )
             : array();
         $clinicas = isset( $_POST['svcp_clinicas'] ) && is_array( $_POST['svcp_clinicas'] )
-            ? array_slice( array_map( 'sanitize_text_field', wp_unslash( $_POST['svcp_clinicas'] ) ), 0, 3 )
+            ? array_slice( array_map( function( $value ) { return is_scalar( $value ) ? sanitize_text_field( $value ) : ''; }, wp_unslash( $_POST['svcp_clinicas'] ) ), 0, 3 )
             : array();
+        if ( empty( $telefonos ) && ! empty( $_POST['svcp_telefono'] ) ) { $telefonos = array( sanitize_text_field( wp_unslash( $_POST['svcp_telefono'] ) ) ); }
+        if ( empty( $clinicas ) && ! empty( $_POST['svcp_clinica'] ) ) { $clinicas = array( sanitize_text_field( wp_unslash( $_POST['svcp_clinica'] ) ) ); }
         $telefono = $telefonos[0] ?? '';
         $clinica  = $clinicas[0] ?? '';
         $telefonos = array_values( array_filter( $telefonos, function( $value ) { return '' !== trim( $value ); } ) );
