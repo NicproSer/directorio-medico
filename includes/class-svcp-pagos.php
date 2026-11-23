@@ -1091,6 +1091,14 @@ CSS;
             update_post_meta( $doctor, 'svcp_membresia_tasa_fecha', get_post_meta($id, self::META_TASA_FECHA, true) );
             update_post_meta( $doctor, 'svcp_membresia_precio_usd', get_post_meta($id, self::META_PRECIO_USD, true) );
 
+            // La confirmación del pago valida automáticamente la membresía y publica la ficha.
+            // La publicación sincroniza también post_status=publish para que el directorio la incluya.
+            if ( class_exists( 'SVCP_Aprobacion' ) ) {
+                if ( ! SVCP_Aprobacion::establecer( $doctor, SVCP_Aprobacion::PUBLICADA, true ) ) {
+                    $this->redirigir_admin( 'error' );
+                }
+            }
+
             update_post_meta( $id, self::META_ESTADO, 'aprobado' );
             if ( class_exists('SVCP_Auditoria') ) { SVCP_Auditoria::registrar( $doctor, 'pago_aprobado', 'pago_' . $id, 'pendiente', 'aprobado · Bs. ' . $monto . ' · USD ' . number_format($pagado_usd,4,'.','') . ' · saldo Bs. ' . number_format($saldo_bs,2,'.','') . ' · ref. ' . $ref, 'finanzas' ); }
             update_post_meta( $id, self::META_RESUELTO_POR, $admin_id );

@@ -249,7 +249,7 @@ class SVCP_Aprobacion {
         <div class="wrap">
             <h1><?php esc_html_e( 'Aprobaciones del Directorio', 'svcp-directorio' ); ?></h1>
             <p class="description">Gestiona el ciclo de revisión de las fichas sin depender únicamente del estado interno de WordPress.</p>
-            <?php if ( $pago_aprobado ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'El pago fue aprobado y la membresía quedó actualizada. Ahora puedes continuar con la revisión y aprobación de la ficha del médico.', 'svcp-directorio' ); ?></p></div><?php endif; ?>
+            <?php if ( $pago_aprobado ) : ?><div class="notice notice-success is-dismissible"><p><?php esc_html_e( 'El pago fue aprobado correctamente. La membresía quedó activa y la ficha del médico fue aprobada y publicada automáticamente en el directorio.', 'svcp-directorio' ); ?></p></div><?php endif; ?>
             <div style="display:flex;gap:10px;flex-wrap:wrap;margin:18px 0;">
                 <?php foreach ( self::estados() as $key => $label ) : ?>
                     <a class="button" href="<?php echo esc_url( add_query_arg( array( 'post_type'=>'doctor', 'page'=>'svcp-aprobaciones', 'estado'=>$key ), admin_url('edit.php') ) ); ?>"><strong><?php echo esc_html( $conteos[$key] ); ?></strong> <?php echo esc_html( $label ); ?></a>
