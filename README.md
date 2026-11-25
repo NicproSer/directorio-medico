@@ -1,6 +1,6 @@
 # SVCP Directorio Médico
 
-**Versión:** 1.0.0  
+**Versión:** 1.0.7  
 **Autor:** NICPRODEV  
 **Plataforma:** WordPress
 
@@ -11,9 +11,9 @@ Plugin para administrar el directorio público de médicos de la Sociedad Venezo
 - [Manual del administrador](MANUAL-ADMINISTRADOR.md)
 - [Manual del usuario final (médico)](MANUAL-USUARIO.md)
 
-## Actualización a 1.0.0
+## Actualización a 1.0.7
 
-Esta versión consolida el flujo de registro y acceso, la administración del ciclo institucional de membresías, la configuración de datos de pago, el historial de pagos y sus comprobantes PDF, además de la interfaz renovada del portal.
+Esta versión incorpora consulta de divisa opcional (no bloqueante), comprobante PDF con identidad institucional y RIF, y publicación automática de la ficha al aprobar un pago. Consulta los manuales actualizados para el médico y el administrador/tesorero.
 
 ## URLs públicas del portal
 
