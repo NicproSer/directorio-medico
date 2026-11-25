@@ -41,6 +41,7 @@ class SVCP_Pagos {
         add_shortcode( 'svcp_pagos_realizados', array( $this, 'shortcode_pagos_realizados' ) );
         add_action( 'admin_init', array( $this, 'asegurar_pagina_pagos_realizados' ) );
         add_action( 'admin_post_svcp_enviar_pago', array( $this, 'enviar' ) );
+        add_action( 'wp_ajax_svcp_consultar_tasa', array( $this, 'consultar_tasa_ajax' ) );
         add_action( 'admin_post_nopriv_svcp_enviar_pago', array( $this, 'enviar' ) );
         add_action( 'admin_menu', array( $this, 'menu' ) );
         add_filter( 'parent_file', array( $this, 'badge_menu_pagos' ) );
@@ -405,15 +406,19 @@ CSS;
         if ( $doctor_foto ) { echo '<img src="' . esc_url( $doctor_foto ) . '" alt="">'; } else { echo '<span>' . esc_html( strtoupper( $doctor_inicial ) ) . '</span>'; }
         echo '</div></header><div class="svcp-portal-content">';
         echo '<section class="svcp-pago-wrap" aria-labelledby="svcp-pago-titulo">';
-        echo '<div class="svcp-pago-encabezado"><span class="svcp-pago-kicker">Membresía SVCP</span><h2 id="svcp-pago-titulo">Reportar pago</h2><p>Completa los datos exactamente como aparecen en tu comprobante. La membresía no se activa hasta que la sociedad verifique el pago.</p></div>';
+        echo '<div class="svcp-pago-encabezado"><span class="svcp-pago-kicker">Membresía SVCP</span><h2 id="svcp-pago-titulo">Reportar pago</h2><p>Completa los datos exactamente como aparecen en tu comprobante. La consulta de divisa es opcional; registra el monto que realmente pagaste en bolívares. La membresía se activa cuando la sociedad verifique el pago.</p></div>';
         echo '<div class="svcp-pago-resumen"><div><span>Afiliado</span><strong>' . esc_html( get_the_title( $doctor_id ) ) . '</strong></div><div><span>Estado actual</span><strong>' . esc_html( $estado_visual ) . '</strong></div></div>';
         $ajustes_membresia = class_exists( 'SVCP_Ciclo_Membresia' ) ? SVCP_Ciclo_Membresia::settings() : array();
         $precio_usd = isset( $ajustes_membresia['precio_membresia_usd'] ) ? (float) $ajustes_membresia['precio_membresia_usd'] : 0;
         $saldo_usd_actual = max( 0, (float) get_post_meta( $doctor_id, 'svcp_membresia_saldo_pendiente_usd', true ) );
         $fecha_pago_default = current_time('Y-m-d');
-        $tasa_actual = class_exists('SVCP_Tasa_BCV') ? SVCP_Tasa_BCV::obtener($fecha_pago_default, false) : new WP_Error('sin_servicio','Servicio de tasas no disponible');
         if ( $saldo_usd_actual > 0 ) { $precio_usd = $saldo_usd_actual; }
-        if ( $precio_usd > 0 && ! is_wp_error($tasa_actual) ) { $equivalente = $precio_usd * (float) $tasa_actual['tasa']; echo '<div style="margin:16px 0"><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').showModal()">Consultar monto de membresía</button></div><dialog id="svcp-precio-modal" class="svcp-precio-modal"><button type="button" class="svcp-precio-cerrar" aria-label="Cerrar" onclick="document.getElementById(\'svcp-precio-modal\').close()">×</button><span class="svcp-pago-kicker">Membresía SVCP</span><h2>'.( $saldo_usd_actual > 0 ? 'Saldo pendiente' : 'Monto institucional' ).'</h2><strong class="svcp-precio-usd">USD '.esc_html(number_format_i18n($precio_usd,2)).'</strong><strong class="svcp-precio-bs">Bs. '.esc_html(number_format_i18n($equivalente,2)).'</strong><p>Tasa BCV: Bs. '.esc_html(number_format_i18n((float)$tasa_actual['tasa'],4)).' por USD<br>Vigencia: '.esc_html(wp_date('d/m/Y',strtotime($tasa_actual['fecha_vigencia']),wp_timezone())).'</p><small>La cotización corresponde a hoy; si seleccionas otra fecha de pago, se guardará su tasa histórica.</small><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').close()">Entendido</button></dialog><style>.svcp-precio-modal{width:min(440px,calc(100% - 32px));border:0;border-radius:18px;padding:30px;color:#173f5f;box-shadow:0 24px 80px rgba(12,35,52,.28)}.svcp-precio-modal::backdrop{background:rgba(13,29,43,.62);backdrop-filter:blur(3px)}.svcp-precio-modal h2{margin:8px 0 18px}.svcp-precio-usd,.svcp-precio-bs{display:block;font-size:26px;margin:8px 0}.svcp-precio-usd{color:#0b5a88}.svcp-precio-bs{color:#087f72}.svcp-precio-modal p,.svcp-precio-modal small{color:#61717c;line-height:1.6}.svcp-precio-cerrar{float:right;border:0;background:transparent;font-size:28px;cursor:pointer;color:#61717c}</style>'; } elseif ( $precio_usd > 0 ) { echo '<div class="svcp-pago-alerta-publico svcp-pago-alerta-error" role="alert"><strong>No se pudo consultar la tasa BCV.</strong><span>Por seguridad, no se muestra una conversión estimada. Intenta más tarde o contacta a la administración.</span></div>'; }
+        if ( $precio_usd > 0 ) {
+            echo '<div style="margin:16px 0"><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').showModal()">Consultar monto de membresía (opcional)</button></div>';
+            echo '<dialog id="svcp-precio-modal" class="svcp-precio-modal"><button type="button" class="svcp-precio-cerrar" aria-label="Cerrar" onclick="document.getElementById(\'svcp-precio-modal\').close()">×</button><span class="svcp-pago-kicker">Membresía SVCP</span><h2>'.( $saldo_usd_actual > 0 ? 'Saldo pendiente' : 'Monto institucional' ).'</h2><strong class="svcp-precio-usd">USD '.esc_html(number_format_i18n($precio_usd,2)).'</strong><p>La consulta de la tasa es opcional y solo sirve como referencia. Puedes reportar el monto exacto que pagaste en bolívares aunque el servicio de consulta no esté disponible.</p><label for="svcp-consulta-fecha">Fecha de pago</label><input id="svcp-consulta-fecha" type="date" value="'.esc_attr($fecha_pago_default).'" max="'.esc_attr($fecha_pago_default).'"><button type="button" class="svcp-pago-boton" id="svcp-consultar-tasa">Consultar tasa BCV</button><p id="svcp-consulta-resultado" aria-live="polite">Aún no se ha realizado ninguna consulta.</p><button type="button" class="svcp-pago-boton" onclick="document.getElementById(\'svcp-precio-modal\').close()">Cerrar</button></dialog>';
+            echo '<style>.svcp-precio-modal{width:min(440px,calc(100% - 32px));border:0;border-radius:18px;padding:30px;color:#173f5f;box-shadow:0 24px 80px rgba(12,35,52,.28)}.svcp-precio-modal::backdrop{background:rgba(13,29,43,.62);backdrop-filter:blur(3px)}.svcp-precio-modal h2{margin:8px 0 18px}.svcp-precio-usd,.svcp-precio-bs{display:block;font-size:26px;margin:8px 0;color:#0b5a88}.svcp-precio-modal p,.svcp-precio-modal small{color:#61717c;line-height:1.6}.svcp-precio-modal input{display:block;width:100%;margin:8px 0 14px;padding:10px}.svcp-precio-cerrar{float:right;border:0;background:transparent;font-size:28px;cursor:pointer;color:#61717c}</style>';
+            echo '<script>document.addEventListener("DOMContentLoaded",function(){var b=document.getElementById("svcp-consultar-tasa");if(!b)return;b.addEventListener("click",function(){var f=document.getElementById("svcp-consulta-fecha"),r=document.getElementById("svcp-consulta-resultado");b.disabled=true;b.textContent="Consultando…";r.textContent="Consultando la tasa de referencia…";var d=new URLSearchParams();d.set("action","svcp_consultar_tasa");d.set("nonce","'.esc_js(wp_create_nonce('svcp_consultar_tasa')).'");d.set("fecha",f.value);fetch("'.esc_url(admin_url('admin-ajax.php')).'",{method:"POST",headers:{"Content-Type":"application/x-www-form-urlencoded"},body:d.toString(),credentials:"same-origin"}).then(function(x){return x.json()}).then(function(x){if(!x.success)throw new Error(x.data&&x.data.message?x.data.message:"Consulta no disponible");r.textContent="Tasa BCV: Bs. "+x.data.tasa+" por USD · Vigencia: "+x.data.vigencia+". Equivalente referencial de la membresía: Bs. "+x.data.equivalente;}).catch(function(e){r.textContent=e.message+" Puedes continuar reportando tu pago normalmente."}).finally(function(){b.disabled=false;b.textContent="Consultar tasa BCV"});});});</script>';
+        }
         $datos_pago = class_exists( 'SVCP_Ciclo_Membresia' ) ? SVCP_Ciclo_Membresia::settings() : array();
         $campos_pago = array(
             'Banco' => isset( $datos_pago['payment_bank'] ) ? $datos_pago['payment_bank'] : '',
@@ -442,6 +447,7 @@ CSS;
         <form class="svcp-form-pago" method="post" enctype="multipart/form-data" action="<?php echo esc_url( admin_url( 'admin-post.php' ) ); ?>" novalidate>
             <input type="hidden" name="action" value="svcp_enviar_pago">
             <input type="hidden" name="doctor_id" value="<?php echo esc_attr( $doctor_id ); ?>">
+            <input type="hidden" name="tasa_consultada" value="1" id="svcp-tasa-consultada" disabled>
             <?php wp_nonce_field( 'svcp_enviar_pago', 'svcp_pago_nonce' ); ?>
             <div class="svcp-pago-grid">
                 <p class="svcp-pago-campo"><label for="svcp-depositante">Nombre y apellido del depositante <span aria-hidden="true">*</span></label><input id="svcp-depositante" type="text" name="depositante" required maxlength="160" autocomplete="name"><small>Nombre del titular de la cuenta que realizó la operación.</small></p>
@@ -458,6 +464,36 @@ CSS;
         <?php
         echo '</section></div></main></div>';
         return ob_get_clean();
+    }
+
+    /** Consulta opcional de tasa: solo se ejecuta cuando el médico pulsa el botón. */
+    public function consultar_tasa_ajax() {
+        if ( ! is_user_logged_in() || ! check_ajax_referer( 'svcp_consultar_tasa', 'nonce', false ) ) {
+            wp_send_json_error( array( 'message' => 'No se pudo validar la consulta.' ), 403 );
+        }
+        $fecha = isset( $_POST['fecha'] ) ? sanitize_text_field( wp_unslash( $_POST['fecha'] ) ) : current_time( 'Y-m-d' );
+        if ( ! class_exists( 'SVCP_Tasa_BCV' ) ) {
+            wp_send_json_error( array( 'message' => 'El servicio de consulta no está disponible.' ), 503 );
+        }
+        $tasa = SVCP_Tasa_BCV::obtener( $fecha, false );
+        if ( is_wp_error( $tasa ) ) {
+            wp_send_json_error( array( 'message' => 'No se pudo consultar la tasa en este momento.' ), 503 );
+        }
+        $uid = get_current_user_id();
+        set_transient( 'svcp_bcv_quote_' . $uid . '_' . $fecha, $tasa, 2 * HOUR_IN_SECONDS );
+        $settings = class_exists( 'SVCP_Ciclo_Membresia' ) ? SVCP_Ciclo_Membresia::settings() : array();
+        $doctor_ids = get_posts( array( 'post_type' => 'doctor', 'post_status' => 'any', 'posts_per_page' => 1, 'fields' => 'ids', 'meta_key' => 'svcp_usuario_id', 'meta_value' => $uid ) );
+        $doctor_id = $doctor_ids ? (int) $doctor_ids[0] : 0;
+        $precio = isset( $settings['precio_membresia_usd'] ) ? (float) $settings['precio_membresia_usd'] : 0;
+        if ( $doctor_id ) {
+            $saldo = max( 0, (float) get_post_meta( $doctor_id, 'svcp_membresia_saldo_pendiente_usd', true ) );
+            if ( $saldo > 0 ) { $precio = $saldo; }
+        }
+        wp_send_json_success( array(
+            'tasa' => number_format_i18n( (float) $tasa['tasa'], 4 ),
+            'vigencia' => wp_date( 'd/m/Y', strtotime( $tasa['fecha_vigencia'] ), wp_timezone() ),
+            'equivalente' => number_format_i18n( $precio * (float) $tasa['tasa'], 2 ),
+        ) );
     }
 
     public function enviar() {
@@ -499,13 +535,20 @@ CSS;
         }
         $fecha_pago = isset($_POST['fecha_pago']) ? sanitize_text_field(wp_unslash($_POST['fecha_pago'])) : '';
         if ( ! preg_match('/^\d{4}-\d{2}-\d{2}$/', $fecha_pago) || ! checkdate((int)substr($fecha_pago,5,2),(int)substr($fecha_pago,8,2),(int)substr($fecha_pago,0,4)) || $fecha_pago > current_time('Y-m-d') ) { $this->fallo_publico('Indica una fecha de pago válida, no futura.'); }
-        $snapshot_bcv = class_exists('SVCP_Tasa_BCV') ? SVCP_Tasa_BCV::obtener($fecha_pago, true) : new WP_Error('sin_servicio','Servicio de tasas no disponible');
-        if ( is_wp_error($snapshot_bcv) ) { $this->fallo_publico('No fue posible verificar la tasa BCV correspondiente a la fecha seleccionada. Intenta más tarde.'); }
-        $ajustes_snapshot = class_exists('SVCP_Ciclo_Membresia') ? SVCP_Ciclo_Membresia::settings() : array();
-        $precio_usd_snapshot = isset($ajustes_snapshot['precio_membresia_usd']) ? (float) $ajustes_snapshot['precio_membresia_usd'] : 0;
-        $saldo_usd_previo = max(0, (float) get_post_meta($doctor, 'svcp_membresia_saldo_pendiente_usd', true));
-        if ($saldo_usd_previo > 0) { $precio_usd_snapshot = $saldo_usd_previo; }
-        $equivalente_snapshot = $precio_usd_snapshot * (float) $snapshot_bcv['tasa'];
+        // La tasa BCV es una consulta informativa opcional; nunca condiciona el envío del pago.
+        $snapshot_bcv = false;
+        if ( ! empty( $_POST['tasa_consultada'] ) ) {
+            $snapshot_bcv = get_transient( 'svcp_bcv_quote_' . $uid . '_' . $fecha_pago );
+            delete_transient( 'svcp_bcv_quote_' . $uid . '_' . $fecha_pago );
+        }
+        if ( ! is_array( $snapshot_bcv ) || empty( $snapshot_bcv['tasa'] ) || (float) $snapshot_bcv['tasa'] <= 0 ) {
+            $snapshot_bcv = array( 'tasa' => '0', 'fecha_vigencia' => '' );
+        }
+        $ajustes_snapshot = class_exists( 'SVCP_Ciclo_Membresia' ) ? SVCP_Ciclo_Membresia::settings() : array();
+        $precio_usd_snapshot = isset( $ajustes_snapshot['precio_membresia_usd'] ) ? (float) $ajustes_snapshot['precio_membresia_usd'] : 0;
+        $saldo_usd_previo = max( 0, (float) get_post_meta( $doctor, 'svcp_membresia_saldo_pendiente_usd', true ) );
+        if ( $saldo_usd_previo > 0 ) { $precio_usd_snapshot = $saldo_usd_previo; }
+        $equivalente_snapshot = (float) $snapshot_bcv['tasa'] > 0 ? $precio_usd_snapshot * (float) $snapshot_bcv['tasa'] : 0;
         if ( empty($_FILES['comprobante']['name']) || ! isset($_FILES['comprobante']['tmp_name']) ) {
             $this->fallo_publico( 'Debes adjuntar la captura del comprobante de pago.' );
         }
@@ -570,7 +613,7 @@ CSS;
             self::META_TASA_FECHA => $snapshot_bcv['fecha_vigencia'],
             self::META_PRECIO_USD => number_format($precio_usd_snapshot, 2, '.', ''),
             self::META_EQUIVALENTE_BS => number_format($equivalente_snapshot, 2, '.', ''),
-            self::META_PAGO_USD => number_format( $monto / max( (float) $snapshot_bcv['tasa'], 0.00000001 ), 8, '.', '' ),
+            self::META_PAGO_USD => ( (float) $snapshot_bcv['tasa'] > 0 ? number_format( $monto / (float) $snapshot_bcv['tasa'], 8, '.', '' ) : '0' ),
             '_svcp_deuda_previa_usd' => number_format($saldo_usd_previo, 8, '.', ''),
             self::META_METODO => $metodo,
             self::META_ESTADO => 'pendiente',
@@ -886,8 +929,8 @@ CSS;
             'Tasa BCV aplicada: Bs. ' . number_format($tasa,4,',','.') . ' por USD',
             'Vigencia de tasa: ' . get_post_meta($id,self::META_TASA_FECHA,true),
             'Saldo pendiente: USD ' . number_format($saldo_usd,4,',','.') . ' (Bs. ' . number_format($saldo_bs,2,',','.') . ')',
-            'Estado: APROBADO', 'Este documento acredita el registro y aprobacion del pago indicado.',
-            'No sustituye una factura fiscal.'
+            'Estado: APROBADO', 'Este documento es una constancia informativa del registro del pago.',
+            'No constituye un documento fiscal.'
         );
         $esc = function( $value ) { return $this->pdf_escape( $value ); };
         $content = "q\n";
@@ -896,11 +939,15 @@ CSS;
         $content .= "0.89 0.14 0.18 rg 0 644 612 6 re f\n";
         // El color de relleno del PDF también afecta al texto (rg); definirlo explícitamente.
         $content .= "1 1 1 rg\n";
-        $content .= "BT /F2 10 Tf 48 800 Td (SOCIEDAD VENEZOLANA DE COLOPROCTOLOGIA) Tj ET\n";
-        $content .= "BT /F2 22 Tf 48 758 Td (Comprobante de pago) Tj ET\n";
-        $content .= "BT /F1 10 Tf 48 735 Td (Membresia institucional - constancia de pago aprobado) Tj ET\n";
+        $content .= "BT /F2 10 Tf 118 800 Td (SOCIEDAD VENEZOLANA DE COLOPROCTOLOGIA) Tj ET\n";
+        $content .= "BT /F2 22 Tf 118 758 Td (Comprobante de pago) Tj ET\n";
+        $content .= "BT /F1 10 Tf 118 735 Td (RIF: J-30849139-0) Tj ET\n";
+        $content .= "BT /F1 9 Tf 118 718 Td (Membresia institucional - constancia informativa) Tj ET\n";
         $content .= "0.10 0.55 0.43 rg 454 760 110 28 re f\n";
         $content .= "1 1 1 rg BT /F2 10 Tf 477 770 Td (APROBADO) Tj ET\n";
+        // Logo institucional del inicio de sesión, descargado y convertido a JPEG para incrustarlo en el PDF.
+        $logo_pdf = $this->obtener_logo_pdf();
+        if ( $logo_pdf ) { $content .= "q 58 0 0 58 48 766 cm /Logo Do Q\n"; }
         // Identificador y datos del afiliado.
         $content .= "0.95 0.97 0.98 rg 42 560 528 58 re f\n";
         $content .= "0.82 0.87 0.90 RG 42 560 528 58 re S\n";
@@ -935,7 +982,7 @@ CSS;
         // Pie y nota legal.
         $content .= "0.82 0.87 0.90 RG 42 165 m 570 165 l S\n";
         $content .= "0.09 0.16 0.22 rg BT /F2 9 Tf 42 142 Td (Constancia interna de registro y aprobacion de pago) Tj ET\n";
-        $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 125 Td (Este documento no sustituye una factura fiscal.) Tj ET\n";
+        $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 125 Td (Este documento no constituye un documento fiscal, sino que tiene caracter informativo.) Tj ET\n";
         $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 80 Td (Sociedad Venezolana de Coloproctologia | Portal del Medico SVCP) Tj ET\n";
         $content .= "0.35 0.42 0.48 rg BT /F1 8 Tf 42 64 Td (Documento generado automaticamente. Conserve este comprobante para sus registros.) Tj ET\n";
         $content .= "Q";
@@ -943,16 +990,44 @@ CSS;
         $objects = array();
         $objects[] = '<< /Type /Catalog /Pages 2 0 R >>';
         $objects[] = '<< /Type /Pages /Kids [3 0 R] /Count 1 >>';
-        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>';
+        $objects[] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> /XObject << /Logo 7 0 R >> >> /Contents 6 0 R >>';
         $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica >>';
         $objects[] = '<< /Type /Font /Subtype /Type1 /BaseFont /Helvetica-Bold >>';
         $objects[] = '<< /Length ' . strlen($stream) . " >>\nstream\n" . $stream . "\nendstream";
+        if ( $logo_pdf ) {
+            $objects[] = '<< /Type /XObject /Subtype /Image /Width ' . absint( $logo_pdf['width'] ) . ' /Height ' . absint( $logo_pdf['height'] ) . ' /ColorSpace /DeviceRGB /BitsPerComponent 8 /Filter /DCTDecode /Length ' . strlen( $logo_pdf['data'] ) . " >>\nstream\n" . $logo_pdf['data'] . "\nendstream";
+        } else {
+            // Sin GD o sin conexión, se omite la imagen sin impedir la descarga del comprobante.
+            $objects[2] = '<< /Type /Page /Parent 2 0 R /MediaBox [0 0 612 842] /Resources << /Font << /F1 4 0 R /F2 5 0 R >> >> /Contents 6 0 R >>';
+        }
         $pdf = "%PDF-1.4\n"; $offsets = array(0);
         foreach ($objects as $i=>$obj) { $offsets[] = strlen($pdf); $pdf .= ($i+1) . " 0 obj\n" . $obj . "\nendobj\n"; }
         $xref = strlen($pdf); $total = count($objects) + 1; $pdf .= "xref\n0 " . $total . "\n0000000000 65535 f \n";
         for ($i=1;$i<$total;$i++) { $pdf .= sprintf('%010d 00000 n ', $offsets[$i]) . "\n"; }
         $pdf .= "trailer\n<< /Size " . $total . " /Root 1 0 R >>\nstartxref\n" . $xref . "\n%%EOF";
         nocache_headers(); header('Content-Type: application/pdf'); header('Content-Disposition: attachment; filename="comprobante-svcp-' . $id . '.pdf"'); header('Content-Length: ' . strlen($pdf)); echo $pdf; exit;
+    }
+
+    /** Descarga el logo de acceso SVCP y lo convierte a JPEG para incrustarlo en el PDF. */
+    private function obtener_logo_pdf() {
+        if ( ! function_exists( 'imagecreatefromstring' ) || ! function_exists( 'imagejpeg' ) ) { return false; }
+        $response = wp_remote_get( 'https://svcp86.org/wp-content/uploads/2021/10/SVCP_Logo__ICO.png', array( 'timeout' => 5, 'redirection' => 2 ) );
+        if ( is_wp_error( $response ) || 200 !== (int) wp_remote_retrieve_response_code( $response ) ) { return false; }
+        $binary = wp_remote_retrieve_body( $response );
+        if ( ! $binary ) { return false; }
+        $source = @imagecreatefromstring( $binary );
+        if ( ! $source ) { return false; }
+        $width = imagesx( $source ); $height = imagesy( $source );
+        if ( $width < 1 || $height < 1 || $width > 2000 || $height > 2000 ) { imagedestroy( $source ); return false; }
+        $canvas = imagecreatetruecolor( $width, $height );
+        $white = imagecolorallocate( $canvas, 255, 255, 255 );
+        imagefill( $canvas, 0, 0, $white );
+        imagecopy( $canvas, $source, 0, 0, 0, 0, $width, $height );
+        ob_start();
+        imagejpeg( $canvas, null, 88 );
+        $data = ob_get_clean();
+        imagedestroy( $canvas ); imagedestroy( $source );
+        return $data ? array( 'data' => $data, 'width' => $width, 'height' => $height ) : false;
     }
 
     private function pdf_escape($text) {
