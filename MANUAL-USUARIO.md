@@ -1,65 +1,66 @@
-# Manual del usuario final (médico)
-## SVCP Directorio Médico — versión 1.0.0
+# Manual del médico afiliado
+## SVCP Directorio Médico — versión 1.0.7
 
-Esta guía explica cómo crear tu cuenta, ingresar al portal, actualizar tu ficha y reportar pagos de membresía.
+Esta guía explica cómo crear tu cuenta, mantener tu ficha y reportar pagos de membresía.
 
 ## 1. Crear una cuenta
 1. Visita https://svcp86.org/admin-crearcuenta/.
-2. Completa los campos solicitados con información correcta y actualizada.
-3. Utiliza un correo al que tengas acceso y crea una contraseña segura.
-4. Revisa los datos y envía el formulario.
+2. Completa los datos con información correcta y actualizada.
+3. El correo principal será el correo de acceso; utiliza una cuenta a la que tengas acceso.
+4. Completa el teléfono principal. Los teléfonos y correos adicionales se agregan cuando los necesites mediante **Agregar otro teléfono** o **Agregar otro correo**.
+5. Envía el formulario.
 
-Tu registro y ficha deben ser revisados por la administración. Enviar el formulario no significa que tu perfil ya esté publicado en el directorio.
+La administración revisará tu registro. Crear la cuenta no significa que la ficha ya esté publicada.
 
 ## 2. Iniciar sesión
-1. Entra en https://svcp86.org/admin-iniciosesion/.
-2. Escribe tu usuario o correo y contraseña.
-3. Pulsa **Iniciar sesión**.
-
-Si olvidaste la contraseña, utiliza el enlace de recuperación que aparece en la página y sigue las instrucciones enviadas a tu correo.
+Entra en https://svcp86.org/admin-iniciosesion/, escribe tu usuario/correo y contraseña. Si olvidaste la contraseña, utiliza el enlace de recuperación.
 
 ## 3. Mi perfil
-Ingresa en https://svcp86.org/admin-miperfil/ para abrir tu panel. En **Mi perfil** puedes consultar y actualizar los datos que estén habilitados: nombre, contacto, teléfono/WhatsApp, clínica, ciudad, región y fotografía.
+En https://svcp86.org/admin-miperfil/ puedes revisar y actualizar los datos habilitados. Los campos adicionales de teléfono, correo y dirección se agregan progresivamente con los enlaces **Agregar otro...**. No es necesario completar los adicionales. Guarda los cambios al terminar.
 
-La foto es opcional. Si cargas una, utiliza una imagen cuadrada (1:1), nítida y profesional. Guarda los cambios antes de salir. Si un dato no puede editarse, contacta a la administración.
+La fotografía es opcional. Se recomienda una imagen profesional, cuadrada, nítida y bien iluminada.
 
-## 4. Consultar membresía y monto
-Dentro del panel, abre **Membresía y pago** para consultar tu estado y los datos bancarios institucionales. Pulsa el botón de consulta del monto para abrir la ventana modal con el importe y la información de conversión disponible. Revisa la moneda, tasa y fecha indicadas antes de pagar.
+## 4. Consultar membresía y datos de pago
+En **Membresía y pago** revisa el estado de tu membresía y los datos bancarios oficiales. El precio institucional puede consultarse en el botón correspondiente.
 
-Estados posibles:
-- **Activa:** tu membresía está vigente.
-- **Por vencer:** se aproxima su vencimiento.
-- **Vencida:** el período terminó.
-- **Suspendida:** la administración aplicó una suspensión.
+La consulta de tasa/divisa es **opcional e informativa**. No necesitas abrirla para enviar tu reporte y un fallo del servicio externo no debe impedirte reportar un pago. Si deseas usarla:
+1. Abre **Consultar monto de membresía**.
+2. Selecciona la fecha de la operación.
+3. Pulsa **Consultar tasa BCV**.
+4. Lee la tasa, fecha de vigencia y equivalente aproximado mostrado.
 
-Si tienes dudas sobre el saldo o vencimiento, consulta con la SVCP antes de realizar el pago.
+La conversión es solo una referencia. Paga y reporta el monto real que aparece en tu comprobante bancario.
 
 ## 5. Realizar y reportar un pago
-1. Consulta los datos bancarios e instrucciones en **Membresía y pago**.
-2. Realiza el pago por el canal indicado por la SVCP.
-3. Conserva el comprobante bancario.
-4. Abre https://svcp86.org/admin-reportarpagos/.
-5. Completa los datos solicitados: depositante, referencia, teléfono, monto y fecha, según aparezcan en el formulario.
-6. Adjunta el soporte si el formulario lo solicita.
-7. Verifica la información y envía el reporte.
+1. Consulta los datos bancarios institucionales en **Membresía y pago**.
+2. Realiza la transferencia, depósito o pago móvil.
+3. Conserva la captura o comprobante bancario.
+4. Entra en https://svcp86.org/admin-reportarpagos/.
+5. Completa:
+   - Nombre y apellido del depositante.
+   - Los últimos seis caracteres de la referencia bancaria.
+   - Teléfono del propietario de la cuenta.
+   - Fecha real del pago.
+   - Monto efectivamente pagado en bolívares.
+   - Método de pago.
+   - Captura del comprobante.
+6. Envía el reporte.
 
-Escribe correctamente el monto y la referencia. No reportes una operación que todavía no hayas realizado. Después de enviar, el pago quedará pendiente de verificación.
+**No necesitas consultar la tasa BCV para enviar el formulario.** Si no la consultaste o el servicio no responde, introduce el monto exacto en Bs. que pagaste y continúa. No introduzcas un equivalente calculado por tu cuenta en el campo de bolívares.
 
-## 6. Pagos realizados y comprobantes
-Abre https://svcp86.org/admin-pagosrealizados/ o utiliza la opción del portal. Allí podrás consultar el historial y el estado de tus reportes.
+El reporte queda pendiente de verificación. Enviar el formulario no activa la membresía.
 
-Cuando un pago esté **aprobado**, podrás descargar el comprobante PDF correspondiente. Los reportes pendientes siguen en revisión. Si uno es rechazado, lee el motivo y comunícate con la administración para aclararlo o corregirlo.
+## 6. Consultar pagos y descargar el PDF
+Abre https://svcp86.org/admin-pagosrealizados/ para consultar tus reportes. Cuando el tesorero confirme el pago, el estado cambiará a **Aprobado** y podrás descargar el PDF.
 
-El PDF es una constancia interna de registro y aprobación; no sustituye una factura fiscal.
+El comprobante PDF incluye el logo institucional, RIF J-30849139-0, datos del pago y una nota que indica que es un documento informativo y no fiscal. No es una factura fiscal ni sustituye el comprobante emitido por el banco.
 
-## 7. Directorio médico
-El directorio público está en https://svcp86.org/sociedad-directorio-medico/. La publicación de tu ficha requiere aprobación administrativa y una membresía que permita aparecer en el directorio. Crear una cuenta o enviar un reporte de pago no publica automáticamente el perfil.
+Si el reporte es rechazado, revisa el motivo y contacta a la administración antes de volver a reportar la misma operación.
 
-## 8. Seguridad de tu cuenta
-- No compartas tu contraseña.
-- Cierra sesión al terminar, especialmente en equipos compartidos.
-- Mantén actualizado el correo asociado.
-- No envíes contraseñas ni códigos de recuperación a terceros.
+## 7. Publicación de tu ficha
+Una vez que el pago sea aprobado, el sistema activa/actualiza automáticamente la membresía y aprueba/publica la ficha en el directorio, siempre que no exista una suspensión administrativa. La ficha también debe tener información válida y cumplir las reglas institucionales.
 
-## 9. ¿Necesitas ayuda?
-Si no puedes ingresar, no encuentras tu ficha, necesitas corregir información o tienes dudas sobre un pago, contacta a la administración mediante los canales oficiales publicados en el sitio. Describe el problema e incluye tu nombre, pero nunca envíes tu contraseña.
+Directorio: https://svcp86.org/sociedad-directorio-medico/.
+
+## 8. Seguridad y ayuda
+No compartas tu contraseña ni códigos de recuperación. Cierra sesión en equipos compartidos. Para corregir información o consultar un pago, contacta a la administración por los canales oficiales. Nunca envíes tu contraseña.
